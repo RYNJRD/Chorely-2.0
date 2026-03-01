@@ -22,7 +22,7 @@ export default function GetStarted() {
   const handleDemo = async () => {
     try {
       const family = await demoMutation.mutateAsync();
-      setLocation(`/family/${family.id}/users`);
+      setLocation(`/family/${family.id}/dashboard`);
     } catch (error) {
       console.error(error);
     }

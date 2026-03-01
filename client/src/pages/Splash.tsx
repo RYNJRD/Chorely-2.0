@@ -2,17 +2,25 @@ import { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Star, Sparkles } from "lucide-react";
 import { useLocation } from "wouter";
+import { useStore } from "@/store/useStore";
 
 export default function Splash() {
   const [, setLocation] = useLocation();
   const [phase, setPhase] = useState(0);
+  const { family, currentUser } = useStore();
 
   useEffect(() => {
     const t1 = setTimeout(() => setPhase(1), 800);
     const t2 = setTimeout(() => setPhase(2), 1600);
-    const t3 = setTimeout(() => setLocation("/get-started"), 2800);
+    const t3 = setTimeout(() => {
+      if (family && currentUser) {
+        setLocation(`/family/${family.id}/dashboard`);
+      } else {
+        setLocation("/get-started");
+      }
+    }, 2800);
     return () => { clearTimeout(t1); clearTimeout(t2); clearTimeout(t3); };
-  }, [setLocation]);
+  }, [setLocation, family, currentUser]);
 
   return (
     <div className="min-h-screen flex flex-col items-center justify-center bg-gradient-to-b from-primary/20 via-background to-accent/10 relative overflow-hidden">

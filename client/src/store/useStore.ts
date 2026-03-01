@@ -6,9 +6,13 @@ interface AppState {
   family: Family | null;
   currentUser: User | null;
   onboardingIntent: 'create' | 'join' | null;
+  firebaseUid: string | null;
+  pendingFamilyId: number | null;
   setFamily: (family: Family) => void;
   setCurrentUser: (user: User) => void;
   setOnboardingIntent: (intent: 'create' | 'join' | null) => void;
+  setFirebaseUid: (uid: string | null) => void;
+  setPendingFamilyId: (id: number | null) => void;
   logout: () => void;
 }
 
@@ -18,10 +22,14 @@ export const useStore = create<AppState>()(
       family: null,
       currentUser: null,
       onboardingIntent: null,
+      firebaseUid: null,
+      pendingFamilyId: null,
       setFamily: (family) => set({ family }),
       setCurrentUser: (user) => set({ currentUser: user }),
       setOnboardingIntent: (intent) => set({ onboardingIntent: intent }),
-      logout: () => set({ family: null, currentUser: null, onboardingIntent: null }),
+      setFirebaseUid: (uid) => set({ firebaseUid: uid }),
+      setPendingFamilyId: (id) => set({ pendingFamilyId: id }),
+      logout: () => set({ family: null, currentUser: null, onboardingIntent: null, firebaseUid: null, pendingFamilyId: null }),
     }),
     {
       name: 'chore-app-storage',

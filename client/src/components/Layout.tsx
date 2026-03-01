@@ -4,10 +4,9 @@ import { useLocation } from "wouter";
 export function Layout({ children }: { children: React.ReactNode }) {
   const [location] = useLocation();
   const onboardingPaths = ["/", "/get-started", "/auth", "/join-family", "/setup-family", "/home"];
-  const isOnboarding = onboardingPaths.includes(location);
-  const isUserSelection = location.includes("/users");
+  const isOnboarding = onboardingPaths.includes(location) || location.startsWith("/join/");
 
-  const showNav = !isOnboarding && !isUserSelection;
+  const showNav = !isOnboarding;
 
   return (
     <div className="min-h-screen bg-background font-sans text-foreground pb-24 selection:bg-primary/20">

@@ -6,14 +6,12 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import NotFound from "@/pages/not-found";
 import { Layout } from "@/components/Layout";
 
-// Pages
 import Splash from "@/pages/Splash";
 import GetStarted from "@/pages/GetStarted";
 import AuthWelcome from "@/pages/AuthWelcome";
 import JoinFamily from "@/pages/JoinFamily";
 import FamilySetup from "@/pages/FamilySetup";
 import Landing from "@/pages/Landing";
-import UserSelection from "@/pages/UserSelection";
 import Dashboard from "@/pages/Dashboard";
 import Leaderboard from "@/pages/Leaderboard";
 import Rewards from "@/pages/Rewards";
@@ -31,7 +29,6 @@ function Router() {
       <Route path="/join/:code" component={JoinFamily} />
       <Route path="/setup-family" component={FamilySetup} />
       <Route path="/home" component={Landing} />
-      <Route path="/family/:id/users" component={UserSelection} />
       <Route path="/family/:familyId/dashboard" component={Dashboard} />
       <Route path="/family/:familyId/leaderboard" component={Leaderboard} />
       <Route path="/family/:familyId/rewards" component={Rewards} />

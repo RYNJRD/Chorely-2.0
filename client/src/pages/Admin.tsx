@@ -3,7 +3,7 @@ import { useStore } from "@/store/useStore";
 import { useCreateChore } from "@/hooks/use-chores";
 import { useCreateReward } from "@/hooks/use-rewards";
 import { useFamilyUsers } from "@/hooks/use-families";
-import { Settings, Plus, Star, Gift, Trophy, Check, Search, Link as LinkIcon, Copy, CheckCheck, Users as UsersIcon } from "lucide-react";
+import { Settings, Plus, Star, Gift, Trophy, Check, Search, Link as LinkIcon, Copy, CheckCheck, Users as UsersIcon, Shield, ShieldOff } from "lucide-react";
 import { useState, useCallback, useRef, useEffect } from "react";
 import { apiRequest, queryClient } from "@/lib/queryClient";
 import { buildUrl, api } from "@shared/routes";
@@ -414,6 +414,99 @@ export default function Admin() {
               {filteredUsers.length === 0 && (
                 <p className="text-sm text-muted-foreground text-center py-4" data-testid="text-no-users-match">No users match your search</p>
               )}
+            </div>
+          )}
+        </section>
+
+        <section className="bg-card p-5 rounded-[1.5rem] border-2 border-border shadow-sm">
+          <h2 className="font-display font-bold text-lg mb-1 flex items-center gap-2">
+            <Shield className="text-primary w-5 h-5" /> Member Roles
+          </h2>
+          <p className="text-xs font-medium text-muted-foreground mb-4">
+            Promote members to admin or demote admins to member
+          </p>
+
+          {usersLoading ? (
+            <div className="space-y-3">
+              {[1, 2, 3].map(i => (
+                <div key={i} className="flex items-center gap-3 px-3 py-3 rounded-xl bg-muted/30 animate-pulse">
+                  <div className="w-9 h-9 rounded-full bg-muted" />
+                  <div className="flex-1 space-y-1.5">
+                    <div className="h-3.5 w-20 rounded bg-muted" />
+                  </div>
+                  <div className="w-20 h-8 rounded bg-muted" />
+                </div>
+              ))}
+            </div>
+          ) : (
+            <div className="divide-y divide-border/50">
+              {familyUsers.map(user => {
+                const isAdmin = user.role === "admin";
+                const isSelf = user.id === currentUser?.id;
+                return (
+                  <div
+                    key={user.id}
+                    className="flex items-center gap-3 px-2 py-3 first:pt-0 last:pb-0"
+                  >
+                    <div className={cn(
+                      "w-9 h-9 rounded-full flex items-center justify-center font-bold text-sm text-white flex-shrink-0",
+                      isAdmin ? "bg-accent" : "bg-primary"
+                    )}>
+                      {user.username.charAt(0).toUpperCase()}
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <span className="font-bold text-sm text-foreground truncate block">
+                        {user.username}
+                        {isSelf && <span className="text-muted-foreground text-xs ml-1">(you)</span>}
+                      </span>
+                      <span className={cn(
+                        "text-[9px] font-bold uppercase tracking-wider",
+                        isAdmin ? "text-accent" : "text-muted-foreground"
+                      )}>
+                        {user.role}
+                      </span>
+                    </div>
+                    {!isSelf && (
+                      <button
+                        data-testid={`button-toggle-role-${user.id}`}
+                        onClick={async () => {
+                          const newRole = isAdmin ? "member" : "admin";
+                          try {
+                            const res = await apiRequest(
+                              "PATCH",
+                              `${buildUrl(api.users.updateRole.path, { id: user.id })}?requestingUserId=${currentUser?.id}`,
+                              { role: newRole }
+                            );
+                            const updated: User = await res.json();
+                            const updater = (old: User[] | undefined) =>
+                              old?.map(u => u.id === updated.id ? { ...u, role: updated.role } : u);
+                            queryClient.setQueryData<User[]>([...usersQueryKey], updater);
+                            queryClient.setQueryData<User[]>([...leaderboardQueryKey], updater);
+                            toast({
+                              title: isAdmin ? "Demoted to member" : "Promoted to admin",
+                              description: `${user.username} is now a ${newRole}`,
+                            });
+                          } catch {
+                            toast({ title: "Error", description: "Failed to update role", variant: "destructive" });
+                          }
+                        }}
+                        className={cn(
+                          "px-3 py-1.5 rounded-lg text-xs font-bold transition-all active:scale-95 flex items-center gap-1.5",
+                          isAdmin
+                            ? "bg-muted text-muted-foreground hover:bg-destructive/10 hover:text-destructive"
+                            : "bg-accent/10 text-accent hover:bg-accent/20"
+                        )}
+                      >
+                        {isAdmin ? (
+                          <><ShieldOff className="w-3.5 h-3.5" /> Demote</>
+                        ) : (
+                          <><Shield className="w-3.5 h-3.5" /> Promote</>
+                        )}
+                      </button>
+                    )}
+                  </div>
+                );
+              })}
             </div>
           )}
         </section>

@@ -69,6 +69,17 @@ export const api = {
       path: '/api/users/:id/leaderboard' as const,
       input: z.object({ hideFromLeaderboard: z.boolean() }),
       responses: { 200: z.custom<typeof users.$inferSelect>(), 404: errorSchemas.notFound }
+    },
+    getByFirebaseUid: {
+      method: 'GET' as const,
+      path: '/api/users/firebase/:uid' as const,
+      responses: { 200: z.custom<typeof users.$inferSelect>(), 404: errorSchemas.notFound }
+    },
+    updateRole: {
+      method: 'PATCH' as const,
+      path: '/api/users/:id/role' as const,
+      input: z.object({ role: z.enum(['admin', 'member']) }),
+      responses: { 200: z.custom<typeof users.$inferSelect>(), 404: errorSchemas.notFound }
     }
   },
   messages: {

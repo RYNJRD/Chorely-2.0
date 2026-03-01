@@ -1,6 +1,6 @@
 import type { Express } from "express";
 import type { Server } from "http";
-import { storage } from "./storage";
+import { storage, isUserAdminOfFamily } from "./storage";
 import { api } from "@shared/routes";
 import { z } from "zod";
 
@@ -55,8 +55,6 @@ export async function registerRoutes(
       return res.status(400).json({ message: "Invalid request" });
     }
     
-    // Check if user is admin of this family
-    const { isUserAdminOfFamily } = await import("./storage");
     const isAdmin = await isUserAdminOfFamily(userId, familyId);
     
     if (!isAdmin) {
@@ -75,6 +73,12 @@ export async function registerRoutes(
   app.post(api.users.create.path, async (req, res) => {
     try {
       const input = api.users.create.input.parse(req.body);
+      if (input.firebaseUid) {
+        const existing = await storage.getUserByFirebaseUid(input.firebaseUid);
+        if (existing) {
+          return res.status(409).json({ message: "Account already has a profile", user: existing });
+        }
+      }
       const user = await storage.createUser(input);
       res.status(201).json(user);
     } catch (e) {
@@ -108,6 +112,39 @@ export async function registerRoutes(
         return res.status(400).json({ message: "Invalid user id" });
       }
       const user = await storage.updateUserLeaderboard(userId, input.hideFromLeaderboard);
+      if (!user) {
+        return res.status(404).json({ message: "User not found" });
+      }
+      res.json(user);
+    } catch (e) {
+      if (e instanceof z.ZodError) res.status(400).json({ message: e.errors[0].message });
+      else res.status(500).json({ message: "Internal server error" });
+    }
+  });
+
+  app.get(api.users.getByFirebaseUid.path, async (req, res) => {
+    const user = await storage.getUserByFirebaseUid(req.params.uid);
+    if (!user) return res.status(404).json({ message: "Not found" });
+    res.json(user);
+  });
+
+  app.patch(api.users.updateRole.path, async (req, res) => {
+    try {
+      const input = api.users.updateRole.input.parse(req.body);
+      const userId = Number(req.params.id);
+      const requestingUserId = Number(req.query.requestingUserId);
+      if (isNaN(userId) || isNaN(requestingUserId)) {
+        return res.status(400).json({ message: "Invalid request" });
+      }
+      const targetUser = await storage.getUser(userId);
+      if (!targetUser || !targetUser.familyId) {
+        return res.status(404).json({ message: "User not found" });
+      }
+      const isAdmin = await isUserAdminOfFamily(requestingUserId, targetUser.familyId);
+      if (!isAdmin) {
+        return res.status(403).json({ message: "Only admins can change roles" });
+      }
+      const user = await storage.updateUserRole(userId, input.role);
       if (!user) {
         return res.status(404).json({ message: "User not found" });
       }

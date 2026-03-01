@@ -26,8 +26,10 @@ export interface IStorage {
   getFamilyChores(familyId: number): Promise<Chore[]>;
   createUser(user: InsertUser): Promise<User>;
   getUser(id: number): Promise<User | undefined>;
+  getUserByFirebaseUid(uid: string): Promise<User | undefined>;
   updateUserAvatar(id: number, config: string): Promise<User>;
   updateUserLeaderboard(id: number, hide: boolean): Promise<User | undefined>;
+  updateUserRole(id: number, role: string): Promise<User | undefined>;
   createChore(chore: InsertChore): Promise<Chore>;
   updateChore(id: number, updates: Partial<InsertChore>): Promise<Chore>;
   completeChore(choreId: number, userId: number): Promise<{ chore: Chore, user: User }>;
@@ -84,12 +86,20 @@ export class DatabaseStorage implements IStorage {
     const [user] = await db.select().from(users).where(eq(users.id, id));
     return user;
   }
+  async getUserByFirebaseUid(uid: string): Promise<User | undefined> {
+    const [user] = await db.select().from(users).where(eq(users.firebaseUid, uid));
+    return user;
+  }
   async updateUserAvatar(id: number, config: string): Promise<User> {
     const [updated] = await db.update(users).set({ avatarConfig: config }).where(eq(users.id, id)).returning();
     return updated;
   }
   async updateUserLeaderboard(id: number, hide: boolean): Promise<User | undefined> {
     const [updated] = await db.update(users).set({ hideFromLeaderboard: hide }).where(eq(users.id, id)).returning();
+    return updated;
+  }
+  async updateUserRole(id: number, role: string): Promise<User | undefined> {
+    const [updated] = await db.update(users).set({ role }).where(eq(users.id, id)).returning();
     return updated;
   }
   async createChore(chore: InsertChore): Promise<Chore> {

@@ -18,7 +18,7 @@ function isValidEmail(email: string) {
 export default function AuthWelcome() {
   const [, setLocation] = useLocation();
   const { toast } = useToast();
-  const { onboardingIntent } = useStore();
+  const { onboardingIntent, setFirebaseUid, setFamily, setCurrentUser } = useStore();
   const [step, setStep] = useState<"email" | "password">("email");
   const [email, setEmail] = useState("");
   const [emailError, setEmailError] = useState("");
@@ -29,18 +29,35 @@ export default function AuthWelcome() {
 
   const emailValid = isValidEmail(email);
 
-  const getPostAuthRoute = () => {
-    if (onboardingIntent === "create") return "/setup-family";
-    if (onboardingIntent === "join") return "/join-family";
-    return "/home";
+  const handlePostAuth = async (uid: string) => {
+    setFirebaseUid(uid);
+    try {
+      const res = await fetch(`/api/users/firebase/${uid}`);
+      if (res.ok) {
+        const user = await res.json();
+        setCurrentUser(user);
+        if (user.familyId) {
+          const famRes = await fetch(`/api/families/${user.familyId}`);
+          if (famRes.ok) {
+            const family = await famRes.json();
+            setFamily(family);
+            setLocation(`/family/${family.id}/dashboard`);
+            return;
+          }
+        }
+      }
+    } catch {}
+    if (onboardingIntent === "create") setLocation("/setup-family");
+    else if (onboardingIntent === "join") setLocation("/join-family");
+    else setLocation("/get-started");
   };
 
   const handleGoogleSignIn = async () => {
     setIsGoogleLoading(true);
     try {
-      await signInWithPopup(auth, googleProvider);
+      const result = await signInWithPopup(auth, googleProvider);
       toast({ title: "Welcome!", description: "Signed in with Google successfully" });
-      setLocation(getPostAuthRoute());
+      await handlePostAuth(result.user.uid);
     } catch (error: any) {
       if (error.code !== "auth/popup-closed-by-user") {
         toast({ title: "Sign-in failed", description: error.message || "Something went wrong", variant: "destructive" });
@@ -74,15 +91,15 @@ export default function AuthWelcome() {
     }
     setPasswordError("");
     try {
-      await createUserWithEmailAndPassword(auth, email.trim(), password);
+      const result = await createUserWithEmailAndPassword(auth, email.trim(), password);
       toast({ title: "Account created!", description: "Welcome to ChoreQuest" });
-      setLocation(getPostAuthRoute());
+      await handlePostAuth(result.user.uid);
     } catch (error: any) {
       if (error.code === "auth/email-already-in-use") {
         try {
-          await signInWithEmailAndPassword(auth, email.trim(), password);
+          const result = await signInWithEmailAndPassword(auth, email.trim(), password);
           toast({ title: "Welcome back!", description: "Signed in successfully" });
-          setLocation(getPostAuthRoute());
+          await handlePostAuth(result.user.uid);
         } catch (signInError: any) {
           setPasswordError("Email already in use. Check your password or use a different email.");
         }
@@ -211,16 +228,6 @@ export default function AuthWelcome() {
                 {emailError}
               </motion.p>
             )}
-
-            <div className="pt-4">
-              <button
-                data-testid="button-skip"
-                onClick={() => setLocation(getPostAuthRoute())}
-                className="text-sm font-bold text-muted-foreground hover:text-primary transition-colors underline underline-offset-4"
-              >
-                Skip for now
-              </button>
-            </div>
           </motion.div>
         ) : (
           <motion.div

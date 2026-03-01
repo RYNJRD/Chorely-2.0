@@ -12,7 +12,7 @@ export default function Landing() {
   const handleDemo = async () => {
     try {
       const family = await demoMutation.mutateAsync();
-      setLocation(`/family/${family.id}/users`);
+      setLocation(`/family/${family.id}/dashboard`);
     } catch (error) {
       console.error(error);
     }

@@ -13,6 +13,7 @@ export const families = pgTable("families", {
 export const users = pgTable("users", {
   id: serial("id").primaryKey(),
   familyId: integer("family_id").references(() => families.id),
+  firebaseUid: varchar("firebase_uid", { length: 255 }).unique(),
   username: varchar("username", { length: 255 }).notNull(),
   role: varchar("role", { length: 50 }).notNull().default('member'),
   gender: varchar("gender", { length: 20 }),
