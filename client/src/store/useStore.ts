@@ -8,8 +8,8 @@ interface AppState {
   onboardingIntent: 'create' | 'join' | null;
   firebaseUid: string | null;
   pendingFamilyId: number | null;
-  setFamily: (family: Family) => void;
-  setCurrentUser: (user: User) => void;
+  setFamily: (family: Family | null) => void;
+  setCurrentUser: (user: User | null) => void;
   setOnboardingIntent: (intent: 'create' | 'join' | null) => void;
   setFirebaseUid: (uid: string | null) => void;
   setPendingFamilyId: (id: number | null) => void;

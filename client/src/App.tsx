@@ -30,6 +30,15 @@ function EmailVerificationGate() {
 
   useEffect(() => {
     const enforceVerification = () => {
+      const search = window.location.search || "";
+      const params = new URLSearchParams(search);
+      const mode = params.get("mode");
+      const oobCode = params.get("oobCode");
+      if (mode === "verifyEmail" && oobCode && location !== "/email-action") {
+        setLocation(`/email-action${search}`);
+        return;
+      }
+
       const user = auth.currentUser;
       if (!user) {
         if (location === "/verify-email") setLocation("/auth");

@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useLocation } from "wouter";
 import { ChevronLeft, Loader2, MailCheck, RefreshCw } from "lucide-react";
-import { sendEmailVerification } from "firebase/auth";
+import { applyActionCode, sendEmailVerification } from "firebase/auth";
 import { auth } from "@/lib/firebase";
 import { useToast } from "@/hooks/use-toast";
 import { useStore } from "@/store/useStore";
@@ -21,6 +21,8 @@ export default function VerifyEmail() {
   const { onboardingIntent, setFirebaseUid, setFamily, setCurrentUser } = useStore();
   const [isResending, setIsResending] = useState(false);
   const [isChecking, setIsChecking] = useState(false);
+  const search = window.location.search || "";
+  const emailFromQuery = new URLSearchParams(search).get("email") ?? "";
 
   const handleBack = async () => {
     await auth.signOut();
@@ -31,9 +33,29 @@ export default function VerifyEmail() {
   };
 
   useEffect(() => {
+    const queryParams = new URLSearchParams(search);
+    const mode = queryParams.get("mode");
+    const oobCode = queryParams.get("oobCode");
+    if (mode === "verifyEmail" && oobCode) {
+      void (async () => {
+        try {
+          await applyActionCode(auth, oobCode);
+          if (auth.currentUser) {
+            await auth.currentUser.reload();
+          }
+          toast({ title: "Email verified", description: "Your verification was applied." });
+        } catch {
+          // Ignore invalid/used code here; dedicated page handles richer messaging.
+        }
+      })();
+    }
+
     const user = auth.currentUser;
     if (!user) {
-      setLocation("/auth");
+      const authUrl = emailFromQuery
+        ? `/auth?email=${encodeURIComponent(emailFromQuery)}&mode=signin`
+        : "/auth";
+      setLocation(authUrl);
       return;
     }
 
@@ -47,7 +69,7 @@ export default function VerifyEmail() {
         setLocation,
       });
     }
-  }, [onboardingIntent, setCurrentUser, setFamily, setFirebaseUid, setLocation]);
+  }, [onboardingIntent, search, setCurrentUser, setFamily, setFirebaseUid, setLocation, toast, emailFromQuery]);
 
   const handleResend = async () => {
     const user = auth.currentUser;
@@ -77,12 +99,16 @@ export default function VerifyEmail() {
   const handleRefreshStatus = async () => {
     const user = auth.currentUser;
     if (!user) {
-      setLocation("/auth");
+      const authUrl = emailFromQuery
+        ? `/auth?email=${encodeURIComponent(emailFromQuery)}&mode=signin`
+        : "/auth";
+      setLocation(authUrl);
       return;
     }
 
     setIsChecking(true);
     try {
+      await user.getIdToken(true);
       await user.reload();
       const refreshedUser = auth.currentUser;
       if (refreshedUser?.emailVerified) {
