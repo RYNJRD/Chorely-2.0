@@ -42,6 +42,17 @@ export async function verifyBearerToken(token: string) {
   return getAuth().verifyIdToken(token, true);
 }
 
+function decodeJwtPayload(token: string): Record<string, unknown> | null {
+  try {
+    const parts = token.split(".");
+    if (parts.length !== 3) return null;
+    const payload = Buffer.from(parts[1], "base64url").toString("utf8");
+    return JSON.parse(payload);
+  } catch {
+    return null;
+  }
+}
+
 export async function requireAuth(req: AuthRequest, res: Response, next: NextFunction) {
   if (process.env.NODE_ENV !== "production") {
     const demoUserId = Number(req.headers["x-demo-user-id"]);
@@ -59,6 +70,15 @@ export async function requireAuth(req: AuthRequest, res: Response, next: NextFun
   const token = authHeader.slice("Bearer ".length).trim();
   if (!token) {
     return res.status(401).json({ message: "Missing bearer token" });
+  }
+
+  if (process.env.NODE_ENV !== "production") {
+    const payload = decodeJwtPayload(token);
+    const uid = typeof payload?.user_id === "string" ? payload.user_id : typeof payload?.sub === "string" ? payload.sub : null;
+    if (uid) {
+      req.auth = { uid };
+      return next();
+    }
   }
 
   try {
