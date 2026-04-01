@@ -1,8 +1,8 @@
 import { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Star, Sparkles } from "lucide-react";
 import { useLocation } from "wouter";
 import { useStore } from "@/store/useStore";
+import { ChorlyMascot } from "@/components/ChorlyMascot";
 
 export default function Splash() {
   const [, setLocation] = useLocation();
@@ -10,8 +10,8 @@ export default function Splash() {
   const { family, currentUser } = useStore();
 
   useEffect(() => {
-    const t1 = setTimeout(() => setPhase(1), 800);
-    const t2 = setTimeout(() => setPhase(2), 1600);
+    const t1 = setTimeout(() => setPhase(1), 600);
+    const t2 = setTimeout(() => setPhase(2), 1200);
     const t3 = setTimeout(() => {
       if (family && currentUser) {
         setLocation(`/family/${family.id}/dashboard`);
@@ -23,77 +23,69 @@ export default function Splash() {
   }, [setLocation, family, currentUser]);
 
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center bg-gradient-to-b from-primary/20 via-background to-accent/10 relative overflow-hidden">
-      <div className="absolute top-[-15%] left-[-15%] w-80 h-80 bg-primary/30 rounded-full blur-[80px] animate-pulse" />
-      <div className="absolute bottom-[-15%] right-[-15%] w-80 h-80 bg-accent/30 rounded-full blur-[80px] animate-pulse" />
+    <div className="min-h-screen flex flex-col items-center justify-center bg-onboarding relative overflow-hidden">
+      <div className="blob-primary absolute w-72 h-72 top-[-8%] left-[-12%]" />
+      <div className="blob-accent absolute w-64 h-64 bottom-[-8%] right-[-10%]" />
+      <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_hsl(262_83%_58%_/_0.06)_0%,_transparent_70%)]" />
 
-      <AnimatePresence>
-        {phase >= 0 && (
-          <motion.div
-            initial={{ scale: 0, rotate: -45 }}
-            animate={{ scale: 1, rotate: 3 }}
-            transition={{ type: "spring", bounce: 0.6, duration: 0.8 }}
-            className="w-28 h-28 bg-white rounded-[2rem] shadow-2xl flex items-center justify-center mb-8 relative"
-          >
-            <Star className="w-14 h-14 text-accent fill-accent" />
+      <div className="flex flex-col items-center relative z-10">
+        <AnimatePresence>
+          {phase >= 0 && (
             <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: [0, 1, 0] }}
-              transition={{ repeat: Infinity, duration: 1.5, delay: 0.3 }}
-              className="absolute -top-2 -right-2"
+              initial={{ scale: 0, rotate: -20, opacity: 0 }}
+              animate={{ scale: 1, rotate: 0, opacity: 1 }}
+              transition={{ type: "spring", bounce: 0.55, duration: 0.9 }}
+              className="mb-4"
             >
-              <Sparkles className="w-6 h-6 text-primary" />
+              <ChorlyMascot pose="wave" size={140} bounce={true} />
             </motion.div>
+          )}
+        </AnimatePresence>
+
+        <AnimatePresence>
+          {phase >= 1 && (
             <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: [0, 1, 0] }}
-              transition={{ repeat: Infinity, duration: 1.5, delay: 0.8 }}
-              className="absolute -bottom-1 -left-2"
+              initial={{ opacity: 0, y: 28 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ type: "spring", bounce: 0.4 }}
+              className="text-center mb-2"
             >
-              <Sparkles className="w-5 h-5 text-accent" />
+              <h1 className="font-display text-5xl font-bold mb-1">
+                <span className="logo-glow" style={{ color: "hsl(262 83% 58%)" }}>Chore</span>
+                <span className="logo-accent-glow" style={{ color: "hsl(43 96% 50%)" }}>Quest</span>
+              </h1>
+              <div className="h-1 w-32 mx-auto rounded-full bg-gradient-to-r from-primary to-accent opacity-60 mt-1" />
             </motion.div>
-          </motion.div>
-        )}
-      </AnimatePresence>
+          )}
+        </AnimatePresence>
 
-      <AnimatePresence>
-        {phase >= 1 && (
-          <motion.h1
-            initial={{ opacity: 0, y: 30 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ type: "spring", bounce: 0.4 }}
-            className="font-display text-5xl font-bold text-foreground mb-3"
-          >
-            Chore<span className="text-primary">Quest</span>
-          </motion.h1>
-        )}
-      </AnimatePresence>
-
-      <AnimatePresence>
-        {phase >= 2 && (
-          <motion.p
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ type: "spring", bounce: 0.3 }}
-            className="text-muted-foreground font-bold text-base"
-          >
-            Making chores fun for the whole family
-          </motion.p>
-        )}
-      </AnimatePresence>
+        <AnimatePresence>
+          {phase >= 2 && (
+            <motion.p
+              initial={{ opacity: 0, y: 16 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ type: "spring", bounce: 0.3 }}
+              className="text-muted-foreground font-bold text-base mt-3"
+            >
+              Making chores fun for the whole family ✨
+            </motion.p>
+          )}
+        </AnimatePresence>
+      </div>
 
       <motion.div
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
-        transition={{ delay: 2 }}
+        transition={{ delay: 1.8 }}
         className="absolute bottom-12 flex gap-2"
       >
         {[0, 1, 2].map((i) => (
           <motion.div
             key={i}
-            className="w-2 h-2 bg-primary rounded-full"
-            animate={{ scale: [1, 1.4, 1], opacity: [0.4, 1, 0.4] }}
-            transition={{ repeat: Infinity, duration: 1, delay: i * 0.2 }}
+            className="w-2.5 h-2.5 rounded-full"
+            style={{ background: "hsl(262 83% 58%)" }}
+            animate={{ scale: [1, 1.5, 1], opacity: [0.3, 1, 0.3] }}
+            transition={{ repeat: Infinity, duration: 1.1, delay: i * 0.22 }}
           />
         ))}
       </motion.div>
