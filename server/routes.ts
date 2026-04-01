@@ -34,6 +34,27 @@ function sameFamilyOrReject(res: Response, currentFamilyId: number | null | unde
 }
 
 export async function registerRoutes(httpServer: Server, app: Express): Promise<Server> {
+  // Dev-only debug endpoint — shows token decode result without Firebase Admin
+  if (process.env.NODE_ENV !== "production") {
+    app.get("/api/debug/auth", (req, res) => {
+      const authHeader = req.headers.authorization ?? "";
+      const token = authHeader.startsWith("Bearer ") ? authHeader.slice(7).trim() : "";
+      if (!token) return res.json({ status: "no_token", IS_DEV: true, NODE_ENV: process.env.NODE_ENV });
+
+      try {
+        const parts = token.split(".");
+        if (parts.length !== 3) return res.json({ status: "not_a_jwt", parts: parts.length });
+        const base64 = parts[1].replace(/-/g, "+").replace(/_/g, "/");
+        const padded = base64 + "=".repeat((4 - (base64.length % 4)) % 4);
+        const payload = JSON.parse(Buffer.from(padded, "base64").toString("utf8"));
+        const uid = payload.user_id ?? payload.sub ?? payload.uid ?? null;
+        return res.json({ status: "ok", uid, keys: Object.keys(payload), IS_DEV: true, NODE_ENV: process.env.NODE_ENV });
+      } catch (e) {
+        return res.json({ status: "decode_error", error: String(e) });
+      }
+    });
+  }
+
   app.post(api.families.create.path, requireAuth, async (req, res) => {
     try {
       const input = api.families.create.input.parse(req.body);

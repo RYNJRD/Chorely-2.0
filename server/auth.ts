@@ -4,6 +4,7 @@ import { getAuth } from "firebase-admin/auth";
 import type { User } from "@shared/schema";
 import { storage } from "./storage";
 import { getEnv } from "./env";
+import * as crypto from "crypto";
 
 const IS_DEV = process.env.NODE_ENV !== "production";
 
@@ -15,6 +16,105 @@ type AuthRequest = Request & {
   currentUser?: User;
 };
 
+// ── Firebase public-key cache ─────────────────────────────────────────────────
+interface PublicKeyCache {
+  keys: Record<string, string>; // kid → PEM public key
+  expiresAt: number;
+}
+let pkCache: PublicKeyCache | null = null;
+
+async function getFirebasePublicKeys(): Promise<Record<string, string>> {
+  const now = Date.now();
+  if (pkCache && now < pkCache.expiresAt) return pkCache.keys;
+
+  const res = await fetch(
+    "https://www.googleapis.com/robot/v1/metadata/x509/securetoken@system.gserviceaccount.com",
+  );
+  if (!res.ok) throw new Error("Failed to fetch Firebase public keys");
+
+  // Cache-Control header tells us how long to cache
+  const cc = res.headers.get("cache-control") ?? "";
+  const maxAgeMatch = cc.match(/max-age=(\d+)/);
+  const ttl = maxAgeMatch ? parseInt(maxAgeMatch[1]) * 1000 : 3_600_000;
+
+  const certs = (await res.json()) as Record<string, string>;
+  pkCache = { keys: certs, expiresAt: now + ttl };
+  return certs;
+}
+
+/**
+ * Verifies a Firebase ID token using Firebase's published public keys.
+ * This works without a Firebase Admin service account.
+ */
+async function verifyFirebaseToken(token: string): Promise<{ uid: string } | null> {
+  try {
+    const parts = token.split(".");
+    if (parts.length !== 3) return null;
+
+    // Decode header to get the key id (kid)
+    const headerJson = Buffer.from(
+      parts[0].replace(/-/g, "+").replace(/_/g, "/") +
+        "=".repeat((4 - (parts[0].length % 4)) % 4),
+      "base64",
+    ).toString("utf8");
+    const header = JSON.parse(headerJson) as { kid?: string; alg?: string };
+
+    if (header.alg !== "RS256" || !header.kid) return null;
+
+    // Decode payload
+    const payloadJson = Buffer.from(
+      parts[1].replace(/-/g, "+").replace(/_/g, "/") +
+        "=".repeat((4 - (parts[1].length % 4)) % 4),
+      "base64",
+    ).toString("utf8");
+    const payload = JSON.parse(payloadJson) as Record<string, unknown>;
+
+    // Extract uid
+    const uid = extractUid(payload);
+    if (!uid) return null;
+
+    // Basic time checks
+    const now = Math.floor(Date.now() / 1000);
+    if (typeof payload.exp === "number" && payload.exp < now) {
+      console.warn("[auth] Firebase token expired");
+      return null;
+    }
+    if (typeof payload.iat === "number" && payload.iat > now + 300) {
+      console.warn("[auth] Firebase token issued in the future");
+      return null;
+    }
+
+    // Fetch public keys and verify signature
+    const certs = await getFirebasePublicKeys();
+    const certPem = certs[header.kid];
+    if (!certPem) {
+      console.warn("[auth] No public key found for kid:", header.kid);
+      return null;
+    }
+
+    const signingInput = `${parts[0]}.${parts[1]}`;
+    const signature = Buffer.from(
+      parts[2].replace(/-/g, "+").replace(/_/g, "/") +
+        "=".repeat((4 - (parts[2].length % 4)) % 4),
+      "base64",
+    );
+
+    const verify = crypto.createVerify("RSA-SHA256");
+    verify.update(signingInput);
+    const valid = verify.verify(certPem, signature);
+    if (!valid) {
+      console.warn("[auth] Firebase token signature invalid");
+      return null;
+    }
+
+    return { uid };
+  } catch (e) {
+    console.warn("[auth] verifyFirebaseToken error:", e);
+    return null;
+  }
+}
+
+// ── Firebase Admin (requires service account creds) ──────────────────────────
 function initializeFirebaseAdmin() {
   if (getApps().length > 0) return;
 
@@ -44,31 +144,19 @@ export async function verifyBearerToken(token: string) {
   return getAuth().verifyIdToken(token, true);
 }
 
-/**
- * Decodes the payload segment of a JWT without cryptographic verification.
- * Handles both base64url and standard base64 encoding.
- */
+// ── Helpers ───────────────────────────────────────────────────────────────────
 function decodeJwtPayload(token: string): Record<string, unknown> | null {
   try {
     const parts = token.split(".");
     if (parts.length !== 3) return null;
-
-    const segment = parts[1];
-
-    // Convert base64url → standard base64 manually (most compatible)
-    const base64 = segment.replace(/-/g, "+").replace(/_/g, "/");
+    const base64 = parts[1].replace(/-/g, "+").replace(/_/g, "/");
     const padded = base64 + "=".repeat((4 - (base64.length % 4)) % 4);
-    const json = Buffer.from(padded, "base64").toString("utf8");
-    return JSON.parse(json);
+    return JSON.parse(Buffer.from(padded, "base64").toString("utf8"));
   } catch {
     return null;
   }
 }
 
-/**
- * Tries to extract a Firebase UID from a decoded JWT payload.
- * Firebase ID tokens always carry the uid in `user_id` and `sub`.
- */
 function extractUid(payload: Record<string, unknown>): string | null {
   for (const field of ["user_id", "sub", "uid"]) {
     const val = payload[field];
@@ -77,8 +165,9 @@ function extractUid(payload: Record<string, unknown>): string | null {
   return null;
 }
 
+// ── Middleware ────────────────────────────────────────────────────────────────
 export async function requireAuth(req: AuthRequest, res: Response, next: NextFunction) {
-  // ── Demo user shortcut (dev only) ──────────────────────────────────────────
+  // Demo user shortcut (dev only)
   if (IS_DEV) {
     const demoUserId = Number(req.headers["x-demo-user-id"]);
     if (Number.isFinite(demoUserId) && demoUserId > 0) {
@@ -97,27 +186,30 @@ export async function requireAuth(req: AuthRequest, res: Response, next: NextFun
     return res.status(401).json({ message: "Missing bearer token" });
   }
 
-  // ── Dev bypass: decode JWT locally, no Firebase Admin needed ───────────────
+  // ── Step 1: Try public-key verification (works without service account) ────
+  const verified = await verifyFirebaseToken(token);
+  if (verified) {
+    req.auth = { uid: verified.uid };
+    return next();
+  }
+
+  // ── Step 2: Dev fallback — trust decoded payload (no signature check) ──────
   if (IS_DEV) {
     const payload = decodeJwtPayload(token);
-
     if (payload) {
       const uid = extractUid(payload);
       if (uid) {
         req.auth = { uid };
         return next();
       }
-      // Payload decoded but no uid — log and reject clearly
-      console.warn("[auth] JWT payload decoded but no uid field found. Keys:", Object.keys(payload));
+      console.warn("[auth] JWT payload decoded but no uid found. Keys:", Object.keys(payload));
       return res.status(401).json({ message: "Could not extract uid from token" });
     }
-
-    // Token isn't a valid JWT at all
-    console.warn("[auth] Bearer token is not a valid JWT (couldn't decode payload). Token length:", token.length);
+    console.warn("[auth] Bearer token is not a valid JWT. Length:", token.length);
     return res.status(401).json({ message: "Bearer token is not a valid JWT" });
   }
 
-  // ── Production: full Firebase Admin verification ───────────────────────────
+  // ── Step 3: Production — full Firebase Admin verification ─────────────────
   try {
     const decoded = await verifyBearerToken(token);
     req.auth = { uid: decoded.uid };
@@ -127,7 +219,7 @@ export async function requireAuth(req: AuthRequest, res: Response, next: NextFun
       error instanceof Error && error.message.includes("environment variable")
         ? error.message
         : "Invalid or expired auth token";
-    console.error("[auth] Token verification failed:", error instanceof Error ? error.message : error);
+    console.error("[auth] All auth methods failed:", error instanceof Error ? error.message : error);
     return res.status(message.startsWith("Missing required") ? 500 : 401).json({ message });
   }
 }
