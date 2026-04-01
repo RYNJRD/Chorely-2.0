@@ -43,7 +43,10 @@ export default function FamilySetup() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ name: familyName.trim(), timeZone }),
       });
-      if (!famRes.ok) throw new Error("Failed to create family");
+      if (!famRes.ok) {
+        const errBody = await famRes.json().catch(() => ({ message: famRes.statusText }));
+        throw new Error(errBody?.message || "Failed to create family");
+      }
       const family = await famRes.json();
 
       const userRes = await apiFetch("/api/users", {
@@ -58,7 +61,10 @@ export default function FamilySetup() {
           age: parseInt(age),
         }),
       });
-      if (!userRes.ok) throw new Error("Failed to create profile");
+      if (!userRes.ok) {
+        const errBody = await userRes.json().catch(() => ({ message: userRes.statusText }));
+        throw new Error(errBody?.message || "Failed to create profile");
+      }
       const createdUser = await userRes.json();
 
       if (starterMode === "guided") {
@@ -68,13 +74,17 @@ export default function FamilySetup() {
           { title: "Take out recycling", description: "A good first approval-based chore.", points: 30, type: "weekly", requiresApproval: true },
         ];
         for (const starterChore of starterChores) {
-          await apiFetch("/api/chores", {
+          const choreRes = await apiFetch("/api/chores", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ familyId: family.id, assigneeId: null, emoji: "", createdBy: createdUser.id, ...starterChore }),
           });
+          if (!choreRes.ok) {
+            const errBody = await choreRes.json().catch(() => ({ message: choreRes.statusText }));
+            console.error("Chore creation failed:", errBody);
+          }
         }
-        await apiFetch("/api/rewards", {
+        const rewardRes = await apiFetch("/api/rewards", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
@@ -87,6 +97,10 @@ export default function FamilySetup() {
             createdBy: createdUser.id,
           }),
         });
+        if (!rewardRes.ok) {
+          const errBody = await rewardRes.json().catch(() => ({ message: rewardRes.statusText }));
+          console.error("Reward creation failed:", errBody);
+        }
       }
 
       setFamily(family);
@@ -99,8 +113,10 @@ export default function FamilySetup() {
         duration: 5000,
       });
       setLocation(`/family/${family.id}/dashboard`);
-    } catch {
-      toast({ title: "Error", description: "Something went wrong. Please try again.", variant: "destructive" });
+    } catch (err) {
+      console.error("Family setup error:", err);
+      const message = err instanceof Error ? err.message : "Something went wrong. Please try again.";
+      toast({ title: "Error", description: message, variant: "destructive" });
     } finally {
       setIsSubmitting(false);
     }
