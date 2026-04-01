@@ -65,10 +65,9 @@ export const ChoreCard = forwardRef<HTMLDivElement, ChoreCardProps>(
             onClick={() => {
               if (!confirming) {
                 setConfirming(true);
-                return;
+              } else {
+                setConfirming(false);
               }
-              onComplete();
-              setConfirming(false);
             }}
             disabled={isDone || isCompleting}
             className={cn(
