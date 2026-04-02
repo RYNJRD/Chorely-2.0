@@ -189,7 +189,14 @@ export default function Profile() {
                 src={currentHairImage}
                 alt="Hair"
                 draggable={false}
-                className="absolute top-0 left-1/2 -translate-x-1/2 h-full w-auto object-contain object-bottom select-none pointer-events-none"
+                className="absolute select-none pointer-events-none"
+                style={{
+                  top: "-8%",
+                  left: "50%",
+                  transform: "translateX(-50%)",
+                  height: "47%",
+                  width: "auto",
+                }}
               />
             )}
           </AnimatePresence>
