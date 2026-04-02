@@ -1,8 +1,7 @@
 import { useEffect, useState } from "react";
 import { useMutation } from "@tanstack/react-query";
 import { motion, AnimatePresence } from "framer-motion";
-import { ArrowLeft, Save, Shirt, Smile } from "lucide-react";
-import { useLocation } from "wouter";
+import { Save, Shirt, Smile, RotateCcw, Check, X } from "lucide-react";
 import { api, buildUrl } from "@shared/routes";
 import { queryClient } from "@/lib/queryClient";
 import { Button } from "@/components/ui/button";
@@ -21,12 +20,16 @@ import {
 } from "@/lib/avatar";
 import { cn } from "@/lib/utils";
 import penguinImg from "@assets/0d1f6a25-4983-496c-a1e9-cf33a6774d85_removalai_preview_1775145431205.png";
+import goldSpikyHairImg from "@assets/ChatGPT_Image_Apr_2,_2026,_05_15_05_PM_1775146544794.png";
 
 type AvatarCategory = "head" | "clothing";
 
+const HAIR_IMAGES: Record<string, string> = {
+  "gold-spiky": goldSpikyHairImg,
+};
+
 export default function Profile() {
   const { currentUser, setCurrentUser } = useStore();
-  const [, setLocation] = useLocation();
   const { toast } = useToast();
 
   const [config, setConfig] = useState<AvatarConfig>(() =>
@@ -34,7 +37,7 @@ export default function Profile() {
   );
   const [activeCategory, setActiveCategory] = useState<AvatarCategory>("head");
   const [activeSubSection, setActiveSubSection] = useState<AvatarSubSection>("hair");
-
+  const [confirmReset, setConfirmReset] = useState(false);
 
   useEffect(() => {
     setConfig(parseAvatarConfig(currentUser?.avatarConfig));
@@ -69,9 +72,11 @@ export default function Profile() {
 
   const headSections = HEAD_SUB_SECTIONS;
   const clothingSections = CLOTHING_SUB_SECTIONS;
-
   const currentSections = activeCategory === "head" ? headSections : clothingSections;
   const items = AVATAR_ITEMS[activeSubSection] ?? [];
+
+  const currentHairId = config.hair ?? "none";
+  const currentHairImage = currentHairId && currentHairId !== "none" ? HAIR_IMAGES[currentHairId] : null;
 
   function handleCategoryChange(cat: AvatarCategory) {
     setActiveCategory(cat);
@@ -79,47 +84,116 @@ export default function Profile() {
     setActiveSubSection(defaultSub);
   }
 
+  function handleReset() {
+    setConfig({});
+    setConfirmReset(false);
+    toast({ title: "Character reset", description: "Your look has been cleared." });
+  }
+
+  function handleHairSelect(id: string) {
+    if (id === "none") {
+      setConfig((c) => ({ ...c, hair: null }));
+    } else {
+      setConfig((c) => ({ ...c, hair: id }));
+    }
+  }
+
   return (
     <div className="flex flex-col h-dvh overflow-hidden bg-background">
 
       {/* ── Slim top bar ── */}
       <div className="flex-none flex items-center justify-between px-4 pt-4 pb-2">
-        <button
-          onClick={() => setLocation(-1 as any)}
-          className="flex items-center gap-1.5 text-muted-foreground hover:text-foreground transition-colors"
-          data-testid="button-back"
-        >
-          <ArrowLeft className="w-5 h-5" />
-          <span className="text-sm font-bold">Back</span>
-        </button>
         <h1 className="text-base font-black text-primary tracking-tight">My Character</h1>
-        <Button
-          size="sm"
-          data-testid="button-save-avatar"
-          onClick={() => mutation.mutate(config)}
-          disabled={mutation.isPending}
-          className="rounded-xl font-bold h-8 px-3 text-xs"
-        >
-          <Save className="w-3.5 h-3.5 mr-1.5" />
-          Save
-        </Button>
+
+        <AnimatePresence mode="wait">
+          {confirmReset ? (
+            <motion.div
+              key="confirm"
+              initial={{ opacity: 0, scale: 0.9 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.9 }}
+              className="flex items-center gap-2"
+            >
+              <span className="text-xs font-bold text-muted-foreground">Reset look?</span>
+              <button
+                data-testid="button-confirm-reset"
+                onClick={handleReset}
+                className="flex items-center gap-1 bg-destructive text-destructive-foreground rounded-xl h-8 px-3 text-xs font-bold"
+              >
+                <Check className="w-3.5 h-3.5" />
+                Yes
+              </button>
+              <button
+                data-testid="button-cancel-reset"
+                onClick={() => setConfirmReset(false)}
+                className="flex items-center gap-1 bg-muted text-muted-foreground rounded-xl h-8 px-3 text-xs font-bold hover:bg-muted/80"
+              >
+                <X className="w-3.5 h-3.5" />
+                No
+              </button>
+            </motion.div>
+          ) : (
+            <motion.div
+              key="actions"
+              initial={{ opacity: 0, scale: 0.9 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.9 }}
+              className="flex items-center gap-2"
+            >
+              <button
+                data-testid="button-undo-avatar"
+                onClick={() => setConfirmReset(true)}
+                className="flex items-center gap-1 text-muted-foreground hover:text-foreground rounded-xl h-8 px-3 text-xs font-bold border border-border/60 hover:bg-muted/60 transition-colors"
+              >
+                <RotateCcw className="w-3.5 h-3.5" />
+                Undo
+              </button>
+              <Button
+                size="sm"
+                data-testid="button-save-avatar"
+                onClick={() => mutation.mutate(config)}
+                disabled={mutation.isPending}
+                className="rounded-xl font-bold h-8 px-3 text-xs"
+              >
+                <Save className="w-3.5 h-3.5 mr-1.5" />
+                Save
+              </Button>
+            </motion.div>
+          )}
+        </AnimatePresence>
       </div>
 
       {/* ── Character preview ── */}
-      <div className="flex-none relative flex items-end justify-center bg-gradient-to-b from-primary/8 via-background/50 to-background overflow-hidden"
-        style={{ height: "38vh" }}>
-        {/* Decorative glow behind character */}
+      <div
+        className="flex-none relative flex items-end justify-center bg-gradient-to-b from-primary/8 via-background/50 to-background overflow-hidden"
+        style={{ height: "38vh" }}
+      >
         <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-48 h-32 bg-primary/10 rounded-full blur-3xl" />
-        <motion.img
-          key="penguin"
-          initial={{ opacity: 0, y: 12 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.35, ease: "easeOut" }}
-          src={penguinImg}
-          alt="Character"
-          draggable={false}
-          className="relative z-10 h-full w-auto object-contain object-bottom select-none pointer-events-none drop-shadow-2xl"
-        />
+
+        {/* Stacked character: penguin base + hair overlay */}
+        <div className="relative h-full flex items-end justify-center z-10">
+          <img
+            src={penguinImg}
+            alt="Character"
+            draggable={false}
+            className="h-full w-auto object-contain object-bottom select-none pointer-events-none drop-shadow-2xl"
+          />
+          <AnimatePresence>
+            {currentHairImage && (
+              <motion.img
+                key={currentHairId}
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                transition={{ duration: 0.2 }}
+                src={currentHairImage}
+                alt="Hair"
+                draggable={false}
+                className="absolute top-0 left-1/2 -translate-x-1/2 h-full w-auto object-contain object-bottom select-none pointer-events-none"
+              />
+            )}
+          </AnimatePresence>
+        </div>
       </div>
 
       {/* ── Wardrobe panel ── */}
@@ -157,30 +231,26 @@ export default function Profile() {
         {/* Sub-section tabs — horizontal scroll */}
         <div className="flex-none pt-3 pb-1">
           <div className="flex gap-2 overflow-x-auto px-4 pb-1 no-scrollbar">
-            <AnimatePresence mode="wait">
-              {currentSections.map((sub) => {
-                const isActive = activeSubSection === sub;
-                return (
-                  <button
-                    key={sub}
-                    data-testid={`tab-subsection-${sub}`}
-                    onClick={() => setActiveSubSection(sub)}
-                    className={cn(
-                      "flex-none flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-bold whitespace-nowrap transition-all border",
-                      isActive
-                        ? "bg-primary/10 text-primary border-primary/30"
-                        : "bg-transparent text-muted-foreground border-transparent hover:text-foreground hover:bg-muted/60",
-                    )}
-                  >
-                    <span className="text-base leading-none">{SUB_SECTION_ICONS[sub]}</span>
-                    <span>{SUB_SECTION_LABELS[sub]}</span>
-                  </button>
-                );
-              })}
-            </AnimatePresence>
+            {currentSections.map((sub) => {
+              const isActive = activeSubSection === sub;
+              return (
+                <button
+                  key={sub}
+                  data-testid={`tab-subsection-${sub}`}
+                  onClick={() => setActiveSubSection(sub)}
+                  className={cn(
+                    "flex-none flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-bold whitespace-nowrap transition-all border",
+                    isActive
+                      ? "bg-primary/10 text-primary border-primary/30"
+                      : "bg-transparent text-muted-foreground border-transparent hover:text-foreground hover:bg-muted/60",
+                  )}
+                >
+                  <span className="text-base leading-none">{SUB_SECTION_ICONS[sub]}</span>
+                  <span>{SUB_SECTION_LABELS[sub]}</span>
+                </button>
+              );
+            })}
           </div>
-
-          {/* Thin divider */}
           <div className="mx-4 mt-1 h-px bg-border/60" />
         </div>
 
@@ -210,30 +280,62 @@ export default function Profile() {
               transition={{ duration: 0.2 }}
               className="grid grid-cols-3 gap-3 pt-3"
             >
-              {items.map((item) => (
-                <button
-                  key={item.id}
-                  data-testid={`item-${activeSubSection}-${item.id}`}
-                  onClick={() => setConfig((c) => ({ ...c, [activeSubSection]: item.id }))}
-                  className={cn(
-                    "relative aspect-square rounded-2xl border-2 overflow-hidden transition-all bg-muted/40",
-                    config[activeSubSection] === item.id
-                      ? "border-primary ring-2 ring-primary/20"
-                      : "border-border/60 hover:border-primary/30",
-                  )}
-                >
-                  {item.image && (
-                    <img
-                      src={item.image}
-                      alt={item.label}
-                      className="w-full h-full object-contain p-2"
-                    />
-                  )}
-                  <div className="absolute bottom-0 inset-x-0 bg-background/80 backdrop-blur-sm py-1 px-2">
-                    <p className="text-[10px] font-bold truncate text-center">{item.label}</p>
-                  </div>
-                </button>
-              ))}
+              {items.map((item) => {
+                const isHair = activeSubSection === "hair";
+                const isNone = item.id === "none";
+                const isSelected = isHair
+                  ? isNone
+                    ? !config.hair || config.hair === "none"
+                    : config[activeSubSection] === item.id
+                  : config[activeSubSection] === item.id;
+
+                return (
+                  <button
+                    key={item.id}
+                    data-testid={`item-${activeSubSection}-${item.id}`}
+                    onClick={() =>
+                      isHair ? handleHairSelect(item.id) : setConfig((c) => ({ ...c, [activeSubSection]: item.id }))
+                    }
+                    className={cn(
+                      "relative aspect-square rounded-2xl border-2 overflow-hidden transition-all",
+                      isSelected
+                        ? "border-primary ring-2 ring-primary/20 bg-primary/5"
+                        : "border-border/60 hover:border-primary/30 bg-muted/40",
+                    )}
+                  >
+                    {isNone ? (
+                      /* "Nothing" tile: show penguin head, cropped to top */
+                      <img
+                        src={penguinImg}
+                        alt="No hair"
+                        className="w-full h-full object-cover"
+                        style={{ objectPosition: "50% 10%" }}
+                      />
+                    ) : isHair && HAIR_IMAGES[item.id] ? (
+                      /* Hair item: show just the hair image, no label */
+                      <img
+                        src={HAIR_IMAGES[item.id]}
+                        alt={item.label}
+                        className="w-full h-full object-contain p-3"
+                      />
+                    ) : (
+                      /* Generic item with label */
+                      <>
+                        {item.image && (
+                          <img
+                            src={item.image}
+                            alt={item.label}
+                            className="w-full h-full object-contain p-2"
+                          />
+                        )}
+                        <div className="absolute bottom-0 inset-x-0 bg-background/80 backdrop-blur-sm py-1 px-2">
+                          <p className="text-[10px] font-bold truncate text-center">{item.label}</p>
+                        </div>
+                      </>
+                    )}
+                  </button>
+                );
+              })}
             </motion.div>
           )}
         </div>

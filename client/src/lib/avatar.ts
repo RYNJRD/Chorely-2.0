@@ -16,7 +16,10 @@ export type AvatarItem = {
 };
 
 export const AVATAR_ITEMS: Record<AvatarSubSection, AvatarItem[]> = {
-  hair: [],
+  hair: [
+    { id: "none", label: "Nothing" },
+    { id: "gold-spiky", label: "Gold Spiky" },
+  ],
   face: [],
   eyebrows: [],
   eyes: [],
