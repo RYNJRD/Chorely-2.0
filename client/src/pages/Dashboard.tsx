@@ -10,11 +10,8 @@ import { ChoreCard } from "@/components/ChoreCard";
 import { UserAvatar } from "@/components/UserAvatar";
 import { useToast } from "@/hooks/use-toast";
 import {
-  useFamilyActivity,
-  useFamilyAchievements,
   useFamilyChores,
   useFamilyLeaderboard,
-  useFamilyMonthlyWinners,
   useFamilyOnboarding,
 } from "@/hooks/use-families";
 import { useCompleteChore } from "@/hooks/use-chores";
@@ -45,9 +42,6 @@ export default function Dashboard() {
   const { family, currentUser, setCurrentUser } = useStore();
   const { data: chores = [] } = useFamilyChores(id);
   const { data: leaderboard = [] } = useFamilyLeaderboard(id);
-  const { data: activity = [] } = useFamilyActivity(id);
-  const { data: achievements = [] } = useFamilyAchievements(id);
-  const { data: winners = [] } = useFamilyMonthlyWinners(id);
   const { data: onboarding } = useFamilyOnboarding(id);
   const completeMutation = useCompleteChore();
 
@@ -77,9 +71,6 @@ export default function Dashboard() {
   const completedThisWeek = myChores.filter((chore) => getDaysSinceCompleted(chore) <= 7).length;
   const totalActionable = bucketed.today.length + bucketed.overdue.length;
   const checklist = onboarding?.checklist ?? [];
-  const latestWinner = winners[0];
-  const myAchievements = achievements.filter((achievement) => achievement.userId === currentUser.id).slice(0, 3);
-
   const handleComplete = async (chore: Chore) => {
     try {
       const result = await completeMutation.mutateAsync({ id: chore.id, userId: currentUser.id, familyId: id });
@@ -236,89 +227,6 @@ export default function Dashboard() {
         </div>
       </section>
 
-      <section className="mb-8">
-        <div className="grid grid-cols-1 gap-4">
-          <div className="rounded-[2rem] border-2 border-border bg-card p-4 shadow-sm">
-            <h2 className="font-display text-lg font-bold mb-3">Upcoming and shared</h2>
-            <div className="space-y-3">
-              {bucketed.upcoming.slice(0, 3).map((chore) => (
-                <ChoreCard
-                  key={chore.id}
-                  chore={chore}
-                  onComplete={() => handleComplete(chore)}
-                  isCompleting={completeMutation.isPending && completeMutation.variables?.id === chore.id}
-                  stateLabel="Coming up"
-                  footerNote="Keep the momentum going before it becomes urgent."
-                />
-              ))}
-              {bucketed.upcoming.length === 0 && <p className="text-sm text-muted-foreground">Nothing upcoming right now.</p>}
-            </div>
-          </div>
-
-          <div className="rounded-[2rem] border-2 border-border bg-card p-4 shadow-sm">
-            <h2 className="font-display text-lg font-bold mb-3">Recently finished</h2>
-            <div className="space-y-3">
-              {bucketed.recent.slice(0, 3).map((chore) => (
-                <ChoreCard
-                  key={chore.id}
-                  chore={chore}
-                  onComplete={() => undefined}
-                  isCompleting={false}
-                  completed
-                  stateLabel="Recently done"
-                  footerNote={`Last wrapped up ${format(new Date(chore.lastCompletedAt || Date.now()), "EEE HH:mm")}.`}
-                />
-              ))}
-              {bucketed.recent.length === 0 && <p className="text-sm text-muted-foreground">Fresh wins will show up here.</p>}
-            </div>
-          </div>
-        </div>
-      </section>
-
-      <section className="mb-8 grid gap-4">
-        <div className="rounded-[2rem] border-2 border-border bg-card p-4 shadow-sm">
-          <h2 className="font-display text-lg font-bold mb-3">Fresh family activity</h2>
-          <div className="space-y-2">
-            {activity.slice(0, 5).map((event) => (
-              <div key={event.id} className="rounded-2xl bg-muted/50 px-3 py-3">
-                <p className="font-bold text-sm">{event.title}</p>
-                <p className="text-sm text-muted-foreground mt-1">{event.body}</p>
-              </div>
-            ))}
-          </div>
-        </div>
-
-        <div className="rounded-[2rem] border-2 border-border bg-card p-4 shadow-sm">
-          <h2 className="font-display text-lg font-bold mb-3">Your latest badges</h2>
-          <div className="space-y-2">
-            {myAchievements.length > 0 ? (
-              myAchievements.map((achievement) => (
-                <div key={achievement.id} className="rounded-2xl bg-primary/8 px-3 py-3">
-                  <p className="font-bold text-sm">
-                    {achievement.emoji} {achievement.title}
-                  </p>
-                  <p className="text-sm text-muted-foreground mt-1">{achievement.description}</p>
-                </div>
-              ))
-            ) : (
-              <p className="text-sm text-muted-foreground">Your first badge unlocks after your first completed chore.</p>
-            )}
-          </div>
-        </div>
-
-        <div className="rounded-[2rem] border-2 border-border bg-card p-4 shadow-sm">
-          <h2 className="font-display text-lg font-bold mb-3">Monthly spotlight</h2>
-          {latestWinner ? (
-            <div className="rounded-2xl bg-gradient-to-br from-accent/15 to-primary/10 p-4">
-              <p className="text-xs font-black uppercase tracking-[0.18em] text-accent">{latestWinner.monthKey}</p>
-              <p className="font-display text-xl font-bold mt-1">{latestWinner.title}</p>
-              <p className="text-sm text-muted-foreground mt-2">{latestWinner.summary}</p>
-            </div>
-          ) : (
-            <p className="text-sm text-muted-foreground">Monthly winners appear once your family has a full month of history.</p>
-          )}
-        </div>
-      </section>
     </div>
   );
 }
