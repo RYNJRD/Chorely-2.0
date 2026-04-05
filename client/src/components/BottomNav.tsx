@@ -23,36 +23,71 @@ export function BottomNav() {
   }
 
   return (
-    <div className="fixed bottom-0 left-0 right-0 z-50 bg-background/80 backdrop-blur-xl border-t border-border pt-2 px-2" style={{ paddingBottom: "max(env(safe-area-inset-bottom, 0px), 12px)" }}>
-      <div className="max-w-md mx-auto flex items-center pb-1">
-        {navItems.map((item) => {
-          const isActive = location === item.href;
-          const Icon = item.icon;
-          
-          return (
-            <Link key={item.href} href={item.href} className="relative group flex-1 min-w-0 flex flex-col items-center gap-0.5 py-1">
-              <div className={cn(
-                "relative z-10 flex items-center justify-center w-10 h-10 rounded-xl transition-colors duration-300",
-                isActive ? "text-primary" : "text-muted-foreground group-hover:text-foreground"
-              )}>
-                {isActive && (
-                  <motion.div 
-                    layoutId="nav-pill"
-                    className="absolute inset-0 bg-primary/10 rounded-xl -z-10"
-                    transition={{ type: "spring", stiffness: 400, damping: 30 }}
-                  />
-                )}
-                <Icon size={20} strokeWidth={isActive ? 2.5 : 2} />
-              </div>
-              <span className={cn(
-                "text-[9px] font-bold tracking-wide uppercase transition-colors truncate max-w-full px-1",
-                isActive ? "text-primary" : "text-muted-foreground"
-              )}>
-                {item.label}
-              </span>
-            </Link>
-          );
-        })}
+    <div
+      className="fixed bottom-0 left-0 right-0 z-50"
+      style={{ paddingBottom: "max(env(safe-area-inset-bottom, 0px), 8px)" }}
+    >
+      {/* Frosted glass backing */}
+      <div className="mx-3 mb-2">
+        <div className="max-w-md mx-auto bg-background/85 backdrop-blur-2xl border border-border/60 rounded-[1.75rem] shadow-[0_8px_32px_rgba(0,0,0,0.12)] px-2 py-1.5">
+          <div className="flex items-center">
+            {navItems.map((item) => {
+              const isActive = location === item.href;
+              const Icon = item.icon;
+
+              return (
+                <Link
+                  key={item.href}
+                  href={item.href}
+                  className="relative flex-1 min-w-0 flex flex-col items-center py-1.5 gap-0.5"
+                >
+                  <div className="relative flex items-center justify-center w-11 h-9 rounded-2xl">
+                    {/* Active pill */}
+                    {isActive && (
+                      <motion.div
+                        layoutId="nav-active-pill"
+                        className="absolute inset-0 bg-primary/12 rounded-2xl"
+                        transition={{ type: "spring", stiffness: 450, damping: 32 }}
+                      />
+                    )}
+                    {/* Icon */}
+                    <motion.div
+                      animate={isActive ? { scale: 1.1 } : { scale: 1 }}
+                      transition={{ type: "spring", stiffness: 400, damping: 25 }}
+                      className={cn(
+                        "relative z-10 transition-colors",
+                        isActive ? "text-primary" : "text-muted-foreground",
+                      )}
+                    >
+                      <Icon
+                        size={isActive ? 21 : 20}
+                        strokeWidth={isActive ? 2.5 : 2}
+                        className={cn(
+                          item.label === "Parent" && isActive
+                            ? "text-amber-500"
+                            : item.label === "Parent"
+                              ? "text-amber-400"
+                              : "",
+                        )}
+                      />
+                    </motion.div>
+                  </div>
+
+                  <motion.span
+                    animate={isActive ? { opacity: 1 } : { opacity: 0.55 }}
+                    className={cn(
+                      "text-[9px] font-black tracking-wide uppercase truncate max-w-full px-0.5 leading-none",
+                      isActive ? "text-primary" : "text-muted-foreground",
+                      item.label === "Parent" && "text-amber-500",
+                    )}
+                  >
+                    {item.label}
+                  </motion.span>
+                </Link>
+              );
+            })}
+          </div>
+        </div>
       </div>
     </div>
   );
