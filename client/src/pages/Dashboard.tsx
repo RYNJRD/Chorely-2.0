@@ -12,6 +12,7 @@ import { useToast } from "@/hooks/use-toast";
 import {
   useFamilyChores,
   useFamilyLeaderboard,
+  useFamilyMonthlyWinners,
   useFamilyOnboarding,
 } from "@/hooks/use-families";
 import { useCompleteChore } from "@/hooks/use-chores";
@@ -42,6 +43,7 @@ export default function Dashboard() {
   const { family, currentUser, setCurrentUser } = useStore();
   const { data: chores = [] } = useFamilyChores(id);
   const { data: leaderboard = [] } = useFamilyLeaderboard(id);
+  const { data: winners = [] } = useFamilyMonthlyWinners(id);
   const { data: onboarding } = useFamilyOnboarding(id);
   const completeMutation = useCompleteChore();
 
@@ -71,6 +73,8 @@ export default function Dashboard() {
   const completedThisWeek = myChores.filter((chore) => getDaysSinceCompleted(chore) <= 7).length;
   const totalActionable = bucketed.today.length + bucketed.overdue.length;
   const checklist = onboarding?.checklist ?? [];
+  const latestWinner = winners[0];
+
   const handleComplete = async (chore: Chore) => {
     try {
       const result = await completeMutation.mutateAsync({ id: chore.id, userId: currentUser.id, familyId: id });
@@ -226,6 +230,19 @@ export default function Dashboard() {
           )}
         </div>
       </section>
+
+      {latestWinner && (
+        <section className="mb-8">
+          <div className="rounded-[2rem] border-2 border-border bg-card p-4 shadow-sm">
+            <h2 className="font-display text-lg font-bold mb-3">Monthly spotlight</h2>
+            <div className="rounded-2xl bg-gradient-to-br from-accent/15 to-primary/10 p-4">
+              <p className="text-xs font-black uppercase tracking-[0.18em] text-accent">{latestWinner.monthKey}</p>
+              <p className="font-display text-xl font-bold mt-1">{latestWinner.title}</p>
+              <p className="text-sm text-muted-foreground mt-2">{latestWinner.summary}</p>
+            </div>
+          </div>
+        </section>
+      )}
 
     </div>
   );
