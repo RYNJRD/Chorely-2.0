@@ -1,7 +1,8 @@
 import { useEffect, useState } from "react";
 import { useMutation } from "@tanstack/react-query";
 import { motion, AnimatePresence } from "framer-motion";
-import { Save, RotateCcw, Check, X, Lock } from "lucide-react";
+import { Save, RotateCcw, Check, X, Lock, Settings as SettingsIcon } from "lucide-react";
+import { useLocation } from "wouter";
 import { api, buildUrl } from "@shared/routes";
 import { queryClient } from "@/lib/queryClient";
 import { Button } from "@/components/ui/button";
@@ -16,8 +17,9 @@ import {
 import { cn } from "@/lib/utils";
 
 export default function Profile() {
-  const { currentUser, setCurrentUser } = useStore();
+  const { currentUser, setCurrentUser, family } = useStore();
   const { toast } = useToast();
+  const [, setLocation] = useLocation();
 
   const [config, setConfig] = useState<AvatarConfig>(() =>
     parseAvatarConfig(currentUser?.avatarConfig),
@@ -69,60 +71,73 @@ export default function Profile() {
 
       {/* ── Top bar ── */}
       <div className="flex-none flex items-center justify-between px-4 pt-4 pb-2">
-        <h1 className="text-base font-black text-primary tracking-tight">My Character</h1>
+        <div className="flex items-center gap-2">
+          <h1 className="text-base font-black text-primary tracking-tight">Chorely</h1>
+          <span className="text-xs font-bold text-muted-foreground/70 bg-muted/60 rounded-lg px-2 py-0.5">My Character</span>
+        </div>
 
-        <AnimatePresence mode="wait">
-          {confirmReset ? (
-            <motion.div
-              key="confirm"
-              initial={{ opacity: 0, scale: 0.9 }}
-              animate={{ opacity: 1, scale: 1 }}
-              exit={{ opacity: 0, scale: 0.9 }}
-              className="flex items-center gap-2"
-            >
-              <span className="text-xs font-bold text-muted-foreground">Reset look?</span>
-              <button
-                data-testid="button-confirm-reset"
-                onClick={handleReset}
-                className="flex items-center gap-1 bg-destructive text-destructive-foreground rounded-xl h-8 px-3 text-xs font-bold"
+        <div className="flex items-center gap-2">
+          <AnimatePresence mode="wait">
+            {confirmReset ? (
+              <motion.div
+                key="confirm"
+                initial={{ opacity: 0, scale: 0.9 }}
+                animate={{ opacity: 1, scale: 1 }}
+                exit={{ opacity: 0, scale: 0.9 }}
+                className="flex items-center gap-2"
               >
-                <Check className="w-3.5 h-3.5" /> Yes
-              </button>
-              <button
-                data-testid="button-cancel-reset"
-                onClick={() => setConfirmReset(false)}
-                className="flex items-center gap-1 bg-muted text-muted-foreground rounded-xl h-8 px-3 text-xs font-bold hover:bg-muted/80"
+                <span className="text-xs font-bold text-muted-foreground">Reset look?</span>
+                <button
+                  data-testid="button-confirm-reset"
+                  onClick={handleReset}
+                  className="flex items-center gap-1 bg-destructive text-destructive-foreground rounded-xl h-8 px-3 text-xs font-bold"
+                >
+                  <Check className="w-3.5 h-3.5" /> Yes
+                </button>
+                <button
+                  data-testid="button-cancel-reset"
+                  onClick={() => setConfirmReset(false)}
+                  className="flex items-center gap-1 bg-muted text-muted-foreground rounded-xl h-8 px-3 text-xs font-bold hover:bg-muted/80"
+                >
+                  <X className="w-3.5 h-3.5" /> No
+                </button>
+              </motion.div>
+            ) : (
+              <motion.div
+                key="actions"
+                initial={{ opacity: 0, scale: 0.9 }}
+                animate={{ opacity: 1, scale: 1 }}
+                exit={{ opacity: 0, scale: 0.9 }}
+                className="flex items-center gap-2"
               >
-                <X className="w-3.5 h-3.5" /> No
-              </button>
-            </motion.div>
-          ) : (
-            <motion.div
-              key="actions"
-              initial={{ opacity: 0, scale: 0.9 }}
-              animate={{ opacity: 1, scale: 1 }}
-              exit={{ opacity: 0, scale: 0.9 }}
-              className="flex items-center gap-2"
-            >
-              <button
-                data-testid="button-undo-avatar"
-                onClick={() => setConfirmReset(true)}
-                className="flex items-center gap-1 text-muted-foreground hover:text-foreground rounded-xl h-8 px-3 text-xs font-bold border border-border/60 hover:bg-muted/60 transition-colors"
-              >
-                <RotateCcw className="w-3.5 h-3.5" /> Undo
-              </button>
-              <Button
-                size="sm"
-                data-testid="button-save-avatar"
-                onClick={() => mutation.mutate(config)}
-                disabled={mutation.isPending}
-                className="rounded-xl font-bold h-8 px-3 text-xs"
-              >
-                <Save className="w-3.5 h-3.5 mr-1.5" /> Save
-              </Button>
-            </motion.div>
-          )}
-        </AnimatePresence>
+                <button
+                  data-testid="button-undo-avatar"
+                  onClick={() => setConfirmReset(true)}
+                  className="flex items-center gap-1 text-muted-foreground hover:text-foreground rounded-xl h-8 px-3 text-xs font-bold border border-border/60 hover:bg-muted/60 transition-colors"
+                >
+                  <RotateCcw className="w-3.5 h-3.5" /> Undo
+                </button>
+                <Button
+                  size="sm"
+                  data-testid="button-save-avatar"
+                  onClick={() => mutation.mutate(config)}
+                  disabled={mutation.isPending}
+                  className="rounded-xl font-bold h-8 px-3 text-xs"
+                >
+                  <Save className="w-3.5 h-3.5 mr-1.5" /> Save
+                </Button>
+              </motion.div>
+            )}
+          </AnimatePresence>
+
+          <button
+            data-testid="button-open-settings"
+            onClick={() => setLocation(`/family/${family?.id}/settings`)}
+            className="w-9 h-9 flex items-center justify-center rounded-2xl bg-muted/60 hover:bg-muted border border-border/60 transition-colors flex-none"
+          >
+            <SettingsIcon className="w-4 h-4 text-muted-foreground" />
+          </button>
+        </div>
       </div>
 
       {/* ── Character preview ── */}

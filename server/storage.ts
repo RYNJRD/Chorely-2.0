@@ -46,6 +46,7 @@ export interface IStorage {
   updateUserAvatar(id: number, avatarConfig: string, avatarInventory?: string): Promise<User>;
   updateUserLeaderboard(id: number, hide: boolean): Promise<User | undefined>;
   updateUserRole(id: number, role: string): Promise<User | undefined>;
+  updateUserProfile(id: number, username: string): Promise<User | undefined>;
   createChore(chore: InsertChore): Promise<Chore>;
   getChore(id: number): Promise<Chore | undefined>;
   updateChore(id: number, updates: Partial<InsertChore>): Promise<Chore>;
@@ -130,6 +131,11 @@ export class DatabaseStorage implements IStorage {
 
   async updateUserRole(id: number, role: string): Promise<User | undefined> {
     const [updated] = await db.update(users).set({ role }).where(eq(users.id, id)).returning();
+    return updated;
+  }
+
+  async updateUserProfile(id: number, username: string): Promise<User | undefined> {
+    const [updated] = await db.update(users).set({ username }).where(eq(users.id, id)).returning();
     return updated;
   }
 

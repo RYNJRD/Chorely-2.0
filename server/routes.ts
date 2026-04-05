@@ -205,6 +205,21 @@ export async function registerRoutes(httpServer: Server, app: Express): Promise<
     return res.json(currentUser);
   });
 
+  app.patch(api.users.updateProfile.path, requireAuth, attachCurrentUser, async (req, res) => {
+    try {
+      const currentUser = getCurrentUser(req);
+      const userId = parseId(req.params.id);
+      if (!userId) return res.status(400).json({ message: "Invalid user id" });
+      if (currentUser.id !== userId) return res.status(403).json({ message: "You can only update your own profile" });
+      const input = api.users.updateProfile.input.parse(req.body);
+      const updated = await storage.updateUserProfile(userId, input.username.trim());
+      if (!updated) return res.status(404).json({ message: "User not found" });
+      return res.json(updated);
+    } catch (e) {
+      return handleError(res, e);
+    }
+  });
+
   app.patch(api.users.updateAvatar.path, requireAuth, attachCurrentUser, async (req, res) => {
     try {
       const currentUser = getCurrentUser(req);

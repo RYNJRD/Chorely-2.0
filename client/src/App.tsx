@@ -20,6 +20,7 @@ import Rewards from "@/pages/Rewards";
 import Admin from "@/pages/Admin";
 import Chat from "@/pages/Chat";
 import Profile from "@/pages/Profile";
+import Settings from "@/pages/Settings";
 import VerifyEmail from "@/pages/VerifyEmail";
 import EmailAction from "@/pages/EmailAction";
 import { auth } from "@/lib/firebase";
@@ -84,6 +85,7 @@ function Router() {
       <Route path="/family/:familyId/rewards" component={Rewards} />
       <Route path="/family/:familyId/chat" component={Chat} />
       <Route path="/family/:familyId/profile" component={Profile} />
+      <Route path="/family/:familyId/settings" component={Settings} />
       <Route path="/family/:familyId/admin" component={Admin} />
       <Route component={NotFound} />
     </Switch>

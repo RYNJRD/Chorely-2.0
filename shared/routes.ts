@@ -119,6 +119,12 @@ export const api = {
       path: "/api/users/firebase/:uid" as const,
       responses: { 200: z.custom<typeof users.$inferSelect>() },
     },
+    updateProfile: {
+      method: "PATCH" as const,
+      path: "/api/users/:id/profile" as const,
+      input: z.object({ username: z.string().min(1).max(40) }),
+      responses: { 200: z.custom<typeof users.$inferSelect>() },
+    },
     updateAvatar: {
       method: "PATCH" as const,
       path: "/api/users/:id/avatar" as const,
