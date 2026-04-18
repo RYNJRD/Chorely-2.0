@@ -65,7 +65,8 @@ function EmailVerificationGate() {
         passwordProvider &&
         !user.emailVerified &&
         location !== "/verify-email" &&
-        location !== "/email-action"
+        location !== "/email-action" &&
+        location !== "/auth"  // don't redirect mid OTP flow
       ) {
         setLocation("/verify-email");
       }

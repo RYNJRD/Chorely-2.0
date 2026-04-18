@@ -509,31 +509,36 @@ export async function registerRoutes(httpServer: Server, app: Express): Promise<
     return res.status(201).json({ family, users });
   });
 
-  // ── DB-backed OTP — survives Vercel serverless cold starts ───────────────────
-  const { pool } = await import("./db");
-  await pool.query(`
-    CREATE TABLE IF NOT EXISTS email_verification_codes (
-      id SERIAL PRIMARY KEY,
-      email VARCHAR(255) NOT NULL,
-      firebase_uid VARCHAR(255) NOT NULL,
-      code VARCHAR(6) NOT NULL,
-      expires_at TIMESTAMPTZ NOT NULL,
-      attempts INTEGER NOT NULL DEFAULT 0,
-      last_sent_at TIMESTAMPTZ NOT NULL,
-      created_at TIMESTAMPTZ DEFAULT NOW()
-    )
-  `).catch((e: any) => console.warn("[OTP] table init warning:", e.message));
+  // ── DB-backed OTP helpers ─────────────────────────────────────────────────────
+  async function getOtpPool() {
+    const { pool } = await import("./db");
+    // Ensure table exists — cheap no-op after first run
+    await pool.query(`
+      CREATE TABLE IF NOT EXISTS email_verification_codes (
+        id SERIAL PRIMARY KEY,
+        email VARCHAR(255) NOT NULL,
+        firebase_uid VARCHAR(255) NOT NULL,
+        code VARCHAR(6) NOT NULL,
+        expires_at TIMESTAMPTZ NOT NULL,
+        attempts INTEGER NOT NULL DEFAULT 0,
+        last_sent_at TIMESTAMPTZ NOT NULL,
+        created_at TIMESTAMPTZ DEFAULT NOW()
+      )
+    `).catch((e: any) => console.warn("[OTP] table init warning:", e.message));
+    return pool;
+  }
 
   // POST /api/auth/send-code
-  // Client creates the Firebase user first (Firebase Auth SDK), then calls this
-  // to store the OTP in DB and send via Resend. No Firebase Admin needed here.
+  // Client creates the Firebase user first (Firebase Auth SDK), then calls this.
   app.post("/api/auth/send-code", async (req, res) => {
+
     try {
       const { email, firebaseUid } = req.body;
       if (!email || !firebaseUid) return res.status(400).json({ message: "Email and firebaseUid are required." });
       if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) return res.status(400).json({ message: "Invalid email address." });
 
       // Throttle: 60-second cooldown per email
+      const pool = await getOtpPool();
       const { rows: existing } = await pool.query(
         "SELECT last_sent_at FROM email_verification_codes WHERE email = $1 ORDER BY created_at DESC LIMIT 1",
         [email]
@@ -552,7 +557,7 @@ export async function registerRoutes(httpServer: Server, app: Express): Promise<
       const expiresAt = new Date(Date.now() + 10 * 60_000);
       const now = new Date();
 
-      // Delete old record then insert fresh (simpler than true upsert with no unique constraint)
+      // Delete old record then insert fresh
       await pool.query("DELETE FROM email_verification_codes WHERE email = $1", [email]);
       await pool.query(
         "INSERT INTO email_verification_codes (email, firebase_uid, code, expires_at, attempts, last_sent_at) VALUES ($1, $2, $3, $4, 0, $5)",
@@ -577,6 +582,7 @@ export async function registerRoutes(httpServer: Server, app: Express): Promise<
       const { email, code } = req.body;
       if (!email || !code) return res.status(400).json({ message: "Email and code are required." });
 
+      const pool = await getOtpPool();
       const { rows } = await pool.query(
         "SELECT * FROM email_verification_codes WHERE email = $1 ORDER BY created_at DESC LIMIT 1",
         [email]
