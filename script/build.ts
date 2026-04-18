@@ -51,7 +51,7 @@ async function buildAll() {
   // contained file with zero relative-path lookups at runtime.
   console.log("building vercel api bundle...");
   await esbuild({
-    entryPoints: ["api/index.ts"],
+    entryPoints: ["server/vercel-handler.ts"],
     platform: "node",
     bundle: true,
     format: "cjs",
