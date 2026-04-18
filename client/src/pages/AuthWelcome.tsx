@@ -264,16 +264,19 @@ export default function AuthWelcome() {
     }
   };
 
-  return (
-    <div className="min-h-screen flex flex-col items-center justify-center p-6 text-center relative overflow-hidden bg-onboarding">
-      <div className="blob-primary absolute w-80 h-80 top-[-12%] left-[-14%]" />
-      <div className="blob-accent absolute w-72 h-72 bottom-[-10%] right-[-12%]" />
+  const mood = view === "verification" ? "happy" : view === "signin" ? "thinking" : "waving";
 
+  return (
+    <div className="fixed inset-0 flex flex-col items-center justify-center bg-onboarding overflow-hidden">
+      {/* Background blobs */}
+      <div className="blob-primary absolute w-80 h-80 top-[-12%] left-[-14%] pointer-events-none" />
+      <div className="blob-accent absolute w-72 h-72 bottom-[-10%] right-[-12%] pointer-events-none" />
+
+      {/* Back button */}
       <button
         data-testid="button-back-auth"
         onClick={() => {
           if (view === "welcome") setLocation("/get-started");
-          else if (view === "verification") setView("welcome");
           else setView("welcome");
         }}
         className="absolute top-6 left-6 w-10 h-10 rounded-2xl bg-white/80 backdrop-blur-sm flex items-center justify-center hover:bg-white active:scale-90 transition-all shadow-sm z-20 border border-border/50"
@@ -281,7 +284,8 @@ export default function AuthWelcome() {
         <ChevronLeft className="w-5 h-5 text-foreground" />
       </button>
 
-      <div className="relative z-10 w-full max-w-sm flex flex-col items-center">
+      {/* Main content — fixed width, no scroll */}
+      <div className="relative z-10 w-full max-w-sm px-5 flex flex-col items-center">
         <AnimatePresence mode="wait">
 
           {/* ── Welcome / Sign Up ── */}
@@ -293,11 +297,11 @@ export default function AuthWelcome() {
               exit={{ opacity: 0, y: -10 }}
               className="w-full flex flex-col items-center"
             >
-              <div className="mb-5 inline-block">
+              <div className="mb-4 inline-block">
                 <PenguinMascot mood="waving" size={80} />
               </div>
               <h2 className="font-display text-3xl font-bold text-zinc-900 mb-1 leading-tight">Create your account</h2>
-              <p className="text-sm font-semibold text-zinc-500 mb-7">Get started with your family</p>
+              <p className="text-sm font-semibold text-zinc-500 mb-6">Get started with your family</p>
 
               <div className="w-full bg-white/70 backdrop-blur-md rounded-[2.5rem] p-6 border-2 border-white/80 shadow-xl space-y-4">
                 {/* Social */}
@@ -373,7 +377,7 @@ export default function AuthWelcome() {
                 </div>
               </div>
 
-              <div className="mt-7">
+              <div className="mt-6">
                 <p className="text-sm font-bold text-zinc-500">
                   Already have an account?{" "}
                   <button onClick={() => setView("signin")} className="text-primary hover:underline underline-offset-4 decoration-2">
@@ -402,78 +406,28 @@ export default function AuthWelcome() {
                 <PenguinMascot mood="happy" size={90} />
               </motion.div>
 
-            <p className="text-primary font-medium text-sm mt-0.5">{email}</p>
-          )}
-        </div>
+              <h2 className="font-display text-3xl font-bold text-zinc-900 mb-1 leading-tight">Check your email!</h2>
+              <p className="text-sm font-semibold text-zinc-500 mb-1">We sent a 6-digit code to</p>
+              <p className="text-[15px] font-bold text-primary mb-6">{email.trim()}</p>
 
-        {/* Card Section - Main Interaction */}
-        <div className="w-full p-6 space-y-4 shadow-xl border-t-4 border-t-primary/20 backdrop-blur-sm bg-white/95 rounded-[2.5rem]">
-          {view === "signin" || view === "welcome" ? (
-            <>
-              {/* Oauth Social Login */}
-              <div className="space-y-3">
-                <button onClick={handleGoogleSignIn} className="w-full py-4 rounded-2xl bg-white font-bold text-[15px] text-zinc-900 border-2 border-zinc-100 flex items-center justify-center gap-3 active:scale-[0.98] transition-all shadow-sm hover:shadow-md">
-                  <SiGoogle className="w-5 h-5 text-[#4285F4]" /> Continue with Google
-                </button>
-                <button onClick={handleAppleSignIn} className="w-full py-4 rounded-2xl bg-zinc-900 font-bold text-[15px] text-zinc-50 flex items-center justify-center gap-3 active:scale-[0.98] transition-all shadow-sm">
-                  <SiApple className="w-5 h-5" /> Continue with Apple
-                </button>
-              </div>
-
-              <div className="relative flex items-center py-2">
-                <div className="flex-grow border-t border-slate-200"></div>
-                <span className="flex-shrink mx-4 text-xs font-bold text-slate-300 uppercase tracking-widest">or</span>
-                <div className="flex-grow border-t border-slate-200"></div>
-              </div>
-
-              {/* Email Form */}
-              <div className="space-y-3">
-                <div className="relative flex items-center bg-slate-50 rounded-2xl px-4 py-3 border border-slate-100 transition-all">
-                  <Mail className="h-5 w-5 text-slate-400 mr-3" />
-                  <input
-                    type="email"
-                    placeholder="Email address"
-                    className="bg-transparent border-none focus:ring-0 w-full text-foreground placeholder:text-slate-400"
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                  />
-                </div>
-                {view === "signin" && (
-                  <div className="relative flex items-center bg-slate-50 rounded-2xl px-4 py-3 border border-slate-100 transition-all">
-                    <KeyRound className="h-5 w-5 text-slate-400 mr-3" />
-                    <input
-                      type="password"
-                      placeholder="Password"
-                      className="bg-transparent border-none focus:ring-0 w-full text-foreground placeholder:text-slate-400"
-                      value={password}
-                      onChange={(e) => setPassword(e.target.value)}
-                    />
-                  </div>
-                )}
-                <button 
-                  className="w-full rounded-2xl h-12 text-lg font-bold bg-primary text-white hover:bg-primary/90 flex items-center justify-center gap-2"
-                  onClick={view === "signin" ? handleSignIn : handleEmailSignupContinue}
-                  disabled={loading}
-                >
-                  {loading ? <Loader2 className="animate-spin h-5 w-5" /> : view === "signin" ? "Sign In" : "Send verification code"}
-                  {!loading && <ArrowRight className="h-5 w-5" />}
-                </button>
-              </div>
-            </>
-          ) : (
-            <div className="space-y-6">
-              <div className="flex flex-col items-center">
-                <div className="flex gap-2 justify-center mb-4">
-                  {otp.map((val, i) => (
+              <div className="w-full bg-white/70 backdrop-blur-md rounded-[2.5rem] p-7 border-2 border-white/80 shadow-xl space-y-6">
+                {/* OTP inputs */}
+                <div className="flex justify-between gap-2">
+                  {otp.map((digit, i) => (
                     <input
                       key={i}
                       ref={el => otpRefs.current[i] = el}
+                      autoFocus={i === 0}
                       type="text"
-                      className="w-10 h-14 sm:w-12 sm:h-16 text-center text-3xl font-bold rounded-2xl border-2 border-slate-100 bg-slate-50 focus:border-primary focus:ring-0 transition-all outline-none"
-                      value={val}
+                      inputMode="numeric"
+                      value={digit}
                       maxLength={1}
                       onChange={(e) => handleOtpChange(i, e.target.value)}
                       onKeyDown={(e) => handleOtpKeyDown(i, e)}
+                      className={cn(
+                        "w-full aspect-[4/5] text-center text-2xl font-bold rounded-2xl border-2 bg-white/80 focus:ring-4 focus:ring-primary/15 transition-all outline-none text-zinc-900",
+                        otpError ? "border-destructive" : digit ? "border-primary" : "border-zinc-100 focus:border-primary"
+                      )}
                     />
                   ))}
                 </div>
@@ -532,13 +486,11 @@ export default function AuthWelcome() {
               exit={{ opacity: 0, x: 20 }}
               className="w-full flex flex-col items-center"
             >
-              <div className="mb-7">
-                <div className="w-16 h-16 rounded-xl bg-zinc-900 flex items-center justify-center text-white mb-4 mx-auto rotate-3">
-                  <KeyRound size={28} />
-                </div>
-                <h2 className="font-display text-3xl font-bold text-zinc-900 mb-1 leading-tight">Welcome back</h2>
-                <p className="text-sm font-semibold text-zinc-500">Sign in to your family account</p>
+              <div className="mb-5 inline-block">
+                <PenguinMascot mood="thinking" size={80} />
               </div>
+              <h2 className="font-display text-3xl font-bold text-zinc-900 mb-1 leading-tight">Welcome back</h2>
+              <p className="text-sm font-semibold text-zinc-500 mb-6">Sign in to your family account</p>
 
               <div className="w-full bg-white/70 backdrop-blur-md rounded-[2.5rem] p-8 border-2 border-white/80 shadow-xl space-y-5">
                 <div className="space-y-3.5">
@@ -586,7 +538,7 @@ export default function AuthWelcome() {
 
                 <button
                   onClick={() => setView("welcome")}
-                  className="text-sm font-bold text-zinc-400 hover:text-zinc-600 transition-colors uppercase tracking-widest"
+                  className="text-sm font-bold text-zinc-400 hover:text-zinc-600 transition-colors uppercase tracking-widest w-full text-center"
                 >
                   Back to sign up
                 </button>
@@ -596,16 +548,6 @@ export default function AuthWelcome() {
 
         </AnimatePresence>
       </div>
-
-      {/* Floating penguin decoration */}
-      <motion.div
-        initial={{ y: 100 }}
-        animate={{ y: 0 }}
-        transition={{ delay: 1, type: "spring", bounce: 0.4 }}
-        className="absolute -bottom-4 right-10 pointer-events-none"
-      >
-        <PenguinMascot mood={view === "signin" ? "thinking" : "waving"} size={80} />
-      </motion.div>
     </div>
   );
 }
