@@ -1,6 +1,6 @@
 # Database Setup
 
-Chorely uses PostgreSQL through Drizzle.
+Taskling uses PostgreSQL through Drizzle.
 
 ## Quick Start Options
 
@@ -19,10 +19,10 @@ Chorely uses PostgreSQL through Drizzle.
 1. Install PostgreSQL locally
 2. Create a database:
    ```sql
-   CREATE DATABASE chorely;
+   CREATE DATABASE Taskling;
    ```
 3. Set:
-   `DATABASE_URL=postgresql://postgres:YOUR_PASSWORD@localhost:5432/chorely`
+   `DATABASE_URL=postgresql://postgres:YOUR_PASSWORD@localhost:5432/Taskling`
 
 ## Apply The Schema
 

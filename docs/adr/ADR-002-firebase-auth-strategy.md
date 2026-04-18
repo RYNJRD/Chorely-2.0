@@ -4,7 +4,7 @@
 
 ## Context
 
-Chorely requires:
+Taskling requires:
 - Secure user authentication supporting multiple providers (Google, email/password)
 - Cross-platform sign-in (web, mobile-friendly)
 - Backend protection of sensitive operations

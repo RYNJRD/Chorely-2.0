@@ -261,7 +261,7 @@ export default function Settings() {
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");
     a.href = url;
-    a.download = `chorely-data-${currentUser?.username ?? "user"}-${Date.now()}.json`;
+    a.download = `taskling-data-${currentUser?.username ?? "user"}-${Date.now()}.json`;
     a.click();
     URL.revokeObjectURL(url);
     toast({ title: "Data exported" });
@@ -467,7 +467,7 @@ export default function Settings() {
           )}
 
           <div className="py-12 px-6 text-center space-y-1">
-            <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground/50">Chorely · Built for Families</p>
+            <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground/50">Taskling · Built for Families</p>
             <p className="text-[10px] font-medium text-muted-foreground/35 italic">v{APP_VERSION} · Stability build</p>
           </div>
         </div>

@@ -1,6 +1,6 @@
-# Chorely
+# Taskling
 
-Chorely is a mobile-first family chore game built with React, Vite, Express, PostgreSQL, Drizzle, and Firebase Authentication.
+Taskling is a mobile-first family chore game built with React, Vite, Express, PostgreSQL, Drizzle, and Firebase Authentication.
 
 ## 🚀 Quick Start
 
@@ -36,7 +36,7 @@ To quickly test the app without Firebase or PostgreSQL:
    cp .env.example .env
    cp client/.env.example client/.env.local
    ```
-3. Edit `.env` and add: `CHORELY_DEMO_MODE=true`
+3. Edit `.env` and add: `Taskling_DEMO_MODE=true`
 4. Start: `npm run dev`
 5. Open http://localhost:5173
 
@@ -65,7 +65,7 @@ Demo includes sample family, chores, rewards, and real-time chat—perfect for t
 
 ## 🏗️ Architecture
 
-Chorely follows a monorepo architecture with:
+Taskling follows a monorepo architecture with:
 - **Client** (`client/src/`) - React web app with Vite
 - **Server** (`server/`) - Express API backend
 - **Shared** (`shared/`) - Type definitions, schemas, routes
@@ -126,7 +126,7 @@ Setup: See [DEVELOPMENT.md](./DEVELOPMENT.md) for pre-commit hook setup.
 
 ## 📝 Notes
 
-- **Demo Mode**: Set `CHORELY_DEMO_MODE=true` in `.env` to use mock data (no DB required)
+- **Demo Mode**: Set `Taskling_DEMO_MODE=true` in `.env` to use mock data (no DB required)
 - **Database**: PostgreSQL required for full setup. See [DATABASE_SETUP.md](./DATABASE_SETUP.md)
 - **Migrations**: Check `migrations/` folder before deploying to existing databases
 - **Windows Setup**: Run `.\setup.ps1` for automated setup
@@ -134,7 +134,7 @@ Setup: See [DEVELOPMENT.md](./DEVELOPMENT.md) for pre-commit hook setup.
 
 ## 🎯 First Steps
 
-1. **New to Chorely?** Start with [DEVELOPMENT.md](./DEVELOPMENT.md)
+1. **New to Taskling?** Start with [DEVELOPMENT.md](./DEVELOPMENT.md)
 2. **Need Firebase setup?** See [FIREBASE_SETUP.md](./FIREBASE_SETUP.md)
 3. **Want context for architecture?** Read [docs/adr/](./docs/adr/)
 4. **Ready to contribute?** Follow the workflow in [DEVELOPMENT.md](./DEVELOPMENT.md#development-workflows)

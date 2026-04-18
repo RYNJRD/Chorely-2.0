@@ -1,10 +1,10 @@
-# Firebase Setup Guide for Chorely
+# Firebase Setup Guide for Taskling
 
-This guide walks you through setting up Firebase authentication for Chorely development and production.
+This guide walks you through setting up Firebase authentication for Taskling development and production.
 
 ## Overview
 
-Chorely uses Firebase Authentication for:
+Taskling uses Firebase Authentication for:
 - Google sign-in
 - Email/password authentication
 - Email verification
@@ -23,7 +23,7 @@ Chorely uses Firebase Authentication for:
 
 1. Navigate to [https://console.firebase.google.com/](https://console.firebase.google.com/)
 2. Click **"Create a new project"** or **"Add project"**
-3. Enter project name (e.g., "chorely-dev")
+3. Enter project name (e.g., "Taskling-dev")
 4. (Optional) Enable Google Analytics if desired
 5. Click **"Create project"**
 6. Wait 1-2 minutes for provisioning
@@ -174,7 +174,7 @@ By default, emails come from `noreply@firebase.com`. To use a custom sender:
 4. Enter your domain and email address
 5. Verify the sender via SPF/DKIM records (Firebase provides instructions)
 
-Chorely uses a custom email action page for verification. See [Email Verification Flow](#email-verification-flow) below.
+Taskling uses a custom email action page for verification. See [Email Verification Flow](#email-verification-flow) below.
 
 ## Step 7: Test Firebase Auth Locally
 
@@ -202,7 +202,7 @@ This decodes the token without hitting Firebase Admin SDK, useful for debugging.
 
 ## Email Verification Flow
 
-Chorely implements a custom email verification flow:
+Taskling implements a custom email verification flow:
 
 ### User Signs Up
 ```
@@ -320,7 +320,7 @@ cp client/.env.example client/.env.local
    - Firebase warns about security risks of overly permissive configs
 
 4. **Email Verification**
-   - Enforce for password-based signups (Chorely already does this)
+   - Enforce for password-based signups (Taskling already does this)
    - Helps prevent typos and compromised accounts
 
 5. **Monitoring**
@@ -352,11 +352,11 @@ When deploying to production:
 - [Firebase Console](https://console.firebase.google.com/)
 - [Firebase Auth Docs](https://firebase.google.com/docs/auth)
 - [Firebase Admin SDK](https://firebase.google.com/docs/admin/setup)
-- [Chorely ADR-002: Firebase Auth Strategy](./docs/adr/ADR-002-firebase-auth-strategy.md)
+- [Taskling ADR-002: Firebase Auth Strategy](./docs/adr/ADR-002-firebase-auth-strategy.md)
 
 ## Support
 
-For issues specific to Chorely, check:
+For issues specific to Taskling, check:
 - [README.md](./README.md)
 - [Architecture Decision Records](./docs/adr/)
 - Terminal debug output: `npm run dev`

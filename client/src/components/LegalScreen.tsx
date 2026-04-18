@@ -241,7 +241,7 @@ export function DisclaimerScreen({ open, onClose }: { open: boolean; onClose: ()
 
 /* ─── Contact Support ─── */
 export function ContactScreen({ open, onClose }: { open: boolean; onClose: () => void }) {
-  const SUPPORT_EMAIL = "support@chorely.app"; // REPLACE with your real support email
+  const SUPPORT_EMAIL = "support@taskling.co"; // REPLACE with your real support email
 
   return (
     <Screen open={open} onClose={onClose} title="Contact Support" emoji="💬" color="bg-green-100 dark:bg-green-950/30">
@@ -257,7 +257,7 @@ export function ContactScreen({ open, onClose }: { open: boolean; onClose: () =>
         <div className="px-4 py-4 border-b border-border/40">
           <p className="font-bold text-xs uppercase tracking-widest text-muted-foreground mb-3">Email us</p>
           <a
-            href={`mailto:${SUPPORT_EMAIL}?subject=Chorely Support`}
+            href={`mailto:${SUPPORT_EMAIL}?subject=Taskling Support`}
             className="flex items-center gap-3 bg-primary/8 rounded-2xl px-4 py-3.5 hover:bg-primary/14 transition-colors"
           >
             <div className="w-10 h-10 rounded-xl bg-primary flex items-center justify-center flex-none">

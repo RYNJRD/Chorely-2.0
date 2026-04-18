@@ -65,7 +65,7 @@ export default function Profile() {
       {/* ── Top bar ── */}
       <div className="flex-none flex items-center justify-between px-4 pt-[max(1rem,env(safe-area-inset-top))] pb-2">
         <div className="flex items-center gap-2">
-          <h1 className="text-base font-bold text-primary tracking-tight">Chorely</h1>
+          <h1 className="text-base font-bold text-primary tracking-tight">Taskling</h1>
           <span className="text-xs font-bold text-foreground/50 bg-muted/80 rounded-lg px-2 py-0.5">My Character</span>
         </div>
       </div>

@@ -132,7 +132,7 @@ export default function JoinFamily() {
               className="text-muted-foreground font-medium mb-7 text-sm max-w-[260px]"
             >
               {isViaLink
-                ? "Please wait while Chorely connects you to your family"
+                ? "Please wait while Taskling connects you to your family"
                 : "Enter the invite code your family shared with you"}
             </motion.p>
 

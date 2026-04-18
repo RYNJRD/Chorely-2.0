@@ -4,7 +4,7 @@
 
 ## Context
 
-Chorely requires real-time features:
+Taskling requires real-time features:
 - Live chat messages in family chat room
 - Activity feed updates (chores completed, rewards claimed, etc.)
 - Leaderboard score changes visible immediately

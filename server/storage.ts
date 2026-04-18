@@ -345,7 +345,7 @@ async function setupDemoFamily(storage: DatabaseStorage): Promise<Family> {
   await storage.createMessage({
     familyId: family.id,
     userId: parent.id,
-    senderName: "Chorely",
+    senderName: "Taskling",
     content: "Welcome to the demo family. Try completing a chore, claiming a reward, and reviewing an approval.",
     isSystem: true,
   });

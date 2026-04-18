@@ -1,6 +1,6 @@
-# Development Guide for Chorely
+# Development Guide for Taskling
 
-Welcome to Chorely development! This guide covers local setup, development workflows, testing, and debugging.
+Welcome to Taskling development! This guide covers local setup, development workflows, testing, and debugging.
 
 ## Quick Start (5 minutes)
 
@@ -15,7 +15,7 @@ cp .env.example .env
 cp client/.env.example client/.env.local
 
 # 3. Enable demo mode
-# Edit .env and set CHORELY_DEMO_MODE=true
+# Edit .env and set Taskling_DEMO_MODE=true
 
 # 4. Start dev server
 npm run dev
@@ -47,7 +47,7 @@ See [Setup Steps](#setup-steps) below.
 
 ```bash
 git clone <repo-url>
-cd Chorely-20
+cd Taskling-20
 npm install
 ```
 
@@ -57,14 +57,14 @@ npm install
 
 ```bash
 # Start PostgreSQL container
-docker run --name chorely-postgres \
+docker run --name Taskling-postgres \
   -e POSTGRES_PASSWORD=postgres \
-  -e POSTGRES_DB=chorely \
+  -e POSTGRES_DB=Taskling \
   -p 5432:5432 \
   postgres:16
 
 # In .env, use:
-# DATABASE_URL=postgresql://postgres:postgres@localhost:5432/chorely
+# DATABASE_URL=postgresql://postgres:postgres@localhost:5432/Taskling
 ```
 
 #### Option B: Local PostgreSQL
@@ -74,11 +74,11 @@ docker run --name chorely-postgres \
 sudo -u postgres psql
 
 # In psql:
-CREATE DATABASE chorely;
+CREATE DATABASE Taskling;
 \q
 
 # In .env:
-# DATABASE_URL=postgresql://postgres:YOUR_PASSWORD@localhost:5432/chorely
+# DATABASE_URL=postgresql://postgres:YOUR_PASSWORD@localhost:5432/Taskling
 ```
 
 #### Option C: Cloud (Neon or Supabase)
@@ -161,7 +161,7 @@ npx husky install
 ## Project Structure
 
 ```
-Chorely-20/
+Taskling-20/
 ├── client/                    # React web frontend
 │   ├── src/
 │   │   ├── pages/            # Page components (Dashboard, Admin, etc.)
@@ -410,13 +410,13 @@ npx tsc --watch
 
 | Variable | Required | Example |
 |----------|----------|---------|
-| `DATABASE_URL` | Yes | `postgresql://user:pass@localhost:5432/chorely` |
+| `DATABASE_URL` | Yes | `postgresql://user:pass@localhost:5432/Taskling` |
 | `FIREBASE_PROJECT_ID` | Yes | `my-project` |
 | `FIREBASE_CLIENT_EMAIL` | Yes | `firebase-adminsdk...@...iam.gserviceaccount.com` |
 | `FIREBASE_PRIVATE_KEY` | Yes | `-----BEGIN PRIVATE KEY-----\n...\n-----END PRIVATE KEY-----\n` |
 | `PORT` | No | `5000` (default) |
 | `NODE_ENV` | No | `development` (default) or `production` |
-| `CHORELY_DEMO_MODE` | No | `true` to enable mock data |
+| `Taskling_DEMO_MODE` | No | `true` to enable mock data |
 
 ### Client (client/.env.local)
 
@@ -490,7 +490,7 @@ cp .env.example .env
 cp client/.env.example client/.env.local
 
 # Edit both files with real credentials
-# Or use demo mode: CHORELY_DEMO_MODE=true
+# Or use demo mode: Taskling_DEMO_MODE=true
 ```
 
 ### "Port 5000 already in use"
@@ -597,7 +597,7 @@ npm run start
 - [Drizzle Docs](https://orm.drizzle.team/)
 - [React Query Docs](https://tanstack.com/query/latest)
 - [Firebase Auth Docs](https://firebase.google.com/docs/auth)
-- [Chorely ADRs](./docs/adr/)
+- [Taskling ADRs](./docs/adr/)
 
 ## Getting Help
 

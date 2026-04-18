@@ -4,7 +4,7 @@
 
 ## Context
 
-Chorely client manages two types of state:
+Taskling client manages two types of state:
 1. **Server State**: Families, users, chores, rewards (stored in database)
 2. **UI State**: Modal open/close, form inputs, sort order (stored in React)
 

@@ -1,4 +1,4 @@
-# ChoreQuest (Chorely)
+# ChoreQuest (Taskling)
 
 A fullstack household chore gamification app built with React + Vite frontend, Express backend, and PostgreSQL (Drizzle ORM). Mobile-first, playful (Duolingo meets Mario Party).
 

@@ -4,7 +4,7 @@
 
 ## Context
 
-Chorely manages relational data:
+Taskling manages relational data:
 - Families and members
 - Chores and completions
 - Rewards and claims

@@ -30,7 +30,7 @@ function RouteFallback() {
   return (
     <div className="min-h-screen flex items-center justify-center px-6 text-center">
       <div>
-        <p className="font-display text-2xl font-bold text-primary">Chorely</p>
+        <p className="font-display text-2xl font-bold text-primary">Taskling</p>
         <p className="mt-2 text-sm text-muted-foreground">Loading your family dashboard...</p>
       </div>
     </div>
@@ -82,7 +82,7 @@ function EmailVerificationGate() {
 import { Router as WouterRouter } from "wouter";
 
 function Router() {
-  // Use Vite's BASE_URL (which we set to /Chorely-2.0/)
+  // Use Vite's BASE_URL (which we set to /Taskling/)
   const base = import.meta.env.BASE_URL || "/";
   
   return (

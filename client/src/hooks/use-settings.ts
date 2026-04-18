@@ -20,7 +20,7 @@ const DEFAULTS: AppSettings = {
   darkMode: false,
 };
 
-const STORAGE_KEY = "chorely-settings";
+const STORAGE_KEY = "taskling-settings";
 
 function loadSettings(): AppSettings {
   try {

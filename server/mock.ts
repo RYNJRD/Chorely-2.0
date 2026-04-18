@@ -239,7 +239,7 @@ function createInitialDemoState(): DemoState {
       id: 1,
       familyId: family.id,
       userId: jordan.id,
-      senderName: "Chorely",
+      senderName: "Taskling",
       content: "Family chat started. Try dropping a message here!",
       isSystem: true,
       createdAt: now,
@@ -356,7 +356,7 @@ function appendActivity(event: Omit<ActivityEvent, "id" | "createdAt">) {
 }
 
 export function setupDemoMode(app: Express) {
-  if (process.env.CHORELY_DEMO_MODE !== "true") return;
+  if (process.env.TASKLING_DEMO_MODE !== "true") return;
 
   console.log("Demo mode enabled: using in-memory data.");
 

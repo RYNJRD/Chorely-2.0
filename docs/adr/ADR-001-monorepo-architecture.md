@@ -4,7 +4,7 @@
 
 ## Context
 
-Chorely consists of three interconnected layers:
+Taskling consists of three interconnected layers:
 - **Client**: React web application with Vite
 - **Server**: Express API backend
 - **Shared**: Type definitions and utilities used by both

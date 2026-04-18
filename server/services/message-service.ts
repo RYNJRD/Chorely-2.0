@@ -32,7 +32,7 @@ export async function createSystemMessage(familyId: number, userId: number, cont
   return createMessage({
     familyId,
     userId,
-    senderName: "Chorely",
+    senderName: "Taskling",
     content,
     isSystem: true,
   });

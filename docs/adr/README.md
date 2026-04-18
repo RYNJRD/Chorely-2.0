@@ -1,6 +1,6 @@
 # Architecture Decision Records (ADR)
 
-This directory contains Architecture Decision Records (ADRs) for the Chorely project.
+This directory contains Architecture Decision Records (ADRs) for the Taskling project.
 
 ## What is an ADR?
 
