@@ -519,50 +519,90 @@ export async function registerRoutes(httpServer: Server, app: Express): Promise<
 
 
   // POST /api/auth/send-code
-  // Client creates the Firebase user first (Firebase Auth SDK), then calls this.
   app.post("/api/auth/send-code", async (req, res) => {
-
+    console.log("[OTP] POST /api/auth/send-code entry");
     try {
       const { email, firebaseUid } = req.body;
-      if (!email || !firebaseUid) return res.status(400).json({ message: "Email and firebaseUid are required." });
-      if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) return res.status(400).json({ message: "Invalid email address." });
-
-      // Throttle: 60-second cooldown per email
-      const pool = await checkOtpStorage();
-      const { rows: existing } = await pool.query(
-        "SELECT last_sent_at FROM email_verification_codes WHERE email = $1 ORDER BY created_at DESC LIMIT 1",
-        [email]
-      );
-      if (existing.length > 0) {
-        const lastSent = new Date(existing[0].last_sent_at).getTime();
-        const waitMs = 60_000 - (Date.now() - lastSent);
-        if (waitMs > 0) {
-          const waitSecs = Math.ceil(waitMs / 1000);
-          return res.status(429).json({ message: `Please wait ${waitSecs} seconds before requesting a new code.`, waitSecs });
-        }
+      if (!email || !firebaseUid) {
+        console.error("[OTP] Missing payload:", { email: !!email, firebaseUid: !!firebaseUid });
+        return res.status(400).json({ message: "Email and firebaseUid are required." });
       }
 
-      // Generate 6-digit code and upsert
+      console.log(`[OTP] Step 1: Payload valid for ${email}`);
+      
+      // 1. Initialize DB Storage
+      let pool;
+      try {
+        pool = await checkOtpStorage();
+        console.log("[OTP] Step 2: DB connection successful");
+      } catch (dbErr: any) {
+        console.error("[OTP] DB connection/init failed:", dbErr);
+        throw new Error(`Database unavailable: ${dbErr.message}`);
+      }
+
+      // 2. Throttle Check
+      try {
+        const { rows: existing } = await pool.query(
+          "SELECT last_sent_at FROM email_verification_codes WHERE email = $1 ORDER BY created_at DESC LIMIT 1",
+          [email]
+        );
+        if (existing.length > 0) {
+          const lastSent = new Date(existing[0].last_sent_at).getTime();
+          const waitMs = 60_000 - (Date.now() - lastSent);
+          if (waitMs > 0) {
+            const waitSecs = Math.ceil(waitMs / 1000);
+            console.warn(`[OTP] Step 3: Throttled for ${email}. Wait ${waitSecs}s`);
+            return res.status(429).json({ message: `Please wait ${waitSecs} seconds before requesting a new code.`, waitSecs });
+          }
+        }
+        console.log("[OTP] Step 3: Throttling check passed");
+      } catch (throttleErr: any) {
+        console.error("[OTP] Throttle check failed (Table might be missing):", throttleErr);
+        throw new Error(`Failed to check cooldown: ${throttleErr.message}`);
+      }
+
+      // 3. Generate Code
       const code = String(Math.floor(100000 + Math.random() * 900000));
       const expiresAt = new Date(Date.now() + 10 * 60_000);
       const now = new Date();
+      console.log("[OTP] Step 4: Code generated");
 
-      // Delete old record then insert fresh
-      await pool.query("DELETE FROM email_verification_codes WHERE email = $1", [email]);
-      await pool.query(
-        "INSERT INTO email_verification_codes (email, firebase_uid, code, expires_at, attempts, last_sent_at) VALUES ($1, $2, $3, $4, 0, $5)",
-        [email, firebaseUid, code, expiresAt, now]
-      );
+      // 4. Persistence
+      try {
+        await pool.query("DELETE FROM email_verification_codes WHERE email = $1", [email]);
+        await pool.query(
+          "INSERT INTO email_verification_codes (email, firebase_uid, code, expires_at, attempts, last_sent_at) VALUES ($1, $2, $3, $4, 0, $5)",
+          [email, firebaseUid, code, expiresAt, now]
+        );
+        console.log("[OTP] Step 5: Code saved to Neon DB");
+      } catch (saveErr: any) {
+        console.error("[OTP] Save failed:", saveErr);
+        throw new Error(`Failed to save code to database: ${saveErr.message}`);
+      }
 
-      // Send via Resend
-      const { sendOtpEmail } = await import("./services/email-service");
-      await sendOtpEmail(email, code);
+      // 5. Email Sending
+      try {
+        const { sendOtpEmail } = await import("./services/email-service");
+        console.log("[OTP] Step 6: email-service loaded");
+        const emailResult = await sendOtpEmail(email, code);
+        if (!emailResult) {
+          console.error("[OTP] Step 7: Resend call returned null/false");
+          throw new Error("Resend service returned an empty response. Check your domain verification.");
+        }
+        console.log("[OTP] Step 7: Email sent signal received from Resend");
+      } catch (emailErr: any) {
+        console.error("[OTP] Email transmission failed:", emailErr);
+        throw new Error(`Failed to deliver email: ${emailErr.message}`);
+      }
 
-      console.log(`[OTP] Code sent to ${email} uid=${firebaseUid}`);
       return res.json({ success: true });
     } catch (e: any) {
-      console.error("[OTP] send-code error:", e);
-      return res.status(500).json({ message: e.message || "Failed to send verification code." });
+      console.error("[OTP] FINAL_FAILURE:", e);
+      return res.status(500).json({ 
+        message: e.message || "Failed to send verification code.",
+        error: e.message,
+        phase: e.message.split(":")[0] 
+      });
     }
   });
 
