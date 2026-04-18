@@ -53,9 +53,9 @@ export default function GetStarted() {
   }
 
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center p-6 text-center relative overflow-hidden bg-onboarding">
-      <div className="blob-primary absolute w-80 h-80 top-[-12%] left-[-14%]" />
-      <div className="blob-accent absolute w-72 h-72 bottom-[-10%] right-[-12%]" />
+    <div className="flex-1 flex flex-col items-center justify-center bg-onboarding">
+      <div className="blob-primary absolute w-80 h-80 top-[-12%] left-[-14%] pointer-events-none" />
+      <div className="blob-accent absolute w-72 h-72 bottom-[-10%] right-[-12%] pointer-events-none" />
 
       <button
         data-testid="button-back-get-started"

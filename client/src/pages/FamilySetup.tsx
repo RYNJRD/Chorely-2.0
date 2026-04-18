@@ -118,7 +118,7 @@ export default function FamilySetup() {
   const steps = ["Your Family", "Your Profile"];
 
   return (
-    <div className="min-h-screen bg-onboarding relative overflow-hidden flex flex-col">
+    <div className="flex-1 bg-onboarding relative flex flex-col">
       <div className="blob-primary absolute w-80 h-80 top-[-12%] left-[-14%] pointer-events-none" />
       <div className="blob-accent absolute w-72 h-72 bottom-[-10%] right-[-12%] pointer-events-none" />
       <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_30%_20%,hsl(262_83%_58%/0.07)_0%,transparent_60%)] pointer-events-none" />

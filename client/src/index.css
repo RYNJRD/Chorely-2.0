@@ -190,19 +190,26 @@
     background-clip: text;
   }
 
-  /* Force fixed UI on onboarding */
+  /* Elastic UI on onboarding (locks scrolling unless content overflows) */
   .bg-onboarding {
     background: radial-gradient(ellipse at 20% 10%, hsl(262 83% 58% / 0.18) 0%, transparent 55%),
                 radial-gradient(ellipse at 85% 80%, hsl(43 96% 56% / 0.15) 0%, transparent 55%),
                 radial-gradient(ellipse at 60% 40%, hsl(189 71% 73% / 0.1) 0%, transparent 50%),
                 hsl(210 40% 98%);
-    height: 100vh;
-    height: 100dvh; /* Dynamic viewport height for mobile */
+    min-height: 100vh;
+    min-height: 100dvh;
     width: 100%;
-    overflow: hidden; /* Disallow all scrolling */
+    /* Allow scrolling if content is too large, but keep it looking clean */
+    overflow-y: auto;
+    -ms-overflow-style: none;  /* IE and Edge */
+    scrollbar-width: none;  /* Firefox */
     display: flex;
     flex-direction: column;
-    padding: 1rem;
+    padding: 1.5rem;
+  }
+  
+  .bg-onboarding::-webkit-scrollbar {
+    display: none; /* Chrome, Safari and Opera */
   }
 
   .blob-primary {

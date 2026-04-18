@@ -267,7 +267,7 @@ export default function AuthWelcome() {
   const mood = view === "verification" ? "happy" : view === "signin" ? "thinking" : "waving";
 
   return (
-    <div className="fixed inset-0 flex flex-col items-center justify-center bg-onboarding overflow-hidden">
+    <div className="flex-1 flex flex-col items-center justify-center bg-onboarding">
       {/* Background blobs */}
       <div className="blob-primary absolute w-80 h-80 top-[-12%] left-[-14%] pointer-events-none" />
       <div className="blob-accent absolute w-72 h-72 bottom-[-10%] right-[-12%] pointer-events-none" />
