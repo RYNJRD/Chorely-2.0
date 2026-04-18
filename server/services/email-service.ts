@@ -89,6 +89,70 @@ export async function sendVerificationEmail(to: string, link: string) {
   }
 }
 
+export async function sendOtpEmail(to: string, code: string) {
+  const subject = "Your Taskling verification code 🔑";
+
+  // Penguin SVG inline (waving pose, small, for email)
+  const penguinSvg = `<svg width="90" height="100" viewBox="0 0 100 120" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <ellipse cx="50" cy="114" rx="24" ry="5" fill="rgba(0,0,0,0.10)"/>
+    <path d="M18 72 C18 44 30 18 50 18 C70 18 82 44 82 72 C82 96 68 112 50 112 C32 112 18 96 18 72Z" fill="#1a1a2e"/>
+    <ellipse cx="50" cy="76" rx="21" ry="26" fill="#f0f0f5"/>
+    <path d="M18 72 C10 68 8 82 14 88 Q18 90 22 88 L22 68Z" fill="#141428"/>
+    <path d="M78 72 C84 58 96 52 100 40 Q100 32 94 34 C90 36 82 50 78 68Z" fill="#141428"/>
+    <ellipse cx="38" cy="112" rx="10" ry="5" fill="#FFB300"/>
+    <ellipse cx="62" cy="112" rx="10" ry="5" fill="#FFB300"/>
+    <circle cx="37" cy="58" r="8.5" fill="white"/>
+    <circle cx="39" cy="56" r="5.5" fill="#1a1a2e"/>
+    <circle cx="41" cy="54" r="2" fill="white"/>
+    <circle cx="63" cy="58" r="8.5" fill="white"/>
+    <circle cx="65" cy="56" r="5.5" fill="#1a1a2e"/>
+    <circle cx="67" cy="54" r="2" fill="white"/>
+    <ellipse cx="27" cy="68" rx="6" ry="4" fill="#FFB3B3" opacity="0.65"/>
+    <ellipse cx="73" cy="68" rx="6" ry="4" fill="#FFB3B3" opacity="0.65"/>
+    <path d="M45 73 Q50 80 55 73 L54 70 Q50 74 46 70 Z" fill="#FFB300"/>
+    <path d="M39 80 Q50 92 61 80" stroke="#1a1a2e" stroke-width="3" stroke-linecap="round" fill="none"/>
+    <path d="M24 78 Q50 88 76 78 L78 84 Q50 96 22 84 Z" fill="#7C3AED"/>
+    <rect x="22" y="80" width="10" height="7" rx="3" fill="#5b21b6"/>
+    <text x="62" y="89" font-size="8" text-anchor="middle" fill="#FFD700">★</text>
+  </svg>`;
+
+  const html = getBaseTemplate(subject, `
+    <div style="text-align: center; margin-bottom: 24px;">
+      ${penguinSvg}
+    </div>
+    <h2 style="color: #7C3AED; font-size: 26px; margin-top: 0; text-align: center; font-weight: 800;">Here's your code! 🎉</h2>
+    <p style="font-size: 16px; line-height: 1.6; text-align: center; color: #475569;">
+      Enter this 6-digit code in the Taskling app to verify your account.<br/>
+      <strong>It expires in 10 minutes.</strong>
+    </p>
+
+    <div style="background: linear-gradient(135deg, #f3e8ff 0%, #ede9fe 100%); border-radius: 20px; padding: 32px 20px; margin: 28px 0; text-align: center; border: 3px solid #7C3AED;">
+      <p style="margin: 0 0 8px 0; font-size: 13px; font-weight: 700; color: #7C3AED; letter-spacing: 3px; text-transform: uppercase;">Your verification code</p>
+      <div style="display: inline-flex; gap: 10px; justify-content: center; flex-wrap: wrap;">
+        ${code.split("").map(d => `<span style="display:inline-block;width:48px;height:64px;background:white;border-radius:14px;font-size:36px;font-weight:900;color:#1a1a2e;line-height:64px;text-align:center;box-shadow:0 4px 12px rgba(124,58,237,0.2);border:2px solid #c4b5fd;">${d}</span>`).join("")}
+      </div>
+      <p style="margin: 16px 0 0 0; font-size: 13px; color: #94a3b8;">Didn't request this? You can safely ignore this email.</p>
+    </div>
+
+    <p style="font-size: 14px; text-align: center; color: #64748b;">
+      Once verified you'll be taken straight into your family's Taskling space. ⭐
+    </p>
+  `);
+
+  const text = `Your Taskling verification code is: ${code}\n\nIt expires in 10 minutes. If you didn't request this, ignore this email.`;
+
+  try {
+    const data = await resend.emails.send({ from: FROM_EMAIL, to, subject, html, text });
+    console.log("[Email] OTP email sent:", data.id);
+    return data;
+  } catch (error) {
+    console.error("[Email] Failed to send OTP email:", error);
+    return null;
+  }
+}
+
+
+
 export async function sendPasswordResetEmail(to: string, link: string) {
   const subject = "Reset your Taskling password 🔒";
   const html = getBaseTemplate(subject, `

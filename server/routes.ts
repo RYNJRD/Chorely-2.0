@@ -509,6 +509,97 @@ export async function registerRoutes(httpServer: Server, app: Express): Promise<
     return res.status(201).json({ family, users });
   });
 
+  // ── In-memory OTP store (survives serverless cold starts poorly, but fine for short-lived codes) ──
+  // Structure: email → { code, expiresAt, attempts, lastSentAt }
+  const otpStore = new Map<string, { code: string; expiresAt: number; attempts: number; lastSentAt: number }>();
+
+  // POST /api/auth/send-code — create Firebase user (if not exists), generate + email OTP
+  app.post("/api/auth/send-code", async (req, res) => {
+    try {
+      const { email, password } = req.body;
+      if (!email || !password) return res.status(400).json({ message: "Email and password are required." });
+      if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) return res.status(400).json({ message: "Invalid email address." });
+      if (password.length < 6) return res.status(400).json({ message: "Password must be at least 6 characters." });
+
+      // Throttle: 60 second cooldown per email
+      const existing = otpStore.get(email);
+      if (existing && Date.now() - existing.lastSentAt < 60_000) {
+        const waitSecs = Math.ceil((60_000 - (Date.now() - existing.lastSentAt)) / 1000);
+        return res.status(429).json({ message: `Please wait ${waitSecs} seconds before requesting a new code.`, waitSecs });
+      }
+
+      const { getAuth } = await import("firebase-admin/auth");
+      const adminAuth = getAuth();
+
+      // Create or look up Firebase user
+      let userRecord;
+      try {
+        userRecord = await adminAuth.getUserByEmail(email);
+      } catch {
+        // User doesn't exist yet — create them
+        userRecord = await adminAuth.createUser({ email, password });
+      }
+
+      // Generate 6-digit code
+      const code = String(Math.floor(100000 + Math.random() * 900000));
+      otpStore.set(email, { code, expiresAt: Date.now() + 10 * 60_000, attempts: 0, lastSentAt: Date.now() });
+
+      // Send via Resend
+      const { sendOtpEmail } = await import("./services/email-service");
+      await sendOtpEmail(email, code);
+
+      console.log(`[OTP] Code sent to ${email} for uid ${userRecord.uid}`);
+      return res.json({ success: true, uid: userRecord.uid });
+    } catch (e: any) {
+      console.error("[OTP] send-code error:", e);
+      const msg = e?.errorInfo?.code === "auth/email-already-exists"
+        ? "An account with this email already exists. Try signing in instead."
+        : e.message || "Failed to send verification code.";
+      return res.status(500).json({ message: msg });
+    }
+  });
+
+  // POST /api/auth/verify-code — validate OTP, mark Firebase email as verified, return custom token
+  app.post("/api/auth/verify-code", async (req, res) => {
+    try {
+      const { email, code } = req.body;
+      if (!email || !code) return res.status(400).json({ message: "Email and code are required." });
+
+      const record = otpStore.get(email);
+      if (!record) return res.status(400).json({ message: "No verification code found. Please request a new one." });
+
+      if (Date.now() > record.expiresAt) {
+        otpStore.delete(email);
+        return res.status(400).json({ message: "Your code has expired. Please request a new one.", expired: true });
+      }
+
+      record.attempts += 1;
+      if (record.attempts > 5) {
+        otpStore.delete(email);
+        return res.status(429).json({ message: "Too many incorrect attempts. Please request a new code.", tooManyAttempts: true });
+      }
+
+      if (record.code !== code.trim()) {
+        const remaining = 5 - record.attempts;
+        return res.status(400).json({ message: `Incorrect code. ${remaining} attempt${remaining !== 1 ? "s" : ""} remaining.` });
+      }
+
+      // Code is correct — mark Firebase user as verified and issue custom token
+      const { getAuth } = await import("firebase-admin/auth");
+      const adminAuth = getAuth();
+      const userRecord = await adminAuth.getUserByEmail(email);
+      await adminAuth.updateUser(userRecord.uid, { emailVerified: true });
+      const customToken = await adminAuth.createCustomToken(userRecord.uid);
+
+      otpStore.delete(email);
+      console.log(`[OTP] Verified email for ${email} uid=${userRecord.uid}`);
+      return res.json({ success: true, customToken, uid: userRecord.uid });
+    } catch (e: any) {
+      console.error("[OTP] verify-code error:", e);
+      return res.status(500).json({ message: e.message || "Verification failed." });
+    }
+  });
+
   app.post("/api/auth/verify-email", requireAuth, async (req, res) => {
     try {
       const { getAuth } = await import("firebase-admin/auth");
