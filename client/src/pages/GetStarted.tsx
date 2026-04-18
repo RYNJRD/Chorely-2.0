@@ -96,14 +96,13 @@ export default function GetStarted() {
               </motion.div>
 
               <motion.div initial={{ y: 20, opacity: 0 }} animate={{ y: 0, opacity: 1 }} transition={{ delay: 0.15 }} className="mb-1">
-                <h1 className="font-display text-4xl font-bold">
-                  <span style={{ color: "hsl(262 83% 58%)" }} className="logo-glow">Chore</span>
-                  <span style={{ color: "hsl(43 96% 50%)" }} className="logo-accent-glow">ly</span>
+                <h1 className="font-display text-4xl font-bold" style={{ color: "hsl(262 83% 58%)" }}>
+                  Taskling
                 </h1>
               </motion.div>
 
               <motion.p initial={{ y: 16, opacity: 0 }} animate={{ y: 0, opacity: 1 }} transition={{ delay: 0.2 }} className="text-muted-foreground font-semibold mb-8 text-sm max-w-[260px]">
-                Turn boring chores into an epic family adventure!
+                Make chores fun — reward your whole family! ⭐
               </motion.p>
 
               <motion.div initial={{ y: 20, opacity: 0 }} animate={{ y: 0, opacity: 1 }} transition={{ delay: 0.28 }} className="w-full space-y-3">

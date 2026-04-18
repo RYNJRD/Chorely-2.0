@@ -1,9 +1,8 @@
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { ChevronLeft, ChevronRight, Check, Loader2, Home, User } from "lucide-react";
+import { ChevronLeft, ChevronRight, Check, Loader2, Home, User, Sparkles, Zap } from "lucide-react";
 import { useLocation } from "wouter";
 import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
 import { useStore } from "@/store/useStore";
 import { useToast } from "@/hooks/use-toast";
 import { cn } from "@/lib/utils";
@@ -33,7 +32,7 @@ export default function FamilySetup() {
 
   const handleSubmit = async () => {
     if (!effectiveFirebaseUid) {
-      toast({ title: "Error", description: "Please sign in first.", variant: "destructive" });
+      toast({ title: "Sign in required", description: "Please sign in first.", variant: "destructive" });
       setLocation("/auth");
       return;
     }
@@ -76,17 +75,13 @@ export default function FamilySetup() {
           { title: "Take out recycling", description: "A good first approval-based chore.", points: 30, type: "weekly", requiresApproval: true },
         ];
         for (const starterChore of starterChores) {
-          const choreRes = await apiFetch("/api/chores", {
+          await apiFetch("/api/chores", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ familyId: family.id, assigneeId: null, emoji: "", createdBy: createdUser.id, ...starterChore }),
           });
-          if (!choreRes.ok) {
-            const errBody = await choreRes.json().catch(() => ({ message: choreRes.statusText }));
-            console.error("Chore creation failed:", errBody);
-          }
         }
-        const rewardRes = await apiFetch("/api/rewards", {
+        await apiFetch("/api/rewards", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
@@ -99,10 +94,6 @@ export default function FamilySetup() {
             createdBy: createdUser.id,
           }),
         });
-        if (!rewardRes.ok) {
-          const errBody = await rewardRes.json().catch(() => ({ message: rewardRes.statusText }));
-          console.error("Reward creation failed:", errBody);
-        }
       }
 
       setFamily(family);
@@ -118,196 +109,300 @@ export default function FamilySetup() {
     } catch (err) {
       console.error("Family setup error:", err);
       const message = err instanceof Error ? err.message : "Something went wrong. Please try again.";
-      toast({ title: "Error", description: message, variant: "destructive" });
+      toast({ title: "Setup failed", description: message, variant: "destructive" });
     } finally {
       setIsSubmitting(false);
     }
   };
 
-  const steps = ["Family Name", "Your Profile"];
-  const inputClass = "h-12 rounded-2xl border-2 font-medium text-base focus-visible:ring-primary";
-  const selectClass = "h-12 rounded-2xl border-2 font-medium text-base bg-background px-4 focus:ring-2 focus:ring-primary/50 outline-none w-full";
+  const steps = ["Your Family", "Your Profile"];
 
   return (
-    <div className="min-h-screen bg-onboarding p-6 relative overflow-hidden">
-      <div className="blob-primary absolute w-72 h-72 top-[-10%] left-[-12%]" />
-      <div className="blob-accent absolute w-64 h-64 bottom-[-10%] right-[-10%]" />
+    <div className="min-h-screen bg-onboarding relative overflow-hidden flex flex-col">
+      <div className="blob-primary absolute w-80 h-80 top-[-12%] left-[-14%] pointer-events-none" />
+      <div className="blob-accent absolute w-72 h-72 bottom-[-10%] right-[-12%] pointer-events-none" />
+      <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_30%_20%,hsl(262_83%_58%/0.07)_0%,transparent_60%)] pointer-events-none" />
 
-      <div className="max-w-md mx-auto relative z-10">
-        <div className="flex items-center gap-2 mb-5">
-          <button
-            data-testid="button-back-setup"
-            onClick={() => step > 0 ? setStep(step - 1) : setLocation("/get-started")}
-            className="w-10 h-10 rounded-2xl bg-white/80 backdrop-blur-sm flex items-center justify-center hover:bg-white active:scale-90 transition-all shadow-sm border border-border/40"
-          >
-            <ChevronLeft className="w-5 h-5 text-foreground" />
-          </button>
-          <div className="flex-1">
-            <p className="text-xs font-bold text-muted-foreground uppercase tracking-wider">Step {step + 1} of 2</p>
-            <p className="text-sm font-bold text-foreground">{steps[step]}</p>
-          </div>
+      {/* Header */}
+      <div className="relative z-10 flex items-center gap-3 px-5 pt-[max(1.25rem,env(safe-area-inset-top))] pb-4">
+        <button
+          data-testid="button-back-setup"
+          onClick={() => step > 0 ? setStep(step - 1) : setLocation("/get-started")}
+          className="w-10 h-10 rounded-2xl bg-white/80 backdrop-blur-sm flex items-center justify-center hover:bg-white active:scale-90 transition-all shadow-sm border border-white/60"
+        >
+          <ChevronLeft className="w-5 h-5 text-foreground" />
+        </button>
+        <div className="flex-1 min-w-0">
+          <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest">Step {step + 1} of 2</p>
+          <p className="text-sm font-bold text-foreground truncate">{steps[step]}</p>
         </div>
-
-        <div className="flex gap-1.5 mb-6">
+        {/* Step indicator pills */}
+        <div className="flex gap-1.5">
           {steps.map((_, i) => (
             <div
               key={i}
-              className={cn("flex-1 h-2 rounded-full transition-all duration-500", i <= step ? "btn-glow-primary" : "bg-muted")}
-              style={i <= step ? { background: "linear-gradient(90deg, hsl(262 83% 58%), hsl(280 75% 62%))" } : {}}
+              className="h-2 rounded-full transition-all duration-500"
+              style={{
+                width: i === step ? "1.5rem" : "0.5rem",
+                background: i <= step
+                  ? "linear-gradient(90deg, hsl(262 83% 58%), hsl(280 75% 62%))"
+                  : "hsl(var(--muted))",
+              }}
             />
           ))}
         </div>
+      </div>
 
-        <AnimatePresence mode="wait">
-          {step === 0 && (
-            <motion.div
-              key="step-0"
-              initial={{ opacity: 0, x: 40 }}
-              animate={{ opacity: 1, x: 0 }}
-              exit={{ opacity: 0, x: -40 }}
-              transition={{ duration: 0.25 }}
-              className="space-y-5"
-            >
-              <div className="flex justify-center mb-2">
-                <ChorlyMascot pose="think" size={120} bounce={true} />
-              </div>
+      {/* Content */}
+      <div className="relative z-10 flex-1 overflow-y-auto">
+        <div className="max-w-md mx-auto px-5 pb-8">
+          <AnimatePresence mode="wait">
 
-              <div className="text-center mb-4">
-                <h2 className="font-display text-2xl font-bold text-foreground">What's your family called?</h2>
-                <p className="text-sm text-muted-foreground mt-1">Give your crew a legendary name!</p>
-              </div>
-
-              <div className="bg-white/70 backdrop-blur-sm p-4 rounded-2xl border-2 border-border/60 card-glow">
-                <div className="flex items-center gap-3 mb-3">
-                  <div className="w-9 h-9 rounded-xl flex items-center justify-center" style={{ background: "hsl(262 83% 58% / 0.12)" }}>
-                    <Home className="w-4 h-4" style={{ color: "hsl(262 83% 58%)" }} />
-                  </div>
-                  <label className="text-sm font-bold text-muted-foreground">Family Name</label>
-                </div>
-                <Input
-                  data-testid="input-family-name"
-                  value={familyName}
-                  onChange={(e) => setFamilyName(e.target.value)}
-                  placeholder='e.g. "The Smiths" or "Team Awesome"'
-                  className={inputClass}
-                  autoFocus
-                  onKeyDown={(e) => e.key === "Enter" && canProceedStep0 && setStep(1)}
-                />
-              </div>
-
-              <Button
-                data-testid="button-next-step-0"
-                onClick={() => setStep(1)}
-                disabled={!canProceedStep0}
-                className="w-full h-13 rounded-2xl font-bold text-base btn-glow-primary"
-                style={{ height: "3.25rem", background: "linear-gradient(135deg, hsl(262 83% 60%) 0%, hsl(280 75% 62%) 100%)" }}
+            {/* ── STEP 0: Family Name ── */}
+            {step === 0 && (
+              <motion.div
+                key="step-0"
+                initial={{ opacity: 0, x: 32 }}
+                animate={{ opacity: 1, x: 0 }}
+                exit={{ opacity: 0, x: -32 }}
+                transition={{ duration: 0.22, ease: "easeOut" }}
+                className="space-y-6 pt-2"
               >
-                Next <ChevronRight className="w-4 h-4 ml-1" />
-              </Button>
-            </motion.div>
-          )}
+                {/* Mascot */}
+                <div className="flex flex-col items-center pt-4 pb-2">
+                  <ChorlyMascot pose="think" size={110} bounce />
+                  <motion.div
+                    initial={{ opacity: 0, y: 12 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.2 }}
+                    className="text-center mt-4"
+                  >
+                    <h2 className="font-display text-2xl font-bold text-foreground">What's your family called?</h2>
+                    <p className="text-sm text-muted-foreground mt-1">Every great family deserves a legendary name!</p>
+                  </motion.div>
+                </div>
 
-          {step === 1 && (
-            <motion.div
-              key="step-1"
-              initial={{ opacity: 0, x: 40 }}
-              animate={{ opacity: 1, x: 0 }}
-              exit={{ opacity: 0, x: -40 }}
-              transition={{ duration: 0.25 }}
-              className="space-y-4"
-            >
-              <div className="flex justify-center mb-2">
-                <ChorlyMascot pose={isSubmitting ? "sleep" : "wave"} size={110} bounce={!isSubmitting} />
-              </div>
-
-              <div className="text-center mb-2">
-                <h2 className="font-display text-2xl font-bold text-foreground">Your Profile</h2>
-                <p className="text-sm text-muted-foreground mt-0.5">You'll be the family admin</p>
-              </div>
-
-              <div className="bg-white/70 backdrop-blur-sm p-4 rounded-2xl border-2 border-border/60 card-glow space-y-3">
-                <div className="flex items-center gap-2 mb-1">
-                  <div className="w-7 h-7 rounded-lg flex items-center justify-center" style={{ background: "hsl(262 83% 58% / 0.12)" }}>
-                    <User className="w-3.5 h-3.5" style={{ color: "hsl(262 83% 58%)" }} />
+                {/* Card */}
+                <motion.div
+                  initial={{ opacity: 0, y: 16 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.1 }}
+                  className="bg-white/75 backdrop-blur-md rounded-3xl border border-white/80 shadow-sm overflow-hidden"
+                >
+                  <div className="px-5 py-4 border-b border-border/30 flex items-center gap-3">
+                    <div className="w-9 h-9 rounded-xl flex items-center justify-center" style={{ background: "hsl(262 83% 58% / 0.1)" }}>
+                      <Home className="w-4 h-4" style={{ color: "hsl(262 83% 58%)" }} />
+                    </div>
+                    <div>
+                      <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">Family Name</p>
+                      <p className="text-xs text-muted-foreground/70">This will appear everywhere in the app</p>
+                    </div>
                   </div>
-                  <span className="text-xs font-bold text-muted-foreground uppercase tracking-wider">You (Admin)</span>
-                </div>
-                <Input
-                  data-testid="input-your-name"
-                  value={userName}
-                  onChange={(e) => setUserName(e.target.value)}
-                  placeholder="Your name"
-                  className={inputClass}
-                  autoFocus
-                />
-                <div className="grid grid-cols-2 gap-2">
-                  <select data-testid="select-your-gender" value={gender} onChange={(e) => setGender(e.target.value)} className={selectClass}>
-                    <option value="">Gender</option>
-                    {GENDER_OPTIONS.map(g => <option key={g} value={g}>{g}</option>)}
-                  </select>
-                  <Input
-                    data-testid="input-your-age"
-                    type="number"
-                    value={age}
-                    onChange={(e) => setAge(e.target.value)}
-                    placeholder="Age"
-                    className={inputClass}
-                    min={1} max={120}
-                  />
-                </div>
-              </div>
+                  <div className="px-5 py-4">
+                    <Input
+                      data-testid="input-family-name"
+                      value={familyName}
+                      onChange={(e) => setFamilyName(e.target.value)}
+                      placeholder='e.g. "The Smiths" or "Team Awesome"'
+                      className="h-13 rounded-2xl border-2 font-semibold text-base focus-visible:ring-primary bg-white/60"
+                      style={{ height: "3rem" }}
+                      autoFocus
+                      onKeyDown={(e) => e.key === "Enter" && canProceedStep0 && setStep(1)}
+                    />
+                  </div>
+                </motion.div>
 
-              <div className="bg-white/50 backdrop-blur-sm p-4 rounded-2xl border-2 border-border/60">
-                <p className="text-xs font-bold uppercase tracking-[0.18em] text-muted-foreground mb-2.5">Starter Setup</p>
-                <div className="grid grid-cols-2 gap-2">
-                  <button
-                    type="button"
-                    onClick={() => setStarterMode("guided")}
-                    className={cn(
-                      "rounded-xl px-3 py-3 text-sm font-bold border-2 transition-all",
-                      starterMode === "guided"
-                        ? "text-primary-foreground border-primary btn-glow-primary"
-                        : "bg-background border-border text-foreground"
-                    )}
-                    style={starterMode === "guided" ? { background: "linear-gradient(135deg, hsl(262 83% 60%), hsl(280 75% 62%))" } : {}}
-                  >
-                    Guided starter ✨
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => setStarterMode("blank")}
-                    className={cn(
-                      "rounded-xl px-3 py-3 text-sm font-bold border-2 transition-all",
-                      starterMode === "blank"
-                        ? "text-primary-foreground border-primary btn-glow-primary"
-                        : "bg-background border-border text-foreground"
-                    )}
-                    style={starterMode === "blank" ? { background: "linear-gradient(135deg, hsl(262 83% 60%), hsl(280 75% 62%))" } : {}}
-                  >
-                    Start blank
-                  </button>
-                </div>
-                <p className="text-xs text-muted-foreground mt-2 leading-snug">
-                  Guided adds sample chores and a first reward to get your family going tonight.
-                </p>
-              </div>
+                {/* Examples */}
+                <motion.div
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  transition={{ delay: 0.3 }}
+                  className="flex gap-2 flex-wrap justify-center"
+                >
+                  {["The Johnsons ⚡", "Team Taskling 🏆", "Squad Goals 🎯"].map(name => (
+                    <button
+                      key={name}
+                      onClick={() => setFamilyName(name.split(" ").slice(0, -1).join(" "))}
+                      className="px-3.5 py-1.5 rounded-full text-xs font-bold bg-white/70 border border-border/60 hover:bg-white hover:border-primary/40 transition-all active:scale-95 text-foreground/70"
+                    >
+                      {name}
+                    </button>
+                  ))}
+                </motion.div>
 
-              <Button
-                data-testid="button-create-family-submit"
-                onClick={handleSubmit}
-                disabled={isSubmitting || !canSubmit}
-                className="w-full rounded-2xl font-bold text-base btn-glow-primary shimmer"
-                style={{ height: "3.25rem", background: "linear-gradient(135deg, hsl(262 83% 60%) 0%, hsl(280 75% 62%) 100%)" }}
+                <motion.button
+                  initial={{ opacity: 0, y: 8 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.2 }}
+                  data-testid="button-next-step-0"
+                  onClick={() => setStep(1)}
+                  disabled={!canProceedStep0}
+                  className="w-full h-14 rounded-2xl font-bold text-base text-white flex items-center justify-center gap-2 transition-all active:scale-[0.97] disabled:opacity-40 disabled:cursor-not-allowed shadow-lg"
+                  style={{ background: "linear-gradient(135deg, hsl(262 83% 60%) 0%, hsl(280 75% 62%) 100%)" }}
+                >
+                  Continue <ChevronRight className="w-5 h-5" />
+                </motion.button>
+              </motion.div>
+            )}
+
+            {/* ── STEP 1: Your Profile ── */}
+            {step === 1 && (
+              <motion.div
+                key="step-1"
+                initial={{ opacity: 0, x: 32 }}
+                animate={{ opacity: 1, x: 0 }}
+                exit={{ opacity: 0, x: -32 }}
+                transition={{ duration: 0.22, ease: "easeOut" }}
+                className="space-y-4 pt-2"
               >
-                {isSubmitting ? (
-                  <><Loader2 className="w-4 h-4 mr-2 animate-spin" /> Creating Family...</>
-                ) : (
-                  <><Check className="w-4 h-4 mr-2" /> Create Family 🚀</>
-                )}
-              </Button>
-            </motion.div>
-          )}
-        </AnimatePresence>
+                {/* Mascot */}
+                <div className="flex flex-col items-center pt-4 pb-1">
+                  <ChorlyMascot pose={isSubmitting ? "sleep" : "wave"} size={100} bounce={!isSubmitting} />
+                  <motion.div
+                    initial={{ opacity: 0, y: 12 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.15 }}
+                    className="text-center mt-3"
+                  >
+                    <h2 className="font-display text-2xl font-bold text-foreground">Your Profile</h2>
+                    <p className="text-sm text-muted-foreground mt-0.5">
+                      You'll be the admin of <span className="font-semibold text-foreground">{familyName || "your family"}</span>
+                    </p>
+                  </motion.div>
+                </div>
+
+                {/* Profile card */}
+                <motion.div
+                  initial={{ opacity: 0, y: 16 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.1 }}
+                  className="bg-white/75 backdrop-blur-md rounded-3xl border border-white/80 shadow-sm overflow-hidden"
+                >
+                  <div className="px-5 py-3.5 border-b border-border/30 flex items-center gap-2.5">
+                    <div className="w-8 h-8 rounded-xl flex items-center justify-center" style={{ background: "hsl(262 83% 58% / 0.1)" }}>
+                      <User className="w-4 h-4" style={{ color: "hsl(262 83% 58%)" }} />
+                    </div>
+                    <p className="text-xs font-bold uppercase tracking-widest text-muted-foreground">Your Details</p>
+                  </div>
+                  <div className="px-5 py-4 space-y-3">
+                    <Input
+                      data-testid="input-your-name"
+                      value={userName}
+                      onChange={(e) => setUserName(e.target.value)}
+                      placeholder="Your first name"
+                      className="h-12 rounded-2xl border-2 font-semibold text-base focus-visible:ring-primary bg-white/60"
+                      autoFocus
+                    />
+                    <div className="grid grid-cols-2 gap-3">
+                      <select
+                        data-testid="select-your-gender"
+                        value={gender}
+                        onChange={(e) => setGender(e.target.value)}
+                        className="h-12 rounded-2xl border-2 border-input font-semibold text-base bg-white/60 px-4 focus:ring-2 focus:ring-primary/50 outline-none w-full text-foreground"
+                      >
+                        <option value="">Gender</option>
+                        {GENDER_OPTIONS.map(g => <option key={g} value={g}>{g}</option>)}
+                      </select>
+                      <Input
+                        data-testid="input-your-age"
+                        type="number"
+                        value={age}
+                        onChange={(e) => setAge(e.target.value)}
+                        placeholder="Age"
+                        className="h-12 rounded-2xl border-2 font-semibold text-base focus-visible:ring-primary bg-white/60"
+                        min={1} max={120}
+                      />
+                    </div>
+                  </div>
+                </motion.div>
+
+                {/* Starter mode */}
+                <motion.div
+                  initial={{ opacity: 0, y: 16 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.18 }}
+                  className="bg-white/75 backdrop-blur-md rounded-3xl border border-white/80 shadow-sm overflow-hidden"
+                >
+                  <div className="px-5 py-3.5 border-b border-border/30">
+                    <p className="text-xs font-bold uppercase tracking-widest text-muted-foreground">Starter Setup</p>
+                    <p className="text-xs text-muted-foreground/70 mt-0.5">How do you want to begin?</p>
+                  </div>
+                  <div className="p-4 grid grid-cols-2 gap-3">
+                    <button
+                      type="button"
+                      onClick={() => setStarterMode("guided")}
+                      className={cn(
+                        "rounded-2xl p-4 text-left border-2 transition-all",
+                        starterMode === "guided"
+                          ? "border-primary bg-primary/5 shadow-sm"
+                          : "border-border/60 bg-white/40 hover:border-primary/40"
+                      )}
+                    >
+                      <div className="w-8 h-8 rounded-xl flex items-center justify-center mb-2.5" style={{
+                        background: starterMode === "guided" ? "hsl(262 83% 58% / 0.15)" : "hsl(var(--muted))"
+                      }}>
+                        <Sparkles className="w-4 h-4" style={{ color: "hsl(262 83% 58%)" }} />
+                      </div>
+                      <p className="font-bold text-sm text-foreground">Guided</p>
+                      <p className="text-[11px] text-muted-foreground mt-0.5 leading-tight">Sample chores + 1st reward</p>
+                      {starterMode === "guided" && (
+                        <div className="mt-2 flex">
+                          <span className="text-[10px] font-bold px-2 py-0.5 rounded-full text-white" style={{ background: "hsl(262 83% 58%)" }}>
+                            ✓ Selected
+                          </span>
+                        </div>
+                      )}
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setStarterMode("blank")}
+                      className={cn(
+                        "rounded-2xl p-4 text-left border-2 transition-all",
+                        starterMode === "blank"
+                          ? "border-primary bg-primary/5 shadow-sm"
+                          : "border-border/60 bg-white/40 hover:border-primary/40"
+                      )}
+                    >
+                      <div className="w-8 h-8 rounded-xl flex items-center justify-center mb-2.5" style={{
+                        background: starterMode === "blank" ? "hsl(262 83% 58% / 0.15)" : "hsl(var(--muted))"
+                      }}>
+                        <Zap className="w-4 h-4" style={{ color: "hsl(262 83% 58%)" }} />
+                      </div>
+                      <p className="font-bold text-sm text-foreground">Start fresh</p>
+                      <p className="text-[11px] text-muted-foreground mt-0.5 leading-tight">Empty slate — you set up everything</p>
+                      {starterMode === "blank" && (
+                        <div className="mt-2 flex">
+                          <span className="text-[10px] font-bold px-2 py-0.5 rounded-full text-white" style={{ background: "hsl(262 83% 58%)" }}>
+                            ✓ Selected
+                          </span>
+                        </div>
+                      )}
+                    </button>
+                  </div>
+                </motion.div>
+
+                {/* Submit */}
+                <motion.button
+                  initial={{ opacity: 0, y: 8 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.25 }}
+                  data-testid="button-create-family-submit"
+                  onClick={handleSubmit}
+                  disabled={isSubmitting || !canSubmit}
+                  className="w-full h-14 rounded-2xl font-bold text-base text-white flex items-center justify-center gap-2.5 transition-all active:scale-[0.97] disabled:opacity-40 disabled:cursor-not-allowed shadow-lg"
+                  style={{ background: "linear-gradient(135deg, hsl(262 83% 60%) 0%, hsl(280 75% 62%) 100%)" }}
+                >
+                  {isSubmitting ? (
+                    <><Loader2 className="w-5 h-5 animate-spin" /> Setting up your family...</>
+                  ) : (
+                    <><Check className="w-5 h-5" /> Launch Taskling 🚀</>
+                  )}
+                </motion.button>
+              </motion.div>
+            )}
+
+          </AnimatePresence>
+        </div>
       </div>
     </div>
   );

@@ -50,9 +50,8 @@ export default function Splash() {
               transition={{ type: "spring", bounce: 0.4 }}
               className="text-center mb-2"
             >
-              <h1 className="font-display text-5xl font-bold mb-1">
-                <span className="logo-glow" style={{ color: "hsl(262 83% 58%)" }}>Chore</span>
-                <span className="logo-accent-glow" style={{ color: "hsl(43 96% 50%)" }}>ly</span>
+              <h1 className="font-display text-5xl font-bold mb-1" style={{ color: "hsl(262 83% 58%)" }}>
+                Taskling
               </h1>
               <div className="h-1 w-24 mx-auto rounded-full bg-gradient-to-r from-primary to-accent opacity-60 mt-1" />
             </motion.div>

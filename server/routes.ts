@@ -192,7 +192,7 @@ export async function registerRoutes(httpServer: Server, app: Express): Promise<
         });
       }
       
-      if (user.role === "parent" && user.firebaseUid) {
+      if (user.role === "admin" && user.firebaseUid) {
         notifyNewParentSignup(user.firebaseUid, user.username).catch(console.error);
       }
 
