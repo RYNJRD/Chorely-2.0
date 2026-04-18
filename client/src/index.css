@@ -190,12 +190,19 @@
     background-clip: text;
   }
 
+  /* Force fixed UI on onboarding */
   .bg-onboarding {
     background: radial-gradient(ellipse at 20% 10%, hsl(262 83% 58% / 0.18) 0%, transparent 55%),
                 radial-gradient(ellipse at 85% 80%, hsl(43 96% 56% / 0.15) 0%, transparent 55%),
                 radial-gradient(ellipse at 60% 40%, hsl(189 71% 73% / 0.1) 0%, transparent 50%),
                 hsl(210 40% 98%);
-    overflow-y: auto;
+    height: 100vh;
+    height: 100dvh; /* Dynamic viewport height for mobile */
+    width: 100%;
+    overflow: hidden; /* Disallow all scrolling */
+    display: flex;
+    flex-direction: column;
+    padding: 1rem;
   }
 
   .blob-primary {

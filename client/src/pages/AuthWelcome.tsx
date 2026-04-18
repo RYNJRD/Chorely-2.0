@@ -402,28 +402,78 @@ export default function AuthWelcome() {
                 <PenguinMascot mood="happy" size={90} />
               </motion.div>
 
-              <h2 className="font-display text-3xl font-bold text-zinc-900 mb-1 leading-tight">Check your email!</h2>
-              <p className="text-sm font-semibold text-zinc-500 mb-1">We sent a 6-digit code to</p>
-              <p className="text-[15px] font-bold text-primary mb-7">{email.trim()}</p>
+            <p className="text-primary font-medium text-sm mt-0.5">{email}</p>
+          )}
+        </div>
 
-              <div className="w-full bg-white/70 backdrop-blur-md rounded-[2.5rem] p-7 border-2 border-white/80 shadow-xl space-y-6">
-                {/* OTP inputs */}
-                <div className="flex justify-between gap-2">
-                  {otp.map((digit, i) => (
+        {/* Card Section - Main Interaction */}
+        <div className="w-full p-6 space-y-4 shadow-xl border-t-4 border-t-primary/20 backdrop-blur-sm bg-white/95 rounded-[2.5rem]">
+          {view === "signin" || view === "welcome" ? (
+            <>
+              {/* Oauth Social Login */}
+              <div className="space-y-3">
+                <button onClick={handleGoogleSignIn} className="w-full py-4 rounded-2xl bg-white font-bold text-[15px] text-zinc-900 border-2 border-zinc-100 flex items-center justify-center gap-3 active:scale-[0.98] transition-all shadow-sm hover:shadow-md">
+                  <SiGoogle className="w-5 h-5 text-[#4285F4]" /> Continue with Google
+                </button>
+                <button onClick={handleAppleSignIn} className="w-full py-4 rounded-2xl bg-zinc-900 font-bold text-[15px] text-zinc-50 flex items-center justify-center gap-3 active:scale-[0.98] transition-all shadow-sm">
+                  <SiApple className="w-5 h-5" /> Continue with Apple
+                </button>
+              </div>
+
+              <div className="relative flex items-center py-2">
+                <div className="flex-grow border-t border-slate-200"></div>
+                <span className="flex-shrink mx-4 text-xs font-bold text-slate-300 uppercase tracking-widest">or</span>
+                <div className="flex-grow border-t border-slate-200"></div>
+              </div>
+
+              {/* Email Form */}
+              <div className="space-y-3">
+                <div className="relative flex items-center bg-slate-50 rounded-2xl px-4 py-3 border border-slate-100 transition-all">
+                  <Mail className="h-5 w-5 text-slate-400 mr-3" />
+                  <input
+                    type="email"
+                    placeholder="Email address"
+                    className="bg-transparent border-none focus:ring-0 w-full text-foreground placeholder:text-slate-400"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                  />
+                </div>
+                {view === "signin" && (
+                  <div className="relative flex items-center bg-slate-50 rounded-2xl px-4 py-3 border border-slate-100 transition-all">
+                    <KeyRound className="h-5 w-5 text-slate-400 mr-3" />
+                    <input
+                      type="password"
+                      placeholder="Password"
+                      className="bg-transparent border-none focus:ring-0 w-full text-foreground placeholder:text-slate-400"
+                      value={password}
+                      onChange={(e) => setPassword(e.target.value)}
+                    />
+                  </div>
+                )}
+                <button 
+                  className="w-full rounded-2xl h-12 text-lg font-bold bg-primary text-white hover:bg-primary/90 flex items-center justify-center gap-2"
+                  onClick={view === "signin" ? handleSignIn : handleEmailSignupContinue}
+                  disabled={loading}
+                >
+                  {loading ? <Loader2 className="animate-spin h-5 w-5" /> : view === "signin" ? "Sign In" : "Send verification code"}
+                  {!loading && <ArrowRight className="h-5 w-5" />}
+                </button>
+              </div>
+            </>
+          ) : (
+            <div className="space-y-6">
+              <div className="flex flex-col items-center">
+                <div className="flex gap-2 justify-center mb-4">
+                  {otp.map((val, i) => (
                     <input
                       key={i}
                       ref={el => otpRefs.current[i] = el}
-                      autoFocus={i === 0}
                       type="text"
-                      inputMode="numeric"
-                      value={digit}
+                      className="w-10 h-14 sm:w-12 sm:h-16 text-center text-3xl font-bold rounded-2xl border-2 border-slate-100 bg-slate-50 focus:border-primary focus:ring-0 transition-all outline-none"
+                      value={val}
                       maxLength={1}
                       onChange={(e) => handleOtpChange(i, e.target.value)}
                       onKeyDown={(e) => handleOtpKeyDown(i, e)}
-                      className={cn(
-                        "w-full aspect-[4/5] text-center text-2xl font-bold rounded-2xl border-2 bg-white/80 focus:ring-4 focus:ring-primary/15 transition-all outline-none text-zinc-900",
-                        otpError ? "border-destructive" : digit ? "border-primary" : "border-zinc-100 focus:border-primary"
-                      )}
                     />
                   ))}
                 </div>
