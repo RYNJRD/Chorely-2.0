@@ -41615,7 +41615,6 @@ __export(email_service_exports, {
   sendOtpEmail: () => sendOtpEmail,
   sendPasswordResetEmail: () => sendPasswordResetEmail,
   sendRewardClaimedEmail: () => sendRewardClaimedEmail,
-  sendVerificationEmail: () => sendVerificationEmail,
   sendWeeklySummaryEmail: () => sendWeeklySummaryEmail,
   sendWelcomeEmail: () => sendWelcomeEmail
 });
@@ -41673,26 +41672,6 @@ async function sendWelcomeEmail(to, parentName) {
     return data;
   } catch (error) {
     console.error("[Email] Failed to send welcome email:", error);
-    return null;
-  }
-}
-async function sendVerificationEmail(to, link) {
-  const subject = "Verify your Taskling account \u2728";
-  const html = getBaseTemplate(subject, `
-    <h2 style="color: #a855f7; font-size: 24px; margin-top: 0;">Almost there! \u{1F388}</h2>
-    <p style="font-size: 16px; line-height: 1.6;">Please verify your email address to make sure you can securely access your family's account.</p>
-    <div style="text-align: center; margin: 30px 0;">
-      <a href="${link}" style="background-color: #3b82f6; color: white; padding: 14px 32px; border-radius: 99px; text-decoration: none; font-weight: bold; font-size: 18px; display: inline-block; box-shadow: 0 4px 14px rgba(59, 130, 246, 0.4);">Verify Email \u2705</a>
-    </div>
-    <p style="font-size: 14px; color: #94a3b8; text-align: center;">Or copy and paste this link: <br/><strong>${link}</strong></p>
-  `);
-  const text2 = `Please verify your Taskling account by visiting this link: ${link}`;
-  try {
-    const data = await resend.emails.send({ from: FROM_EMAIL, to, subject, html, text: text2 });
-    console.log("[Email] Verification email sent successfully:", data.id);
-    return data;
-  } catch (error) {
-    console.error("[Email] Failed to send verification email:", error);
     return null;
   }
 }
@@ -43816,20 +43795,6 @@ async function registerRoutes(httpServer, app) {
     } catch (e) {
       console.error("[OTP] verify-code error:", e);
       return res.status(500).json({ message: e.message || "Verification failed." });
-    }
-  });
-  app.post("/api/auth/verify-email", requireAuth, async (req, res) => {
-    try {
-      const { getAuth: getAuth3 } = await import("firebase-admin/auth");
-      const { sendVerificationEmail: sendVerificationEmail2 } = await Promise.resolve().then(() => (init_email_service(), email_service_exports));
-      const { email } = req.body;
-      if (!email) return res.status(400).json({ message: "Email required" });
-      const link = await getAuth3().generateEmailVerificationLink(email);
-      await sendVerificationEmail2(email, link);
-      return res.json({ success: true });
-    } catch (e) {
-      console.error("[Auth] verification email error", e);
-      return res.status(500).json({ message: e.message || "Failed to send email" });
     }
   });
   app.post("/api/auth/reset-password", async (req, res) => {

@@ -22,63 +22,7 @@ const Admin = lazy(() => import("@/pages/Admin"));
 const Chat = lazy(() => import("@/pages/Chat"));
 const Profile = lazy(() => import("@/pages/Profile"));
 const Settings = lazy(() => import("@/pages/Settings"));
-const VerifyEmail = lazy(() => import("@/pages/VerifyEmail"));
-const EmailAction = lazy(() => import("@/pages/EmailAction"));
 const NotFound = lazy(() => import("@/pages/not-found"));
-
-function RouteFallback() {
-  return (
-    <div className="min-h-screen flex items-center justify-center px-6 text-center">
-      <div>
-        <p className="font-display text-2xl font-bold text-primary">Taskling</p>
-        <p className="mt-2 text-sm text-muted-foreground">Loading your family dashboard...</p>
-      </div>
-    </div>
-  );
-}
-
-function EmailVerificationGate() {
-  const [location, setLocation] = useLocation();
-
-  useEffect(() => {
-    const enforceVerification = () => {
-      const search = window.location.search || "";
-      const params = new URLSearchParams(search);
-      const mode = params.get("mode");
-      const oobCode = params.get("oobCode");
-      if (mode === "verifyEmail" && oobCode && location !== "/email-action") {
-        setLocation(`/email-action${search}`);
-        return;
-      }
-
-      const user = auth.currentUser;
-      if (!user) {
-        if (location === "/verify-email") setLocation("/auth");
-        return;
-      }
-
-      const passwordProvider = user.providerData.some(
-        (provider) => provider.providerId === "password",
-      );
-
-      if (
-        passwordProvider &&
-        !user.emailVerified &&
-        location !== "/verify-email" &&
-        location !== "/email-action" &&
-        location !== "/auth"  // don't redirect mid OTP flow
-      ) {
-        setLocation("/verify-email");
-      }
-    };
-
-    const unsubscribe = onAuthStateChanged(auth, enforceVerification);
-    enforceVerification();
-    return unsubscribe;
-  }, [location, setLocation]);
-
-  return null;
-}
 
 import { Router as WouterRouter } from "wouter";
 
@@ -93,8 +37,6 @@ function Router() {
         <Route path="/" component={Splash} />
         <Route path="/get-started" component={GetStarted} />
         <Route path="/auth" component={AuthWelcome} />
-        <Route path="/verify-email" component={VerifyEmail} />
-        <Route path="/email-action" component={EmailAction} />
         <Route path="/join-family" component={JoinFamily} />
         <Route path="/join/:code" component={JoinFamily} />
         <Route path="/setup-family" component={FamilySetup} />
@@ -117,7 +59,6 @@ function App() {
   return (
     <QueryClientProvider client={queryClient}>
       <TooltipProvider>
-        <EmailVerificationGate />
         <Layout>
           <Router />
         </Layout>

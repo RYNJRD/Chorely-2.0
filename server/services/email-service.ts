@@ -66,28 +66,6 @@ export async function sendWelcomeEmail(to: string, parentName: string) {
   }
 }
 
-export async function sendVerificationEmail(to: string, link: string) {
-  const subject = "Verify your Taskling account ✨";
-  const html = getBaseTemplate(subject, `
-    <h2 style="color: #a855f7; font-size: 24px; margin-top: 0;">Almost there! 🎈</h2>
-    <p style="font-size: 16px; line-height: 1.6;">Please verify your email address to make sure you can securely access your family's account.</p>
-    <div style="text-align: center; margin: 30px 0;">
-      <a href="${link}" style="background-color: #3b82f6; color: white; padding: 14px 32px; border-radius: 99px; text-decoration: none; font-weight: bold; font-size: 18px; display: inline-block; box-shadow: 0 4px 14px rgba(59, 130, 246, 0.4);">Verify Email ✅</a>
-    </div>
-    <p style="font-size: 14px; color: #94a3b8; text-align: center;">Or copy and paste this link: <br/><strong>${link}</strong></p>
-  `);
-  
-  const text = `Please verify your Taskling account by visiting this link: ${link}`;
-
-  try {
-    const data = await resend.emails.send({ from: FROM_EMAIL, to, subject, html, text });
-    console.log("[Email] Verification email sent successfully:", data.id);
-    return data;
-  } catch (error) {
-    console.error("[Email] Failed to send verification email:", error);
-    return null;
-  }
-}
 
 export async function sendOtpEmail(to: string, code: string) {
   const subject = "Your Taskling verification code 🔑";

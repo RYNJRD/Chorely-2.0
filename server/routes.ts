@@ -659,21 +659,6 @@ export async function registerRoutes(httpServer: Server, app: Express): Promise<
     }
   });
 
-  app.post("/api/auth/verify-email", requireAuth, async (req, res) => {
-    try {
-      const { getAuth } = await import("firebase-admin/auth");
-      const { sendVerificationEmail } = await import("./services/email-service");
-      const { email } = req.body;
-      if (!email) return res.status(400).json({ message: "Email required" });
-      const link = await getAuth().generateEmailVerificationLink(email);
-      await sendVerificationEmail(email, link);
-      return res.json({ success: true });
-    } catch (e: any) {
-      console.error("[Auth] verification email error", e);
-      return res.status(500).json({ message: e.message || "Failed to send email" });
-    }
-  });
-
   app.post("/api/auth/reset-password", async (req, res) => {
     try {
       const { getAuth } = await import("firebase-admin/auth");
