@@ -43,31 +43,6 @@ async function buildAll() {
     logLevel: "info",
     tsconfig: "tsconfig.json",
   });
-
-  // ─── Vercel API bundle ───────────────────────────────────────────────────────
-  // Vercel runs api/index.ts but cannot resolve ../server/* at runtime because
-  // server/ is not co-located with the function. We pre-bundle api/index.ts
-  // into api/index.js with ALL server code inlined so Vercel gets one self-
-  // contained file with zero relative-path lookups at runtime.
-  console.log("building vercel api bundle...");
-  await esbuild({
-    entryPoints: ["server/vercel-handler.ts"],
-    platform: "node",
-    bundle: true,
-    format: "esm",
-    outfile: "api/index.js",
-
-    define: { "process.env.NODE_ENV": '"production"' },
-    // We mark all packages as external for Vercel too.
-    // This is safer as Vercel will install the correct platform-specific versions.
-    external: serverExternals,
-    logLevel: "info",
-    tsconfig: "tsconfig.json",
-    // Path alias for @shared/*
-    alias: {
-      "@shared": "./shared",
-    },
-  });
 }
 
 buildAll().catch((err) => {
