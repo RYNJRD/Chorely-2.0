@@ -1,4 +1,4 @@
-﻿import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useMutation } from "@tanstack/react-query";
 import { motion, AnimatePresence } from "framer-motion";
 import { Lock, Settings as SettingsIcon, Check } from "lucide-react";
@@ -63,7 +63,7 @@ export default function Profile() {
     <div className="flex flex-col h-[100dvh] overflow-hidden bg-tab-profile">
 
       {/* ── Top bar ── */}
-      <div className="flex-none flex items-center justify-between px-4 pt-[max(1rem,env(safe-area-inset-top))] pb-2">
+      <div className="flex-none flex items-center justify-between px-4 pr-14 pt-[max(1rem,env(safe-area-inset-top))] pb-2">
         <div className="flex items-center gap-2">
           <h1 className="text-base font-bold text-primary tracking-tight">Taskling</h1>
           <span className="text-xs font-bold text-foreground/50 bg-muted/80 rounded-lg px-2 py-0.5">My Character</span>
