@@ -1,4 +1,4 @@
-import { useState } from "react";
+﻿import { useState } from "react";
 import { motion } from "framer-motion";
 import { Gift, Lock, Minus, Plus, ShieldCheck, Star } from "lucide-react";
 import { useParams } from "wouter";
@@ -13,19 +13,19 @@ import { Button } from "../components/ui/button";
 import { cn } from "../lib/utils";
 
 const EMOJI_MAP: Record<string, string> = {
-  robux: "ðŸŽ®",
-  movie: "ðŸŽ¬",
-  bedtime: "ðŸŒ™",
-  pizza: "ðŸ•",
-  game: "ðŸ•¹ï¸",
-  ice: "ðŸ¦",
-  trip: "ðŸš—",
+  robux: "🎮",
+  movie: "🎬",
+  bedtime: "🌙",
+  pizza: "🍕",
+  game: "🕹️",
+  ice: "🍦",
+  trip: "🚗",
 };
 
 function getRewardEmoji(title: string, fallback?: string | null) {
   if (fallback) return fallback;
   const match = Object.entries(EMOJI_MAP).find(([key]) => title.toLowerCase().includes(key));
-  return match?.[1] ?? "ðŸŽ";
+  return match?.[1] ?? "🎁";
 }
 
 export default function Rewards() {

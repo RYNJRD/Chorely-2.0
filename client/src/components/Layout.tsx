@@ -28,7 +28,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
         {showNav && (
           <button
             onClick={() => setIsDrawerOpen(true)}
-            className="absolute top-[max(1rem,env(safe-area-inset-top))] right-4 z-[90] w-10 h-10 flex items-center justify-center rounded-xl bg-background/20 backdrop-blur-md border border-white/20 shadow-lg text-white"
+            className="absolute top-[max(1rem,env(safe-area-inset-top))] right-4 z-[90] w-10 h-10 flex items-center justify-center rounded-xl bg-black/40 backdrop-blur-md border border-white/20 shadow-lg text-white"
           >
             <Menu className="w-6 h-6" />
           </button>

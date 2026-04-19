@@ -1,4 +1,4 @@
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+﻿import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { api, buildUrl } from "../../../shared/routes";
 import type { InsertReward } from "../../../shared/schema";
 import { apiFetch } from "../lib/apiFetch";

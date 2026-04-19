@@ -67,7 +67,7 @@ export function NavigationDrawer({ isOpen, onClose }: NavigationDrawerProps) {
             {/* Header */}
             <div className="flex items-center justify-between p-6 pb-4">
               <h2 className="font-display text-xl font-bold bg-gradient-to-r from-primary to-violet-500 bg-clip-text text-transparent">
-                Menu
+                Taskling — Menu
               </h2>
               <button 
                 onClick={onClose}

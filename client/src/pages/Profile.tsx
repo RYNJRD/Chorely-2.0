@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+﻿import { useEffect, useMemo, useState } from "react";
 import { useMutation } from "@tanstack/react-query";
 import { motion, AnimatePresence } from "framer-motion";
 import { Lock, Settings as SettingsIcon, Check } from "lucide-react";
@@ -62,7 +62,7 @@ export default function Profile() {
   return (
     <div className="flex flex-col h-[100dvh] overflow-hidden bg-tab-profile">
 
-      {/* Ã¢â€â‚¬Ã¢â€â‚¬ Top bar Ã¢â€â‚¬Ã¢â€â‚¬ */}
+      {/* ── Top bar ── */}
       <div className="flex-none flex items-center justify-between px-4 pt-[max(1rem,env(safe-area-inset-top))] pb-2">
         <div className="flex items-center gap-2">
           <h1 className="text-base font-bold text-primary tracking-tight">Taskling</h1>
@@ -70,11 +70,8 @@ export default function Profile() {
         </div>
       </div>
 
-      {/* Ã¢â€â‚¬Ã¢â€â‚¬ Character preview Ã¢â€â‚¬Ã¢â€â‚¬ */}
-      <div
-        className="flex-none relative flex items-end justify-center bg-gradient-to-b from-primary/8 via-background/50 to-background overflow-hidden"
-        style={{ height: "38vh" }}
-      >
+      {/* ── Character preview (50% height) ── */}
+      <div className="flex-none relative flex items-end justify-center bg-gradient-to-b from-primary/8 via-background/50 to-background overflow-hidden" style={{ height: "calc(50dvh - 3rem)" }}>
         <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-48 h-32 bg-primary/10 rounded-full blur-3xl" />
         <AnimatePresence mode="wait">
           <motion.img
@@ -91,14 +88,14 @@ export default function Profile() {
         </AnimatePresence>
       </div>
 
-      {/* Ã¢â€â‚¬Ã¢â€â‚¬ Outfit picker panel Ã¢â€â‚¬Ã¢â€â‚¬ */}
+      {/* ── Outfit picker panel (50% height, only inner grid scrolls) ── */}
       <div className="flex-1 min-h-0 flex flex-col bg-card rounded-t-[2rem] shadow-2xl border-t-2 border-x-2 border-slate-300/70 dark:border-slate-700/70 overflow-hidden">
-        <div className="flex-none px-4 pt-4 pb-3">
+        <div className="flex-none px-4 pt-4 pb-2">
           <h2 className="font-bold text-sm text-foreground uppercase tracking-widest">Choose Your Penguin</h2>
           <p className="text-xs text-muted-foreground font-medium mt-0.5">More outfits coming soon!</p>
         </div>
-
-        <div className="flex-1 overflow-y-auto px-4 pb-28">
+        {/* Only this div scrolls */}
+        <div className="flex-1 overflow-y-auto overscroll-contain px-4 pb-24 no-scrollbar">
           <motion.div
             initial={{ opacity: 0, y: 8 }}
             animate={{ opacity: 1, y: 0 }}

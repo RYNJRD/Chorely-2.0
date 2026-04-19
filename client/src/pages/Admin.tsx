@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+﻿import { useEffect, useRef, useState } from "react";
 import { Check, Copy, Gift, Link as LinkIcon, Plus, Search, Settings, Shield, ShieldCheck, ShieldOff, Star, Trophy, Users as UsersIcon, X } from "lucide-react";
 import { useParams } from "wouter";
 import { api, buildUrl } from "../../../shared/routes";
@@ -30,7 +30,32 @@ export default function Admin() {
   const [inviteCode, setInviteCode] = useState("");
   const [inviteUrl, setInviteUrl] = useState("");
   const [searchQuery, setSearchQuery] = useState("");
+  const [copiedField, setCopiedField] = useState<string | null>(null);
   const pendingRef = useRef<Set<number>>(new Set());
+
+  const copyToClipboard = async (text: string, field: string) => {
+    try {
+      if (navigator.clipboard && window.isSecureContext) {
+        await navigator.clipboard.writeText(text);
+      } else {
+        // Fallback for iOS Safari / non-HTTPS
+        const el = document.createElement("textarea");
+        el.value = text;
+        el.style.position = "fixed";
+        el.style.opacity = "0";
+        document.body.appendChild(el);
+        el.focus();
+        el.select();
+        document.execCommand("copy");
+        document.body.removeChild(el);
+      }
+      setCopiedField(field);
+      toast({ title: "Copied!", description: `${field} copied to clipboard.` });
+      setTimeout(() => setCopiedField(null), 2000);
+    } catch {
+      toast({ title: "Could not copy", variant: "destructive" });
+    }
+  };
 
   const [choreTitle, setChoreTitle] = useState("");
   const [choreDescription, setChoreDescription] = useState("");
@@ -60,10 +85,10 @@ export default function Admin() {
     return (
       <div className="flex flex-col items-center justify-center min-h-screen px-6 text-center gap-6 pb-32">
         <div className="w-24 h-24 rounded-[2rem] bg-amber-100 dark:bg-amber-950/30 flex items-center justify-center text-5xl shadow-lg">
-          ðŸ‘‘
+          👑
         </div>
         <div>
-          <h2 className="font-display text-2xl font-bold mb-2">Parents only ðŸ˜Š</h2>
+          <h2 className="font-display text-2xl font-bold mb-2">Parents only 😊</h2>
           <p className="text-sm text-muted-foreground max-w-[260px]">
             This area is for parents. You can still complete chores and claim rewards from the other tabs!
           </p>
@@ -71,10 +96,10 @@ export default function Admin() {
         <div className="bg-primary/8 rounded-2xl px-5 py-4 border border-primary/20 max-w-[280px]">
           <p className="text-xs font-bold text-primary uppercase tracking-widest mb-1">What you can do</p>
           <ul className="text-sm text-muted-foreground space-y-1 text-left">
-            <li>âœ… Complete your chores</li>
-            <li>âœ… Earn stars &amp; climb the leaderboard</li>
-            <li>âœ… Claim rewards you've earned</li>
-            <li>âœ… Chat with your family</li>
+            <li>✅ Complete your chores</li>
+            <li>✅ Earn stars &amp; climb the leaderboard</li>
+            <li>✅ Claim rewards you've earned</li>
+            <li>✅ Chat with your family</li>
           </ul>
         </div>
       </div>
@@ -187,8 +212,8 @@ export default function Admin() {
                 <p className="text-[10px] font-bold uppercase tracking-[0.18em] text-muted-foreground">Code</p>
                 <p className="font-mono text-lg font-bold">{inviteCode || "Loading..."}</p>
               </div>
-              <button className="rounded-xl bg-primary text-primary-foreground p-3" onClick={() => navigator.clipboard.writeText(inviteCode)}>
-                <Copy className="w-4 h-4" />
+              <button className="rounded-xl bg-primary text-primary-foreground p-3 shrink-0 transition-transform active:scale-95" onClick={() => copyToClipboard(inviteCode, "Invite code")}>
+                {copiedField === "Invite code" ? <Check className="w-4 h-4" /> : <Copy className="w-4 h-4" />}
               </button>
             </div>
             <div className="rounded-2xl bg-background/80 p-3 border-2 border-accent/20 flex items-center justify-between gap-3">
@@ -196,8 +221,8 @@ export default function Admin() {
                 <p className="text-[10px] font-bold uppercase tracking-[0.18em] text-muted-foreground">Invite link</p>
                 <p className="truncate text-sm text-foreground/70">{inviteUrl || "Loading..."}</p>
               </div>
-              <button className="rounded-xl bg-accent text-accent-foreground p-3" onClick={() => navigator.clipboard.writeText(inviteUrl)}>
-                <LinkIcon className="w-4 h-4" />
+              <button className="rounded-xl bg-accent text-accent-foreground p-3 shrink-0 transition-transform active:scale-95" onClick={() => copyToClipboard(inviteUrl, "Invite link")}>
+                {copiedField === "Invite link" ? <Check className="w-4 h-4" /> : <LinkIcon className="w-4 h-4" />}
               </button>
             </div>
           </div>
@@ -217,7 +242,7 @@ export default function Admin() {
           </div>
 
           <div className="space-y-3">
-            {/* â”€â”€ Chore submissions â”€â”€ */}
+            {/* ── Chore submissions ── */}
             {(pendingChores as any[]).map((submission) => {
               const submitter: User | undefined = submission.user;
               const chore = submission.chore;
@@ -233,7 +258,7 @@ export default function Admin() {
                       <p className="text-[11px] text-muted-foreground font-medium">Chore completion request</p>
                     </div>
                     <span className="text-[10px] font-bold uppercase tracking-widest text-amber-600 bg-amber-100 dark:bg-amber-950/40 dark:text-amber-400 px-2 py-1 rounded-xl">
-                      âœ” Chore
+                      ✔ Chore
                     </span>
                   </div>
 
@@ -258,7 +283,7 @@ export default function Admin() {
                       onClick={async () => {
                         try {
                           await reviewChoreMutation.mutateAsync({ id: submission.id, action: "approve" });
-                          toast({ title: "Chore approved! ðŸŒŸ", description: `${submitter?.username ?? "They"} earned ${chore?.points ?? 0} stars.` });
+                          toast({ title: "Chore approved! 🌟", description: `${submitter?.username ?? "They"} earned ${chore?.points ?? 0} stars.` });
                         } catch {
                           toast({ title: "Could not approve chore", variant: "destructive" });
                         }
@@ -286,7 +311,7 @@ export default function Admin() {
               );
             })}
 
-            {/* â”€â”€ Reward claims â”€â”€ */}
+            {/* ── Reward claims ── */}
             {(pendingRewards as any[]).map((claim) => {
               const requester: User | undefined = claim.user;
               const reward = claim.reward;
@@ -302,7 +327,7 @@ export default function Admin() {
                       <p className="text-[11px] text-muted-foreground font-medium">Reward request</p>
                     </div>
                     <span className="text-[10px] font-bold uppercase tracking-widest text-pink-600 bg-pink-100 dark:bg-pink-950/40 dark:text-pink-400 px-2 py-1 rounded-xl">
-                      ðŸŽ Reward
+                      🎁 Reward
                     </span>
                   </div>
 
@@ -320,7 +345,7 @@ export default function Admin() {
                         <span className="text-sm font-bold">{claim.totalCost} stars</span>
                       </div>
                       {claim.quantity > 1 && (
-                        <span className="text-xs text-muted-foreground font-medium">Ã— {claim.quantity}</span>
+                        <span className="text-xs text-muted-foreground font-medium">× {claim.quantity}</span>
                       )}
                     </div>
                   </div>
@@ -332,7 +357,7 @@ export default function Admin() {
                       onClick={async () => {
                         try {
                           await reviewRewardMutation.mutateAsync({ id: claim.id, action: "approve" });
-                          toast({ title: "Reward approved! ðŸŽ‰", description: `${requester?.username ?? "They"} can now enjoy ${reward?.title ?? "their reward"}.` });
+                          toast({ title: "Reward approved! 🎉", description: `${requester?.username ?? "They"} can now enjoy ${reward?.title ?? "their reward"}.` });
                         } catch {
                           toast({ title: "Could not approve reward", variant: "destructive" });
                         }
@@ -360,7 +385,7 @@ export default function Admin() {
 
             {pendingChores.length === 0 && pendingRewards.length === 0 && (
               <div className="text-center py-8">
-                <div className="text-3xl mb-2">âœ…</div>
+                <div className="text-3xl mb-2">✅</div>
                 <p className="font-bold text-sm">All caught up!</p>
                 <p className="text-xs text-muted-foreground mt-1">Nothing is waiting for review.</p>
               </div>

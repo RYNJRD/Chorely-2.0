@@ -1,4 +1,4 @@
-import { useMemo } from "react";
+﻿import { useMemo } from "react";
 import { addDays, format, isSameDay, startOfToday } from "date-fns";
 import confetti from "canvas-confetti";
 import { motion } from "framer-motion";
@@ -37,7 +37,7 @@ function getChoreBucket(chore: Chore & { latestSubmissionStatus?: string }): Cho
   return "today";
 }
 
-/* â”€â”€â”€ Calendar strip (14 days centred on today) â”€â”€â”€ */
+/* ─── Calendar strip (14 days centred on today) ─── */
 function CalendarStrip() {
   const today = startOfToday();
   const days = Array.from({ length: 14 }, (_, i) => addDays(today, i - 3));
@@ -118,9 +118,9 @@ export default function Dashboard() {
       if (result.user) setCurrentUser(result.user);
 
       if (result.submission?.status === "submitted") {
-        toast({ title: "Submitted for review âœ“", description: `${chore.title} is waiting for approval.` });
+        toast({ title: "Submitted for review ✓", description: `${chore.title} is waiting for approval.` });
       } else {
-        toast({ title: `+${result.awardedPoints} stars â­`, description: `Great job on ${chore.title}!` });
+        toast({ title: `+${result.awardedPoints} stars ⭐`, description: `Great job on ${chore.title}!` });
       }
 
       confetti({
@@ -141,7 +141,7 @@ export default function Dashboard() {
   return (
     <div className="pt-6 px-5 pb-32 min-h-screen">
 
-      {/* â”€â”€ Hero Card â”€â”€ */}
+      {/* ── Hero Card ── */}
       <motion.div
         initial={{ opacity: 0, y: -12 }}
         animate={{ opacity: 1, y: 0 }}
@@ -153,16 +153,16 @@ export default function Dashboard() {
 
         <div className="relative px-4 pt-3 pb-2">
           {/* Top row: avatar + greeting + stars */}
-          <div className="flex items-start justify-between mb-2.5">
+          <div className="flex items-start justify-between mb-2.5 pr-14">
             <div className="flex items-center gap-2.5">
               <UserAvatar user={currentUser} size="sm" className="border-2 border-white/40 shadow-lg" />
               <div>
                 <p className="text-[10px] font-bold uppercase tracking-widest text-white/60">Welcome back</p>
                 <h1 className="font-display text-xl font-bold text-white leading-tight">
-                  Hi, {currentUser.username}! ðŸ‘‹
+                  Hi, {currentUser.username}! 👋
                 </h1>
                 <p className="text-sm text-white/70 mt-0.5">
-                  {rank === 1 ? "ðŸ¥‡ You're leading the family!" : `Rank #${rank || 1} in your family`}
+                  {rank === 1 ? "🥇 You're leading the family!" : `Rank #${rank || 1} in your family`}
                 </p>
               </div>
             </div>
@@ -181,7 +181,7 @@ export default function Dashboard() {
             <div className="flex justify-between items-center mb-1">
               <p className="text-[9px] font-bold uppercase tracking-widest text-white/60 flex items-center gap-1">
                 <TrendingUp className="w-3 h-3" />
-                {userAbove ? `Progress to rank #${rank - 1}` : "You're #1 â€” keep it up!"}
+                {userAbove ? `Progress to rank #${rank - 1}` : "You're #1 — keep it up!"}
               </p>
               <p className="text-[9px] font-bold text-white/70">{progressToNext}%</p>
             </div>
@@ -212,7 +212,7 @@ export default function Dashboard() {
         </div>
       </motion.div>
 
-      {/* â”€â”€ Calendar strip â”€â”€ */}
+      {/* ── Calendar strip ── */}
       <motion.div
         initial={{ opacity: 0, y: 8 }}
         animate={{ opacity: 1, y: 0 }}
@@ -226,7 +226,7 @@ export default function Dashboard() {
         <CalendarStrip />
       </motion.div>
 
-      {/* â”€â”€ Onboarding checklist (admin only) â”€â”€ */}
+      {/* ── Onboarding checklist (admin only) ── */}
       {checklist.some((item) => !item.complete) && currentUser.role === "admin" && (
         <motion.div
           initial={{ opacity: 0, y: 8 }}
@@ -246,7 +246,7 @@ export default function Dashboard() {
                   <p className="text-xs text-muted-foreground">{item.description}</p>
                 </div>
                 <span className={cn("text-[10px] font-bold uppercase tracking-widest shrink-0", item.complete ? "text-green-500" : "text-primary")}>
-                  {item.complete ? "âœ“ Done" : "Next"}
+                  {item.complete ? "✓ Done" : "Next"}
                 </span>
               </div>
             ))}
@@ -254,7 +254,7 @@ export default function Dashboard() {
         </motion.div>
       )}
 
-      {/* â”€â”€ Pending Review â”€â”€ */}
+      {/* ── Pending Review ── */}
       {bucketed.pending.length > 0 && (
         <motion.section
           initial={{ opacity: 0, y: 8 }}
@@ -282,7 +282,7 @@ export default function Dashboard() {
         </motion.section>
       )}
 
-      {/* â”€â”€ Today's chores â”€â”€ */}
+      {/* ── Today's chores ── */}
       <motion.section
         initial={{ opacity: 0, y: 8 }}
         animate={{ opacity: 1, y: 0 }}
@@ -330,7 +330,7 @@ export default function Dashboard() {
               animate={{ opacity: 1 }}
               className="rounded-[2rem] border-2 border-dashed border-border bg-card p-8 text-center"
             >
-              <div className="text-4xl mb-3">ðŸŽ‰</div>
+              <div className="text-4xl mb-3">🎉</div>
               <h3 className="font-display text-lg font-bold mb-1">You&apos;re all clear!</h3>
               <p className="text-sm text-muted-foreground">No chores pressing right now. Check back later or chat with your family.</p>
             </motion.div>
@@ -338,7 +338,7 @@ export default function Dashboard() {
         </div>
       </motion.section>
 
-      {/* â”€â”€ Monthly Spotlight â”€â”€ */}
+      {/* ── Monthly Spotlight ── */}
       {latestWinner && (
         <motion.section
           initial={{ opacity: 0, y: 8 }}

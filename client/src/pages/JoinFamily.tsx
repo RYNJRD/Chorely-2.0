@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+﻿import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { ArrowRight, ChevronLeft, Loader2, Users, Link as LinkIcon, Check, User } from "lucide-react";
 import { useLocation, useParams } from "wouter";
@@ -81,7 +81,7 @@ export default function JoinFamily() {
       const createdUser = await userRes.json();
       setFamily(foundFamily);
       setCurrentUser(createdUser);
-      toast({ title: "Welcome! ðŸŽ‰", description: `You've joined ${foundFamily.name}`, duration: 3000 });
+      toast({ title: "Welcome! 🎉", description: `You've joined ${foundFamily.name}`, duration: 3000 });
       setLocation(`/family/${foundFamily.id}/dashboard`);
     } catch {
       toast({ title: "Error", description: "Something went wrong. Please try again.", variant: "destructive" });
@@ -257,7 +257,7 @@ export default function JoinFamily() {
               {isCreating ? (
                 <><Loader2 className="w-4 h-4 mr-2 animate-spin" /> Joining...</>
               ) : (
-                <><Check className="w-4 h-4 mr-2" /> Join Family! ðŸŽ‰</>
+                <><Check className="w-4 h-4 mr-2" /> Join Family! 🎉</>
               )}
             </Button>
           </motion.div>

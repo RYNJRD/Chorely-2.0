@@ -68,7 +68,7 @@ export async function sendWelcomeEmail(to: string, parentName: string) {
 
 
 export async function sendOtpEmail(to: string, code: string) {
-  const subject = "Your Taskling verification code 🔑";
+  const subject = `Your Taskling code is ${code}`;
 
   // Penguin SVG inline (waving pose, small, for email)
   const penguinSvg = `<svg width="90" height="100" viewBox="0 0 100 120" fill="none" xmlns="http://www.w3.org/2000/svg">
