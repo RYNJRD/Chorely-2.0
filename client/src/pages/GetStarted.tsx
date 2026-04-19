@@ -1,4 +1,4 @@
-﻿import { useState } from "react";
+import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Users, UserPlus, Sparkles, ChevronLeft, Crown, Star, ArrowLeft } from "lucide-react";
 import { useLocation } from "wouter";
@@ -53,7 +53,7 @@ export default function GetStarted() {
   }
 
   return (
-    <div className="flex-1 flex flex-col items-center justify-center bg-onboarding">
+    <div className="h-full w-full flex flex-col items-center justify-center bg-onboarding overflow-hidden touch-none relative">
       <div className="blob-primary absolute w-80 h-80 top-[-12%] left-[-14%] pointer-events-none" />
       <div className="blob-accent absolute w-72 h-72 bottom-[-10%] right-[-12%] pointer-events-none" />
 

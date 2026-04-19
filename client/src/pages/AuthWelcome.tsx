@@ -58,6 +58,14 @@ export default function AuthWelcome() {
       uid, onboardingIntent, setFirebaseUid, setFamily, setCurrentUser, setLocation,
     });
 
+  // FAST-TRACK: If already signed in, skip the welcome buttons
+  useEffect(() => {
+    const user = auth.currentUser;
+    if (user && view === "welcome") {
+      handlePostAuth(user.uid);
+    }
+  }, [view]);
+
   // Cooldown timer
   const startCooldown = useCallback((secs = 60) => {
     setCooldown(secs);
@@ -292,7 +300,7 @@ export default function AuthWelcome() {
   const mood = view === "verification" ? "happy" : view === "signin" ? "thinking" : "waving";
 
   return (
-    <div className="flex-1 flex flex-col items-center justify-center bg-onboarding">
+    <div className="h-full w-full flex flex-col items-center justify-center bg-onboarding overflow-hidden touch-none relative">
       {/* Background blobs */}
       <div className="blob-primary absolute w-80 h-80 top-[-12%] left-[-14%] pointer-events-none" />
       <div className="blob-accent absolute w-72 h-72 bottom-[-10%] right-[-12%] pointer-events-none" />

@@ -23,7 +23,7 @@ export default function Splash() {
   }, [setLocation, family, currentUser]);
 
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center bg-onboarding relative overflow-hidden">
+    <div className="h-full flex flex-col items-center justify-center bg-onboarding relative overflow-hidden touch-none">
       <div className="blob-primary absolute w-72 h-72 top-[-8%] left-[-12%]" />
       <div className="blob-accent absolute w-64 h-64 bottom-[-8%] right-[-10%]" />
       <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_hsl(262_83%_58%_/_0.06)_0%,_transparent_70%)]" />

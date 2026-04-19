@@ -1,4 +1,4 @@
-﻿import type { Family, User } from "../../../shared/schema";
+import type { Family, User } from "../../../shared/schema";
 import { apiFetch } from "../lib/apiFetch";
 
 type PostAuthArgs = {
@@ -45,8 +45,9 @@ export async function handlePostAuthNavigation({
     }
   } catch {}
 
+  // If we reach here, we are authenticated with Firebase but have no User record in DB yet
   if (onboardingIntent === "create") setLocation("/setup-family");
   else if (onboardingIntent === "join") setLocation("/join-family");
-  else setLocation("/get-started");
+  else setLocation("/get-started"); // Fallback if they just signed in without picking an intent
 }
 

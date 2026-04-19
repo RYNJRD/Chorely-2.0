@@ -27,7 +27,8 @@ export function Layout({ children }: { children: React.ReactNode }) {
 
         <main className={cn(
           "flex-1 overflow-x-hidden relative no-scrollbar rounded-[inherit]",
-          location.includes("/profile") || location.includes("/me") ? "overflow-hidden touch-none" : "overflow-y-auto"
+          (location.includes("/profile") || location.includes("/me")) ? "overflow-hidden touch-none" : "overflow-y-auto",
+          isOnboarding && "flex flex-col overflow-hidden touch-none h-full"
         )}>
           {children}
         </main>
