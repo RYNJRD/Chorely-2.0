@@ -1,4 +1,4 @@
-﻿import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Check, Copy, Gift, Link as LinkIcon, Plus, Search, Settings, Shield, ShieldCheck, ShieldOff, Star, Trophy, Users as UsersIcon, X } from "lucide-react";
 import { useParams } from "wouter";
 import { api, buildUrl } from "../../../shared/routes";
@@ -189,7 +189,7 @@ export default function Admin() {
   const inputClass = "w-full rounded-2xl border-2 border-border bg-input px-4 py-3 font-medium focus:outline-none focus:ring-2 focus:ring-primary/50";
 
   return (
-    <div className="pt-[max(2rem,env(safe-area-inset-top))] px-5 pb-32 min-h-screen bg-tab-admin">
+    <div className="pt-[max(2rem,env(safe-area-inset-top))] px-5 pr-14 pb-32 min-h-screen bg-tab-admin">
       <div className="flex items-center gap-3 mb-8">
         <div className="w-12 h-12 bg-muted rounded-2xl flex items-center justify-center">
           <Settings className="text-foreground" />

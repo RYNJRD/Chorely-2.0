@@ -1,4 +1,4 @@
-﻿import { useState } from "react";
+import { useState } from "react";
 import { motion } from "framer-motion";
 import { Gift, Lock, Minus, Plus, ShieldCheck, Star } from "lucide-react";
 import { useParams } from "wouter";
@@ -86,7 +86,7 @@ export default function Rewards() {
   };
 
   return (
-    <div className="pt-8 px-5 pb-32 min-h-screen bg-tab-rewards">
+    <div className="pt-8 px-5 pr-14 pb-32 min-h-screen bg-tab-rewards">
       <div className="flex justify-between items-end mb-8">
         <div>
           <div className="w-14 h-14 bg-secondary/20 rounded-[1.5rem] flex items-center justify-center mb-3 -rotate-6">

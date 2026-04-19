@@ -1,4 +1,4 @@
-﻿import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { format } from "date-fns";
 import { motion, AnimatePresence } from "framer-motion";
@@ -208,8 +208,7 @@ export default function Chat() {
         )}
       </AnimatePresence>
 
-      {/* ── Header ── */}
-      <div className="flex-none px-5 pt-[max(1.5rem,env(safe-area-inset-top))] pb-4 border-b-2 border-slate-200/80 dark:border-slate-800/60 bg-card/95 dark:bg-zinc-950/95 backdrop-blur-md z-10 relative">
+      <div className="flex-none px-5 pr-14 pt-[max(1.5rem,env(safe-area-inset-top))] pb-4 border-b-2 border-slate-200/80 dark:border-slate-800/60 bg-card/95 dark:bg-zinc-950/95 backdrop-blur-md z-10 relative">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 rounded-2xl bg-primary/10 flex items-center justify-center">

@@ -1,4 +1,4 @@
-﻿import { useMemo } from "react";
+import { useMemo } from "react";
 import { addDays, format, isSameDay, startOfToday } from "date-fns";
 import confetti from "canvas-confetti";
 import { motion } from "framer-motion";
@@ -151,7 +151,7 @@ export default function Dashboard() {
         <div className="absolute inset-0 bg-gradient-to-br from-primary via-violet-600 to-indigo-600" />
         <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,rgba(255,255,255,0.15),transparent_60%)]" />
 
-        <div className="relative px-4 pt-3 pb-2">
+        <div className="relative px-4 pr-14 pt-3 pb-2">
           {/* Top row: avatar + greeting + stars */}
           <div className="flex items-start justify-between mb-2.5 pr-14">
             <div className="flex items-center gap-2.5">

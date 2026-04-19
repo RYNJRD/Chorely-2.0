@@ -61,7 +61,7 @@ export default function ParentDashboard() {
       <motion.div
         initial={{ opacity: 0, y: -10 }}
         animate={{ opacity: 1, y: 0 }}
-        className="mb-6 flex items-center justify-between"
+        className="mb-6 flex items-center justify-between pr-14"
       >
         <div>
           <p className="text-[11px] font-bold uppercase tracking-widest text-muted-foreground">
