@@ -207,7 +207,6 @@ export default function Dashboard() {
               />
             </div>
           </div>
-        </div>
 
         {/* Stats row */}
         <div className="relative grid grid-cols-3 divide-x divide-white/10 border-t border-white/10">
