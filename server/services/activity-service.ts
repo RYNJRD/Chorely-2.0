@@ -1,7 +1,7 @@
-import { activityEvents } from "../../shared/schema";
-import type { ActivityEventType } from "../../shared/constants";
-import { db } from "../db";
-import { publishFamilyEvent } from "../realtime";
+import { activityEvents } from "../../shared/schema.js";
+import type { ActivityEventType } from "../../shared/constants.js";
+import { db } from "../db.js";
+import { publishFamilyEvent } from "../realtime.js";
 
 type RecordActivityArgs = {
   familyId: number;

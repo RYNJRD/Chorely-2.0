@@ -1,6 +1,6 @@
 import { and, desc, eq, gte, lt, sql } from "drizzle-orm";
-import { choreLogs, monthlyWinners, users } from "../../shared/schema";
-import { db } from "../db";
+import { choreLogs, monthlyWinners, users } from "../../shared/schema.js";
+import { db } from "../db.js";
 
 function getMonthKey(date: Date) {
   return date.toISOString().slice(0, 7);

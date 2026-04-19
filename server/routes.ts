@@ -2,18 +2,18 @@ import type { Express, Response } from "express";
 import type { Server } from "http";
 import { randomUUID } from "crypto";
 import { z } from "zod";
-import { api } from "../shared/routes";
-import { attachCurrentUser, getCurrentUser, requireAuth, verifyBearerToken } from "./auth";
-import { storage } from "./storage";
-import { canApprove, canManageFamily, ensureSameFamily } from "./permissions";
-import { completeChore, reviewChoreSubmission } from "./services/chore-service";
-import { claimReward, reviewRewardClaim } from "./services/reward-service";
-import { createMessage } from "./services/message-service";
-import { getFamilyOnboardingChecklist } from "./services/family-service";
-import { ensurePreviousMonthWinners } from "./services/monthly-winners-service";
-import { recordActivity } from "./services/activity-service";
-import { notifyNewParentSignup } from "./services/email-service";
-import { publishFamilyEvent, registerSseClient, removeSseClient } from "./realtime";
+import { api } from "../shared/routes.js";
+import { attachCurrentUser, getCurrentUser, requireAuth, verifyBearerToken } from "./auth.js";
+import { storage } from "./storage.js";
+import { canApprove, canManageFamily, ensureSameFamily } from "./permissions.js";
+import { completeChore, reviewChoreSubmission } from "./services/chore-service.js";
+import { claimReward, reviewRewardClaim } from "./services/reward-service.js";
+import { createMessage } from "./services/message-service.js";
+import { getFamilyOnboardingChecklist } from "./services/family-service.js";
+import { ensurePreviousMonthWinners } from "./services/monthly-winners-service.js";
+import { recordActivity } from "./services/activity-service.js";
+import { notifyNewParentSignup } from "./services/email-service.js";
+import { publishFamilyEvent, registerSseClient, removeSseClient } from "./realtime.js";
 
 function parseId(value: unknown): number | null {
   const raw = Array.isArray(value) ? value[0] : value;
@@ -511,7 +511,7 @@ export async function registerRoutes(httpServer: Server, app: Express): Promise<
 
   // ── DB-backed OTP helpers ─────────────────────────────────────────────────────
   async function checkOtpStorage() {
-    const { ensureOtpTable, pool } = await import("./db");
+    const { ensureOtpTable, pool } = await import("./db.js");
     const ok = await ensureOtpTable();
     if (!ok) throw new Error("Database connection failed. Please try again in a moment.");
     return pool;
@@ -582,7 +582,7 @@ export async function registerRoutes(httpServer: Server, app: Express): Promise<
 
       // 5. Email Sending
       try {
-        const { sendOtpEmail } = await import("./services/email-service");
+        const { sendOtpEmail } = await import("./services/email-service.js");
         console.log("[OTP] resend called");
         const emailResult = await sendOtpEmail(email, code);
         if (!emailResult) {
@@ -662,7 +662,7 @@ export async function registerRoutes(httpServer: Server, app: Express): Promise<
   app.post("/api/auth/reset-password", async (req, res) => {
     try {
       const { getAuth } = await import("firebase-admin/auth");
-      const { sendPasswordResetEmail } = await import("./services/email-service");
+      const { sendPasswordResetEmail } = await import("./services/email-service.js");
       const { email } = req.body;
       if (!email) return res.status(400).json({ message: "Email required" });
       const link = await getAuth().generatePasswordResetLink(email);

@@ -1,14 +1,14 @@
 import { and, eq, inArray } from "drizzle-orm";
-import { choreLogs, choreSubmissions, chores, families, users } from "../../shared/schema";
-import type { ChoreSubmission, User } from "../../shared/schema";
-import { db } from "../db";
-import { calculateStreakMultiplier, getEffectiveStreakForDate, getFamilyTimeZone, getLocalDateKey } from "../../shared/streak";
-import { createSystemMessage } from "./message-service";
-import { recordActivity } from "./activity-service";
-import { evaluateAchievements } from "./achievement-service";
-import { publishFamilyEvent } from "../realtime";
-import { notifyParentsOfChoreCompleted } from "./email-service";
-import { notifyParentsOfChoreCompleted } from "./email-service";
+import { choreLogs, choreSubmissions, chores, families, users } from "../../shared/schema.js";
+import type { ChoreSubmission, User } from "../../shared/schema.js";
+import { db } from "../db.js";
+import { calculateStreakMultiplier, getEffectiveStreakForDate, getFamilyTimeZone, getLocalDateKey } from "../../shared/streak.js";
+import { createSystemMessage } from "./message-service.js";
+import { recordActivity } from "./activity-service.js";
+import { evaluateAchievements } from "./achievement-service.js";
+import { publishFamilyEvent } from "../realtime.js";
+import { notifyParentsOfChoreCompleted } from "./email-service.js";
+import { notifyParentsOfChoreCompleted } from "./email-service.js";
 
 async function getFamilyById(id: number | null | undefined) {
   if (!id) return undefined;

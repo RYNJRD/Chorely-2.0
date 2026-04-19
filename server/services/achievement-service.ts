@@ -1,10 +1,10 @@
 import { and, eq, sql } from "drizzle-orm";
-import { ACHIEVEMENTS, getAchievementDefinition } from "../../shared/achievements";
-import { choreLogs, rewardClaims, userAchievements, users } from "../../shared/schema";
-import type { User } from "../../shared/schema";
-import { db } from "../db";
-import { recordActivity } from "./activity-service";
-import { createSystemMessage } from "./message-service";
+import { ACHIEVEMENTS, getAchievementDefinition } from "../../shared/achievements.js";
+import { choreLogs, rewardClaims, userAchievements, users } from "../../shared/schema.js";
+import type { User } from "../../shared/schema.js";
+import { db } from "../db.js";
+import { recordActivity } from "./activity-service.js";
+import { createSystemMessage } from "./message-service.js";
 
 async function hasAchievement(userId: number, code: string) {
   const [existing] = await db

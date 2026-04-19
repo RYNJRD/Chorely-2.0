@@ -1,7 +1,7 @@
 import { Pool } from "pg";
 import { drizzle } from "drizzle-orm/node-postgres";
-import * as schema from "../shared/schema";
-import { getEnv } from "./env";
+import * as schema from "../shared/schema.js";
+import { getEnv } from "./env.js";
 
 let poolInstance: Pool | null = null;
 

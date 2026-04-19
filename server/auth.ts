@@ -1,9 +1,9 @@
 import type { NextFunction, Request, Response } from "express";
 import { applicationDefault, cert, getApps, initializeApp } from "firebase-admin/app";
 import { getAuth } from "firebase-admin/auth";
-import type { User } from "../shared/schema";
-import { storage } from "./storage";
-import { getEnv } from "./env";
+import type { User } from "../shared/schema.js";
+import { storage } from "./storage.js";
+import { getEnv } from "./env.js";
 import * as crypto from "crypto";
 
 const IS_DEV = process.env.NODE_ENV !== "production";

@@ -1,5 +1,5 @@
 import { Resend } from "resend";
-import { getEnv } from "../env";
+import { getEnv } from "../env.js";
 
 const resend = new Resend(process.env.RESEND_API_KEY || "dummy_key");
 const FROM_EMAIL = "Taskling <hello@contact.taskling.co>";
@@ -241,8 +241,8 @@ export async function sendWeeklySummaryEmail(to: string, parentName: string, chi
 // Ensure Firebase is initialized to resolve emails
 import { getApps, initializeApp, cert, applicationDefault } from "firebase-admin/app";
 import { getAuth } from "firebase-admin/auth";
-import { db } from "../db";
-import { users } from "../../shared/schema";
+import { db } from "../db.js";
+import { users } from "../../shared/schema.js";
 import { and, eq } from "drizzle-orm";
 
 function ensureFirebase() {

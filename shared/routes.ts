@@ -16,8 +16,8 @@ import {
   chores,
   rewardClaims,
   families,
-} from "./schema";
-import { REVIEW_STATUSES, USER_ROLES } from "./constants";
+} from "./schema.js";
+import { REVIEW_STATUSES, USER_ROLES } from "./constants.js";
 
 export const errorSchemas = {
   validation: z.object({ message: z.string(), field: z.string().optional() }),

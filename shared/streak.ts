@@ -1,4 +1,4 @@
-import type { Family, User } from "./schema";
+import type { Family, User } from "./schema.js";
 
 export type DateKey = string;
 

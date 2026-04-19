@@ -1,12 +1,12 @@
 import { and, eq } from "drizzle-orm";
-import { rewardClaims, rewards, users } from "../../shared/schema";
-import type { User } from "../../shared/schema";
-import { db } from "../db";
-import { recordActivity } from "./activity-service";
-import { createSystemMessage } from "./message-service";
-import { evaluateAchievements } from "./achievement-service";
-import { publishFamilyEvent } from "../realtime";
-import { notifyParentsOfRewardClaimed } from "./email-service";
+import { rewardClaims, rewards, users } from "../../shared/schema.js";
+import type { User } from "../../shared/schema.js";
+import { db } from "../db.js";
+import { recordActivity } from "./activity-service.js";
+import { createSystemMessage } from "./message-service.js";
+import { evaluateAchievements } from "./achievement-service.js";
+import { publishFamilyEvent } from "../realtime.js";
+import { notifyParentsOfRewardClaimed } from "./email-service.js";
 
 async function getRewardClaim(id: number) {
   const [claim] = await db.select().from(rewardClaims).where(eq(rewardClaims.id, id));

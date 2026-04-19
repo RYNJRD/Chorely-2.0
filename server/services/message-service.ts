@@ -1,7 +1,7 @@
-import { messages } from "../../shared/schema";
-import { db } from "../db";
-import { publishFamilyEvent } from "../realtime";
-import { recordActivity } from "./activity-service";
+import { messages } from "../../shared/schema.js";
+import { db } from "../db.js";
+import { publishFamilyEvent } from "../realtime.js";
+import { recordActivity } from "./activity-service.js";
 
 type CreateMessageArgs = {
   familyId: number;

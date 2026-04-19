@@ -1,10 +1,10 @@
 import "dotenv/config";
 import express, { type Request, Response, NextFunction } from "express";
-import { registerRoutes } from "./routes";
-import { setupDemoMode } from "./mock";
-import { serveStatic } from "./static";
+import { registerRoutes } from "./routes.js";
+import { setupDemoMode } from "./mock.js";
+import { serveStatic } from "./static.js";
 import { createServer } from "http";
-import { getEnv } from "./env";
+import { getEnv } from "./env.js";
 
 const app = express();
 const httpServer = createServer(app);
@@ -85,7 +85,7 @@ export const setupApp = async () => {
   if (process.env.NODE_ENV === "production" && !process.env.VERCEL) {
     serveStatic(app);
   } else if (process.env.NODE_ENV !== "production") {
-    const { setupVite } = await import("./vite");
+    const { setupVite } = await import("./vite.js");
     await setupVite(httpServer, app);
   }
 

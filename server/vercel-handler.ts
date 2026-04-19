@@ -2,7 +2,7 @@ import express from "express";
 import { createServer } from "http";
 // Standard imports are required so esbuild can BUNDLE them into the single file.
 // Dynamic imports ('await import(...)') stay external and fail in Vercel.
-import { registerRoutes } from "./routes";
+import { registerRoutes } from "./routes.js";
 
 /**
  * Resilient Vercel Handler

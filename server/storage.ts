@@ -23,8 +23,8 @@ import {
   type User,
   userAchievements,
   users,
-} from "../shared/schema";
-import { db } from "./db";
+} from "../shared/schema.js";
+import { db } from "./db.js";
 
 function generateInviteCode(familyName: string): string {
   const words = ["STAR", "MOON", "FIRE", "WAVE", "BOLT", "LEAF", "ROCK", "WIND", "SNOW", "RAIN"];
