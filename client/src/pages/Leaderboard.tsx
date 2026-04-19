@@ -25,8 +25,8 @@ export default function Leaderboard() {
   if (error) {
     return (
       <div className="min-h-screen bg-tab-leaderboard flex items-center justify-center p-6 text-center">
-        <div className="p-6 bg-red-50 text-red-600 rounded-3xl border-2 border-red-100">
-          <p className="font-bold">Could not load leaderboard</p>
+        <div className="p-6 bg-red-100 text-red-900 rounded-3xl border-2 border-red-200">
+          <p className="font-bold">Error loading leaderboard</p>
           <p className="text-xs mt-1">{(error as Error).message}</p>
         </div>
       </div>
@@ -35,52 +35,44 @@ export default function Leaderboard() {
 
   if (isLoading || !leaderboard || !currentUser) {
     return (
-      <div className="min-h-screen bg-tab-leaderboard flex items-center justify-center p-6 text-center">
-        <div className="space-y-4">
-          <div className="w-16 h-16 bg-primary/10 rounded-[1.5rem] flex items-center justify-center mx-auto animate-pulse">
-            <Trophy className="w-8 h-8 text-primary/40" />
-          </div>
-          <p className="text-sm font-bold text-muted-foreground animate-pulse">Loading ranking...</p>
+      <div className="min-h-screen bg-tab-leaderboard flex flex-col items-center justify-center p-6 text-center">
+        <div className="w-16 h-16 bg-primary/20 rounded-2xl flex items-center justify-center mb-4 animate-pulse">
+          <Trophy className="w-8 h-8 text-primary" strokeWidth={3} />
         </div>
+        <p className="text-lg font-bold text-primary animate-pulse">Ranking the family...</p>
       </div>
     );
   }
 
-  const visibleUsers = leaderboard
+  const visibleUsers = (leaderboard || [])
     .filter((u) => !u.hideFromLeaderboard)
     .sort((a, b) => b.points - a.points);
   
   const maxPoints = Math.max(...visibleUsers.map((u) => u.points), 1);
-  const myRank = visibleUsers.findIndex((u) => u.id === currentUser.id) + 1;
-
-  const topThree = visibleUsers.slice(0, 3);
-  const rest = visibleUsers.slice(3);
 
   return (
-    <div className="min-h-screen bg-tab-leaderboard pb-32">
-      {/* ── Header ── */}
-      <div className="relative overflow-hidden pt-8 pb-6 px-5 bg-gradient-to-b from-primary/10 to-transparent">
-        <div className="relative text-center">
-          <div className="w-16 h-16 bg-accent/20 rounded-[1.5rem] flex items-center justify-center mx-auto mb-3">
-            <Trophy className="w-8 h-8 text-accent" />
-          </div>
-          <h1 className="font-display text-3xl font-bold">Leaderboard</h1>
-          <p className="text-sm text-muted-foreground mt-1">
-            {visibleUsers.length === 0 ? "No one's ranked yet!" : `${visibleUsers.length} active members`}
-          </p>
+    <div className="flex flex-col min-h-full bg-tab-leaderboard">
+      {/* ── Fixed Header ── */}
+      <div className="px-5 pt-10 pb-6 text-center">
+        <div className="w-14 h-14 bg-amber-400 rounded-2xl flex items-center justify-center mx-auto mb-3 shadow-lg">
+          <Trophy className="w-8 h-8 text-white" />
         </div>
+        <h1 className="font-display text-3xl font-bold text-slate-900 dark:text-white">Leaderboard</h1>
+        <p className="text-sm font-medium text-slate-500 mt-1">
+          {visibleUsers.length === 0 ? "No one's ranked yet!" : `${visibleUsers.length} active members`}
+        </p>
       </div>
 
-      <div className="px-5 space-y-3">
+      {/* ── Scrollable List ── */}
+      <div className="flex-1 px-5 space-y-3 pb-32">
         {visibleUsers.length === 0 && (
-           <div className="text-center py-20">
+           <div className="text-center py-20 bg-white/50 dark:bg-black/20 rounded-[2rem] border-2 border-dashed border-slate-200 dark:border-slate-800">
              <div className="text-4xl mb-2">🏆</div>
-             <p className="text-muted-foreground font-medium">Complete chores to start ranking!</p>
+             <p className="text-slate-500 font-bold">Complete chores to start ranking!</p>
            </div>
         )}
 
         {visibleUsers.map((user, index) => {
-          const isTop3 = index < 3;
           const isMe = user.id === currentUser.id;
           
           return (
@@ -88,27 +80,30 @@ export default function Leaderboard() {
               key={user.id}
               onClick={() => setSelectedUser(user)}
               className={cn(
-                "flex items-center gap-3 rounded-2xl p-4 border-2 transition-all cursor-pointer",
-                isMe ? "border-primary bg-primary/5" : "border-slate-200 dark:border-slate-800 bg-card",
+                "flex items-center gap-3 rounded-2xl p-4 border-2 transition-colors cursor-pointer",
+                isMe ? "border-primary bg-primary/5 shadow-md shadow-primary/10" : "border-slate-200 dark:border-slate-800 bg-white dark:bg-zinc-900 shadow-sm",
                 index === 0 && "border-amber-400 bg-amber-50/50 dark:bg-amber-950/10"
               )}
             >
-              <div className="w-8 text-center font-display font-bold text-lg text-muted-foreground">
+              <div className="w-8 text-center font-display font-black text-lg text-slate-400">
                 {index === 0 ? "🥇" : index === 1 ? "🥈" : index === 2 ? "🥉" : index + 1}
               </div>
-              <UserAvatar user={user} size="sm" />
+              <UserAvatar user={user} size="sm" className="border-2 border-background" />
               <div className="flex-1 min-w-0">
-                <p className="font-bold text-sm truncate">
-                  {user.username} {isMe && "(Me)"}
+                <p className="font-bold text-sm text-slate-900 dark:text-white truncate">
+                  {user.username} {isMe && <span className="text-primary font-black">(ME)</span>}
                 </p>
-                <div className="h-1.5 w-full bg-muted rounded-full mt-1.5 overflow-hidden">
+                <div className="h-2 w-full bg-slate-100 dark:bg-slate-800 rounded-full mt-2 overflow-hidden border border-slate-200/50 dark:border-slate-700/50">
                    <div 
-                     className="h-full bg-primary rounded-full transition-all duration-1000" 
+                     className={cn(
+                       "h-full rounded-full transition-all duration-1000",
+                       index === 0 ? "bg-amber-400" : "bg-primary"
+                     )}
                      style={{ width: `${(user.points / maxPoints) * 100}%` }}
                    />
                 </div>
               </div>
-              <div className="flex items-center gap-1 font-bold text-sm bg-muted/50 px-2 py-1 rounded-xl">
+              <div className="flex items-center gap-1 font-black text-sm bg-slate-100 dark:bg-slate-800 px-2.5 py-1 rounded-xl text-slate-700 dark:text-slate-300">
                 <Star className="w-3.5 h-3.5 fill-amber-500 text-amber-500" />
                 {user.points}
               </div>
@@ -118,10 +113,10 @@ export default function Leaderboard() {
       </div>
 
       <Dialog open={!!selectedUser} onOpenChange={(open) => !open && setSelectedUser(null)}>
-        <DialogContent className="max-w-xs rounded-[2.5rem] p-6 border-2 border-slate-300 dark:border-slate-700 text-center gap-0 shadow-xl">
+        <DialogContent className="max-w-xs rounded-[2.5rem] p-6 border-2 border-slate-300 dark:border-slate-700 text-center gap-0 shadow-xl overflow-hidden">
           {selectedUser && (
             <>
-              <div className="mx-auto mb-4">
+              <div className="mx-auto mb-4 border-4 border-primary/20 p-1 rounded-full">
                 <UserAvatar user={selectedUser} size="lg" />
               </div>
               <h2 className="font-display text-2xl font-bold">{selectedUser.username}</h2>
@@ -138,18 +133,16 @@ export default function Leaderboard() {
                 <div className="bg-orange-50 dark:bg-orange-950/30 border border-orange-200 dark:border-orange-900 rounded-2xl py-3 px-2 flex flex-col items-center">
                   <div className="text-lg leading-none mb-1 mt-0.5">🔥</div>
                   <span className="font-bold text-lg leading-none">{selectedUser.streak}</span>
-                  <span className="text-[10px] text-orange-900/60 font-bold uppercase mt-1">Day Streak</span>
+                  <span className="text-[10px] text-orange-900/60 font-bold uppercase mt-1">Streak</span>
                 </div>
               </div>
-
-              <div className="flex gap-2">
-                <button
-                  disabled
-                  className="flex-1 flex items-center justify-center gap-2 bg-muted/60 text-muted-foreground font-bold text-sm py-3 rounded-2xl opacity-60 cursor-not-allowed"
-                >
-                  <MessageCircle className="w-4 h-4" /> Message
-                </button>
-              </div>
+              
+              <button
+                onClick={() => setSelectedUser(null)}
+                className="w-full bg-slate-900 dark:bg-white text-white dark:text-slate-900 font-bold py-3 rounded-2xl"
+              >
+                Close
+              </button>
             </>
           )}
         </DialogContent>
@@ -157,4 +150,3 @@ export default function Leaderboard() {
     </div>
   );
 }
-

@@ -45,9 +45,6 @@ export default function Profile() {
         queryKey: [api.families.getUsers.path, user.familyId],
       });
     },
-    onError: () => {
-      // Failed silently for better UX in auto-save, but could add a small indicator
-    },
   });
 
   if (!currentUser) return null;
@@ -57,59 +54,57 @@ export default function Profile() {
     () => PENGUIN_OUTFITS.find((o) => o.id === selectedId) ?? PENGUIN_OUTFITS[0],
     [selectedId],
   );
-  const settingsPath = family?.id ? `/family/${family.id}/settings` : "/get-started";
 
   return (
-    <div className="flex flex-col h-[100dvh] overflow-hidden bg-tab-profile">
+    <div className="flex flex-col h-full bg-tab-profile overflow-hidden">
 
       {/* ── Top bar ── */}
-      <div className="flex-none flex items-center justify-between px-4 pr-14 pt-[max(1rem,env(safe-area-inset-top))] pb-2">
-        <div className="flex items-center gap-2">
-          <h1 className="text-base font-bold text-primary tracking-tight">Taskling</h1>
-          <span className="text-xs font-bold text-foreground/50 bg-muted/80 rounded-lg px-2 py-0.5">My Character</span>
+      <div className="flex-none flex items-center justify-between px-5 pt-8 pb-3">
+        <div className="flex items-center gap-2.5">
+          <div className="w-8 h-8 rounded-xl bg-primary/10 flex items-center justify-center">
+            <span className="text-lg">🐧</span>
+          </div>
+          <div>
+            <h1 className="text-sm font-black text-primary uppercase tracking-tight">Taskling</h1>
+            <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest">My Character</p>
+          </div>
         </div>
       </div>
 
-      {/* ── Character preview (50% height) ── */}
-      <div className="flex-none relative flex items-end justify-center bg-gradient-to-b from-primary/8 via-background/50 to-background overflow-hidden" style={{ height: "calc(50dvh - 3rem)" }}>
-        <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-48 h-32 bg-primary/10 rounded-full blur-3xl" />
+      {/* ── Character preview (Reduced height to 38%) ── */}
+      <div className="flex-none relative flex items-end justify-center bg-gradient-to-b from-primary/5 via-transparent to-transparent mb-2" style={{ height: "35%" }}>
+        <div className="absolute inset-0 flex items-center justify-center opacity-20 pointer-events-none">
+           <div className="w-64 h-64 bg-primary/20 rounded-full blur-[80px]" />
+        </div>
         <AnimatePresence mode="wait">
           <motion.img
             key={selectedId}
-            initial={{ opacity: 0, scale: 0.92, y: 8 }}
+            initial={{ opacity: 0, scale: 0.8, y: 20 }}
             animate={{ opacity: 1, scale: 1, y: 0 }}
-            exit={{ opacity: 0, scale: 0.92, y: 8 }}
-            transition={{ duration: 0.25, ease: "easeOut" }}
+            exit={{ opacity: 0, scale: 0.8, y: 20 }}
+            transition={{ type: "spring", stiffness: 300, damping: 25 }}
             src={selectedOutfit.image}
             alt={selectedOutfit.label}
-            draggable={false}
-            className="relative z-10 h-full w-auto object-contain object-bottom select-none pointer-events-none drop-shadow-2xl"
+            className="relative z-10 h-[90%] w-auto object-contain object-bottom drop-shadow-[0_20px_50px_rgba(0,0,0,0.15)]"
           />
         </AnimatePresence>
       </div>
 
-      {/* ── Outfit picker panel (50% height, only inner grid scrolls) ── */}
-      <div className="flex-1 min-h-0 flex flex-col bg-card rounded-t-[2rem] shadow-2xl border-t-2 border-x-2 border-slate-300/70 dark:border-slate-700/70 overflow-hidden">
-        <div className="flex-none px-4 pt-4 pb-2">
-          <h2 className="font-bold text-sm text-foreground uppercase tracking-widest">Choose Your Penguin</h2>
-          <p className="text-xs text-muted-foreground font-medium mt-0.5">More outfits coming soon!</p>
+      {/* ── Outfit picker panel (Takes remaining 60%+) ── */}
+      <div className="flex-1 min-h-0 bg-white dark:bg-zinc-900 rounded-t-[2.5rem] shadow-[0_-10px_40px_rgba(0,0,0,0.05)] border-t border-slate-200 dark:border-slate-800 flex flex-col overflow-hidden">
+        <div className="flex-none px-6 pt-6 pb-2">
+          <h2 className="font-black text-xs text-slate-400 uppercase tracking-widest">Wardrobe</h2>
+          <div className="h-1 w-8 bg-primary/20 rounded-full mt-1.5" />
         </div>
-        {/* Only this div scrolls */}
-        <div className="flex-1 overflow-y-auto overscroll-contain px-4 pb-24 no-scrollbar">
-          <motion.div
-            initial={{ opacity: 0, y: 8 }}
-            animate={{ opacity: 1, y: 0 }}
-            className="grid grid-cols-3 gap-3"
-          >
+
+        {/* Scrollable area - handles only internal scroll */}
+        <div className="flex-1 overflow-y-auto px-6 pb-24 pt-2 no-scrollbar scroll-smooth">
+          <div className="grid grid-cols-3 gap-3.5">
             {PENGUIN_OUTFITS.map((outfit, i) => {
               const isSelected = selectedId === outfit.id;
               return (
-                <motion.button
+                <button
                   key={outfit.id}
-                  initial={{ opacity: 0, y: 12 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: i * 0.05 }}
-                  data-testid={`outfit-${outfit.id}`}
                   disabled={outfit.comingSoon}
                   onClick={() => {
                     if (!outfit.comingSoon) {
@@ -119,46 +114,35 @@ export default function Profile() {
                     }
                   }}
                   className={cn(
-                    "relative aspect-square rounded-2xl border-2 overflow-hidden transition-all flex flex-col shadow-sm",
+                    "group relative aspect-square rounded-[1.25rem] border-2 transition-all flex flex-col items-center justify-center p-2",
                     outfit.comingSoon
-                      ? "border-slate-300/40 dark:border-slate-700/40 bg-muted/20 opacity-60 cursor-not-allowed"
+                      ? "border-slate-100 dark:border-slate-800/40 bg-slate-50/50 dark:bg-zinc-950/20 grayscale opacity-40 cursor-not-allowed"
                       : isSelected
-                      ? "border-primary border-[3px] ring-2 ring-primary/30 bg-primary/5 shadow-md shadow-primary/15"
-                      : "border-slate-300 dark:border-slate-600 hover:border-primary/50 bg-muted/30 active:scale-[0.97]",
+                      ? "border-primary bg-primary/5 ring-4 ring-primary/10"
+                      : "border-slate-100 dark:border-slate-800 bg-slate-50/50 dark:bg-zinc-950/30 hover:border-slate-300 dark:hover:border-slate-600 active:scale-95",
                   )}
                 >
-                  <div className="flex-1 flex items-end justify-center px-2 pt-2 overflow-hidden">
-                    <img
-                      src={outfit.image}
-                      alt={outfit.label}
-                      className={cn(
-                        "h-full w-auto object-contain object-bottom select-none pointer-events-none",
-                        outfit.comingSoon && "grayscale opacity-50",
-                      )}
-                    />
-                  </div>
-                  <div className={cn("flex-none py-1.5 px-2 text-center", isSelected ? "bg-primary/10" : "bg-background/60 backdrop-blur-sm")}>
-                    <p className={cn("text-[10px] font-bold truncate", isSelected ? "text-primary" : "text-foreground/70")}>
-                      {outfit.label}
-                    </p>
-                  </div>
+                  <img
+                    src={outfit.image}
+                    alt={outfit.label}
+                    className="w-full h-full object-contain object-bottom pointer-events-none"
+                  />
+                  
                   {isSelected && (
-                    <div className="absolute top-2 right-2 w-5 h-5 rounded-full bg-primary flex items-center justify-center shadow-md">
-                      <Check className="w-3 h-3 text-primary-foreground" />
+                    <div className="absolute -top-1.5 -right-1.5 w-6 h-6 rounded-full bg-primary flex items-center justify-center shadow-lg border-2 border-white dark:border-zinc-900">
+                      <Check className="w-3.5 h-3.5 text-white" strokeWidth={4} />
                     </div>
                   )}
+
                   {outfit.comingSoon && (
                     <div className="absolute inset-0 flex items-center justify-center">
-                      <div className="bg-background/80 backdrop-blur-sm rounded-xl px-2 py-1 flex items-center gap-1">
-                        <Lock className="w-3 h-3 text-muted-foreground" />
-                        <span className="text-[9px] font-bold text-muted-foreground uppercase tracking-wide">Soon</span>
-                      </div>
+                      <Lock className="w-4 h-4 text-slate-400" />
                     </div>
                   )}
-                </motion.button>
+                </button>
               );
             })}
-          </motion.div>
+          </div>
         </div>
       </div>
     </div>
