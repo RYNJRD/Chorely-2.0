@@ -6,6 +6,7 @@ import { useLocation } from "wouter";
 import { useStore } from "../store/useStore";
 import { BottomNav } from "./BottomNav";
 import { DemoSwitcher } from "./DemoSwitcher";
+import { cn } from "../lib/utils";
 
 export function Layout({ children }: { children: React.ReactNode }) {
   const [location] = useLocation();
