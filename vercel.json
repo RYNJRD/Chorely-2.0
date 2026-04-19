@@ -4,6 +4,12 @@
   "outputDirectory": "dist/public",
   "cleanUrls": true,
   "trailingSlash": false,
+  "functions": {
+    "api/index.cjs": {
+      "runtime": "@vercel/node@3",
+      "includeFiles": "api/**"
+    }
+  },
   "rewrites": [
     {
       "source": "/api/(.*)",
