@@ -144,6 +144,14 @@ export default function AuthWelcome() {
       setOtp(["", "", "", "", "", ""]);
       setOtpError("");
       setView("verification");
+      
+      // Auto-include code in notification for easy copying
+      if (data.code) {
+        toast({ 
+          title: "Code sent! 📧", 
+          description: `Your verification code is ${data.code}. We've also sent it to your email.`,
+        });
+      }
     } catch (err: any) {
       console.error("[OTP] Send error:", err);
       const msg = err.message || "A server error has occurred";
@@ -181,7 +189,12 @@ export default function AuthWelcome() {
       startCooldown(60);
       setOtp(["", "", "", "", "", ""]);
       setOtpError("");
-      toast({ title: "New code sent!", description: "Check your inbox — it expires in 10 minutes." });
+      
+      const desc = data.code 
+        ? `Your new code is ${data.code}. Check your inbox!` 
+        : "Check your inbox — it expires in 10 minutes.";
+        
+      toast({ title: "New code sent!", description: desc });
       otpRefs.current[0]?.focus();
     } catch (err: any) {
       console.error("[OTP] Resend error:", err);
@@ -222,7 +235,30 @@ export default function AuthWelcome() {
   };
 
   const handleOtpChange = (index: number, value: string) => {
-    if (value.length > 1) value = value.slice(-1);
+    // If user pastes a 6-digit code into a single cell
+    if (value.length > 1) {
+      const pastedCode = value.trim().slice(0, 6).split("");
+      if (pastedCode.every(char => /^\d$/.test(char))) {
+        const newOtp = [...otp];
+        pastedCode.forEach((char, i) => {
+          if (index + i < 6) newOtp[index + i] = char;
+        });
+        setOtp(newOtp);
+        setOtpError("");
+        
+        // Focus the last filled or next empty
+        const nextIndex = Math.min(index + pastedCode.length, 5);
+        otpRefs.current[nextIndex]?.focus();
+
+        // If we filled it all, verify
+        if (newOtp.every(v => v !== "")) {
+          handleVerifyCode(newOtp.join(""));
+        }
+        return;
+      }
+      value = value.slice(-1);
+    }
+
     if (!/^\d*$/.test(value)) return;
     setOtpError("");
 
@@ -235,6 +271,17 @@ export default function AuthWelcome() {
     }
     if (newOtp.every(v => v !== "") && index === 5) {
       handleVerifyCode(newOtp.join(""));
+    }
+  };
+
+  const handleOtpPaste = (e: React.ClipboardEvent) => {
+    const pastedData = e.clipboardData.getData("text").trim();
+    if (/^\d{6}$/.test(pastedData)) {
+      const newOtp = pastedData.split("");
+      setOtp(newOtp);
+      setOtpError("");
+      handleVerifyCode(pastedData);
+      e.preventDefault();
     }
   };
 
@@ -318,7 +365,7 @@ export default function AuthWelcome() {
       </button>
 
       {/* Main content — fixed width, no scroll */}
-      <div className="relative z-10 w-full px-4 flex flex-col items-center">
+      <div className="relative z-10 w-full px-2 sm:px-6 flex flex-col items-center py-6">
         <AnimatePresence mode="wait">
 
           {/* ── Welcome / Sign Up ── */}
@@ -336,7 +383,7 @@ export default function AuthWelcome() {
               <h2 className="font-display text-3xl font-bold text-zinc-900 mb-1 leading-tight">Create your account</h2>
               <p className="text-sm font-semibold text-zinc-500 mb-6">Get started with your family</p>
 
-              <div className="w-full bg-white/70 backdrop-blur-md rounded-[2.5rem] p-6 border-2 border-white/80 shadow-xl space-y-4">
+              <div className="w-full max-w-[450px] bg-white/70 backdrop-blur-md rounded-[2.5rem] p-5 sm:p-7 border-[3px] border-white/80 shadow-2xl space-y-4">
                 {/* Social */}
                 <div className="space-y-2.5">
                   <button
@@ -443,7 +490,7 @@ export default function AuthWelcome() {
               <p className="text-sm font-semibold text-zinc-500 mb-1">We sent a 6-digit code to</p>
               <p className="text-[15px] font-bold text-primary mb-6">{email.trim()}</p>
 
-              <div className="w-full bg-white/70 backdrop-blur-md rounded-[2.5rem] p-7 border-2 border-white/80 shadow-xl space-y-6">
+              <div className="w-full max-w-[450px] bg-white/70 backdrop-blur-md rounded-[2.5rem] p-5 sm:p-8 border-[3px] border-white/80 shadow-2xl space-y-6">
                 {/* OTP inputs */}
                 <div className="flex justify-between gap-2">
                   {otp.map((digit, i) => (
@@ -457,8 +504,9 @@ export default function AuthWelcome() {
                       maxLength={1}
                       onChange={(e) => handleOtpChange(i, e.target.value)}
                       onKeyDown={(e) => handleOtpKeyDown(i, e)}
+                      onPaste={handleOtpPaste}
                       className={cn(
-                        "w-full aspect-[4/5] text-center text-2xl font-bold rounded-2xl border-2 bg-white/80 focus:ring-4 focus:ring-primary/15 transition-all outline-none text-zinc-900",
+                        "w-full aspect-[4/5] text-center text-3xl font-black rounded-2xl border-2 bg-white/80 focus:ring-4 focus:ring-primary/15 transition-all outline-none text-zinc-900",
                         otpError ? "border-destructive" : digit ? "border-primary" : "border-zinc-100 focus:border-primary"
                       )}
                     />
@@ -525,7 +573,7 @@ export default function AuthWelcome() {
               <h2 className="font-display text-3xl font-bold text-zinc-900 mb-1 leading-tight">Welcome back</h2>
               <p className="text-sm font-semibold text-zinc-500 mb-6">Sign in to your family account</p>
 
-              <div className="w-full bg-white/70 backdrop-blur-md rounded-[2.5rem] p-8 border-2 border-white/80 shadow-xl space-y-5">
+              <div className="w-full max-w-[450px] bg-white/70 backdrop-blur-md rounded-[2.5rem] p-6 sm:p-9 border-[3px] border-white/80 shadow-2xl space-y-5">
                 <div className="space-y-3.5">
                   <div className="relative group">
                     <div className="absolute left-4 top-1/2 -translate-y-1/2 text-zinc-400 group-focus-within:text-zinc-600 transition-colors">

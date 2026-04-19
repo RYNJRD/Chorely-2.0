@@ -168,18 +168,36 @@ export default function Profile() {
         </div>
       </div>
 
-      {/* ── Wardrobe Section (3/5 of screen) ── */}
-      <div className="flex-[3] relative z-20 flex flex-col bg-white border-t-[4px] border-black rounded-t-[3.5rem] shadow-[0_-10px_50px_rgba(0,0,0,0.1)] overflow-hidden">
-        <div className="flex-none flex items-center justify-between px-8 pt-8 pb-4">
-           <div>
-             <h2 className="text-xs font-black uppercase tracking-[0.2em] text-black">Wardrobe</h2>
-             <div className="h-1.5 w-10 bg-black rounded-full mt-2" />
-           </div>
-           <p className="text-[10px] font-black text-black/40 uppercase tracking-widest">{PENGUIN_OUTFITS.length} Pieces Found</p>
+      {/* ── Wardrobe Section (Resizable Drawer) ── */}
+      <motion.div 
+        initial={{ y: 0 }}
+        drag="y"
+        dragConstraints={{ top: -500, bottom: 200 }} // Allow pulling it down to hide it or up to cover everything
+        dragElastic={0.05}
+        className="flex-[3] relative z-20 flex flex-col bg-white border-t-[4px] border-black rounded-t-[3.5rem] shadow-[0_-20px_60px_rgba(0,0,0,0.15)] overflow-hidden"
+      >
+        {/* Massive Drag Handle Area (Includes the title) */}
+        <div 
+          className="flex-none flex flex-col items-center pt-4 pb-6 group cursor-grab active:cursor-grabbing select-none"
+          style={{ touchAction: "none" }} // Ensure touch events only trigger drag
+        >
+          {/* Visual Handle Bar */}
+          <div className="w-16 h-2 bg-black/10 rounded-full group-hover:bg-black/20 transition-colors mb-4" />
+          
+          <div className="w-full flex items-center justify-between px-8">
+             <div>
+               <h2 className="text-sm font-black uppercase tracking-[0.2em] text-black">Wardrobe</h2>
+               <div className="h-1.5 w-12 bg-black rounded-full mt-2" />
+             </div>
+             <p className="text-[10px] font-black text-black/40 uppercase tracking-widest">{PENGUIN_OUTFITS.length} Pieces Found</p>
+          </div>
         </div>
 
         {/* Wardrobe Grid */}
-        <div className="flex-1 overflow-y-auto px-8 pb-32 pt-4 no-scrollbar touch-pan-y overscroll-contain">
+        <div 
+          className="flex-1 overflow-y-auto px-8 pb-32 pt-2 no-scrollbar touch-pan-y overscroll-contain"
+          onPointerDown={(e) => e.stopPropagation()} // Allow scrolling grid without dragging drawer
+        >
           <div className="grid grid-cols-3 gap-5">
             {sortedOutfits.map((outfit) => {
               const isSelected = selectedId === outfit.id;
@@ -233,7 +251,7 @@ export default function Profile() {
             })}
           </div>
         </div>
-      </div>
+      </motion.div>
     </div>
   );
 }

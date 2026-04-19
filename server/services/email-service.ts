@@ -106,9 +106,10 @@ export async function sendOtpEmail(to: string, code: string) {
 
     <div style="background: linear-gradient(135deg, #f3e8ff 0%, #ede9fe 100%); border-radius: 20px; padding: 32px 20px; margin: 28px 0; text-align: center; border: 3px solid #7C3AED;">
       <p style="margin: 0 0 8px 0; font-size: 13px; font-weight: 700; color: #7C3AED; letter-spacing: 3px; text-transform: uppercase;">Your verification code</p>
-      <div style="display: inline-flex; gap: 10px; justify-content: center; flex-wrap: wrap;">
-        ${code.split("").map(d => `<span style="display:inline-block;width:48px;height:64px;background:white;border-radius:14px;font-size:36px;font-weight:900;color:#1a1a2e;line-height:64px;text-align:center;box-shadow:0 4px 12px rgba(124,58,237,0.2);border:2px solid #c4b5fd;">${d}</span>`).join("")}
+      <div style="display: block; margin-bottom: 20px;">
+        <span style="font-size: 42px; font-weight: 900; color: #1a1a2e; letter-spacing: 4px; background: white; padding: 10px 24px; border-radius: 12px; border: 2px solid #c4b5fd; display: inline-block;">${code}</span>
       </div>
+      <p style="margin: 0; font-size: 14px; color: #6d28d9; font-weight: 600;">Tap and hold to copy the code</p>
       <p style="margin: 16px 0 0 0; font-size: 13px; color: #94a3b8;">Didn't request this? You can safely ignore this email.</p>
     </div>
 

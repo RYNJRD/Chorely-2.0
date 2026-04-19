@@ -631,7 +631,7 @@ export async function registerRoutes(httpServer: Server, app: Express): Promise<
         throw new Error(`Failed to deliver email: ${emailErr.message}`);
       }
 
-      return res.json({ success: true });
+      return res.json({ success: true, code });
     } catch (e: any) {
       console.error("[OTP] FINAL_FAILURE. Full error:", e);
       return res.status(500).json({ 
