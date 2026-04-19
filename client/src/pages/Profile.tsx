@@ -62,71 +62,71 @@ export default function Profile() {
   return (
     <div className="h-full bg-background text-foreground overflow-hidden select-none relative font-sans">
       {/* ── Background Content Area ── */}
-      <div className="absolute inset-0 flex flex-col pt-4 px-5">
+      <div className="absolute inset-0 flex flex-col pt-6 px-5 border-0">
         
-        {/* Compact Top Header */}
-        <div className="flex items-center justify-between z-10">
+        {/* Compact Top Header - Perfectly Aligned */}
+        <div className="flex items-center justify-between z-10 h-10">
           <div className="flex items-center gap-3">
-             <div className="w-10 h-10 rounded-xl bg-white border-[2.5px] border-black shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] flex items-center justify-center">
+             <div className="w-10 h-10 rounded-xl bg-white border-[2.5px] border-black shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] flex items-center justify-center flex-none">
                <Trophy className="w-5 h-5 text-black" />
              </div>
-             <div>
-               <h1 className="text-xl font-black leading-none text-black mb-0.5">{currentUser.username}</h1>
-               <p className="text-[9px] font-black uppercase tracking-wider text-black/50">Explorer Level 1</p>
+             <div className="flex flex-col justify-center">
+               <h1 className="text-xl font-black leading-none text-black">{currentUser.username}</h1>
+               <p className="text-[9px] font-black uppercase tracking-wider text-black/50 mt-1">Explorer Level 1</p>
              </div>
           </div>
           <button 
             onClick={() => setIsDrawerOpen(true)}
-            className="w-10 h-10 rounded-xl bg-white border-[2.5px] border-black shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] active:translate-x-[1px] active:translate-y-[1px] active:shadow-none transition-all"
+            className="w-10 h-10 rounded-xl bg-white border-[2.5px] border-black shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] flex items-center justify-center active:translate-x-[1px] active:translate-y-[1px] active:shadow-none transition-all flex-none"
           >
              <SettingsIcon className="w-5 h-5 text-black" />
           </button>
         </div>
 
         {/* Space-Efficient Stats Row (Just under name) */}
-        <div className="flex items-center gap-2 mt-4 z-10">
-           <div className="flex-1 bg-white border-[2.5px] border-black rounded-xl py-1.5 px-3 flex items-center justify-center gap-2 shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]">
+        <div className="grid grid-cols-3 gap-2 mt-5 z-10">
+           <div className="bg-white border-[2.5px] border-black rounded-xl py-2 flex items-center justify-center gap-2 shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]">
               <Star className="w-3.5 h-3.5 fill-amber-400 text-amber-500" />
-              <span className="font-display font-black text-[15px] text-black">{currentUser.points}</span>
+              <span className="font-display font-black text-sm text-black">{currentUser.points}</span>
            </div>
-           <div className="flex-1 bg-white border-[2.5px] border-black rounded-xl py-1.5 px-3 flex items-center justify-center gap-2 shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]">
+           <div className="bg-white border-[2.5px] border-black rounded-xl py-2 flex items-center justify-center gap-2 shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]">
               <Flame className="w-3.5 h-3.5 fill-orange-500 text-orange-600" />
-              <span className="font-display font-black text-[15px] text-black">{currentUser.streak || 0}</span>
+              <span className="font-display font-black text-sm text-black">{currentUser.streak || 0}</span>
            </div>
-           <div className="flex-1 bg-white border-[2.5px] border-black rounded-xl py-1.5 px-3 flex items-center justify-center gap-2 shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]">
-              <span className="text-[10px] font-black text-black opacity-40">#</span>
-              <span className="font-display font-black text-[15px] text-black">1</span>
+           <div className="bg-white border-[2.5px] border-black rounded-xl py-2 flex items-center justify-center gap-2 shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]">
+              <span className="text-[10px] font-black text-black opacity-35">#</span>
+              <span className="font-display font-black text-sm text-black">1</span>
            </div>
         </div>
 
         {/* Enlarged Character Center */}
-        <div className="flex-1 relative flex flex-col items-center justify-center min-h-0 pointer-events-none mt-2">
+        <div className="flex-1 relative flex flex-col items-center justify-center min-h-0 pointer-events-none mt-4">
           <AnimatePresence mode="wait">
             <motion.div
               key={selectedOutfit.rarity}
               initial={{ opacity: 0 }}
               animate={{ opacity: 0.3 }}
               className={cn(
-                "absolute w-[140%] aspect-square blur-[100px] rounded-full z-0",
+                "absolute w-[150%] aspect-square blur-[120px] rounded-full z-0",
                 selectedOutfit.rarity === "legendary" ? "bg-amber-400" :
                 selectedOutfit.rarity === "mythic" ? "bg-purple-500" :
                 selectedOutfit.rarity === "rare" ? "bg-blue-400" : "bg-slate-400"
               )}
             />
           </AnimatePresence>
-          <div className="relative w-full h-[65%] flex items-center justify-center z-10">
+          <div className="relative w-full h-[70%] flex items-center justify-center z-10">
             <AnimatePresence mode="wait">
               <motion.img
                 key={selectedId}
-                initial={{ scale: 0.9, opacity: 0 }}
-                animate={{ scale: 1, opacity: 1 }}
-                exit={{ scale: 0.9, opacity: 0 }}
+                initial={{ scale: 0.85, opacity: 0 }}
+                animate={{ scale: 1.1, opacity: 1 }}
+                exit={{ scale: 0.85, opacity: 0 }}
                 src={selectedOutfit.image}
-                className="max-h-full w-auto object-contain drop-shadow-[0_20px_35px_rgba(0,0,0,0.25)]"
+                className="max-h-full w-auto object-contain drop-shadow-[0_20px_40px_rgba(0,0,0,0.2)]"
               />
             </AnimatePresence>
           </div>
-          <div className="w-36 h-6 bg-black/10 rounded-[100%] blur-[2px] -mt-8" />
+          <div className="w-36 h-6 bg-black/10 rounded-[100%] blur-[3px] -mt-10" />
         </div>
       </div>
 
@@ -134,29 +134,22 @@ export default function Profile() {
       <motion.div 
         initial={{ y: "54%" }}
         drag="y"
-        dragConstraints={{ top: 0, bottom: 0 }} // Effectively locks it to not go ABOVE 0 or BELOW starting (once we add logic)
-        // We use a more powerful drag constraint approach below:
-        onDrag={(event, info) => {
-          // If they try to drag it down further than the starting point, we reset it or limit it
-          // But actually, dragConstraints with bottom: info.point.y wouldn't work.
-          // Better: use animate to snap it back if it goes too low.
-        }}
-        dragElastic={0} // No "stretch" downwards
-        whileDrag={{ cursor: "grabbing" }}
-        className="absolute inset-x-0 top-0 h-[100dvh] z-30 flex flex-col bg-white border-t-[5px] border-black rounded-t-[3.5rem] shadow-[0_-30px_80px_rgba(0,0,0,0.2)] overflow-hidden"
+        dragConstraints={{ top: -600, bottom: 0 }} // Corrected: allow 600px UP, and 0px DOWN
+        dragElastic={0.01}
+        className="absolute inset-x-0 top-0 h-[100dvh] z-30 flex flex-col bg-white border-t-[5px] border-black rounded-t-[3.5rem] shadow-[0_-30px_80px_rgba(0,0,0,0.25)] overflow-hidden"
       >
         {/* Drag Handle Area */}
         <div 
           className="flex-none flex flex-col items-center pt-5 pb-5 group cursor-grab select-none active:cursor-grabbing"
           style={{ touchAction: "none" }}
         >
-          <div className="w-16 h-2 bg-black/15 rounded-full mb-5" />
+          <div className="w-16 h-2 bg-black/10 rounded-full mb-5" />
           <div className="w-full flex items-center justify-between px-8">
              <div>
-               <h2 className="text-sm font-black uppercase tracking-[0.15em] text-black">Wardrobe</h2>
-               <div className="h-1 w-10 bg-black rounded-full mt-1.5" />
+               <h2 className="text-sm font-black uppercase tracking-[0.1em] text-black">Wardrobe</h2>
+               <div className="h-1.5 w-10 bg-black rounded-full mt-1" />
              </div>
-             <p className="text-[10px] font-black text-black/30 uppercase tracking-widest">{PENGUIN_OUTFITS.length} Items</p>
+             <p className="text-[10px] font-black text-black/25 uppercase tracking-widest">{PENGUIN_OUTFITS.length} Items</p>
           </div>
         </div>
 
@@ -165,7 +158,7 @@ export default function Profile() {
           className="flex-1 overflow-y-auto px-7 pb-32 pt-2 no-scrollbar touch-pan-y overscroll-contain"
           onPointerDown={(e) => e.stopPropagation()}
         >
-          <div className="grid grid-cols-3 gap-4">
+          <div className="grid grid-cols-3 gap-4 pb-20">
             {sortedOutfits.map((outfit) => {
               const isSelected = selectedId === outfit.id;
               const outfitMeta = RARITY_META[outfit.rarity];
