@@ -247,7 +247,8 @@ import { and, eq } from "drizzle-orm";
 
 function ensureFirebase() {
   if (getApps().length > 0) return;
-  const privateKey = process.env.FIREBASE_PRIVATE_KEY?.replace(/\\n/g, "\n");
+  const rawKey = process.env.FIREBASE_PRIVATE_KEY || "";
+  const privateKey = rawKey.replace(/\\n/g, "\n").replace(/\r/g, "").trim();
   if (process.env.FIREBASE_CLIENT_EMAIL && privateKey) {
     initializeApp({
       credential: cert({

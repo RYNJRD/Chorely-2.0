@@ -119,7 +119,8 @@ function initializeFirebaseAdmin() {
   if (getApps().length > 0) return;
 
   const env = getEnv();
-  const privateKey = env.FIREBASE_PRIVATE_KEY?.replace(/\\n/g, "\n");
+  const rawKey = env.FIREBASE_PRIVATE_KEY || "";
+  const privateKey = rawKey.replace(/\\n/g, "\n").replace(/\r/g, "").trim();
 
   if (env.FIREBASE_CLIENT_EMAIL && privateKey) {
     initializeApp({
