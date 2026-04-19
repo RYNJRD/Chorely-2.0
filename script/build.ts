@@ -55,7 +55,7 @@ async function buildAll() {
     platform: "node",
     bundle: true,
     format: "cjs",
-    outfile: "api/index.cjs",
+    outfile: "api/index.js",
     footer: {
       js: "module.exports = exports.default;",
     },
