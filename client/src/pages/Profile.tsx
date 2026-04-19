@@ -60,10 +60,11 @@ export default function Profile() {
   const meta = RARITY_META[selectedOutfit.rarity];
 
   return (
-    <div className="flex flex-col h-full bg-background text-foreground overflow-hidden select-none relative">
-      {/* ── Top Section (HUD) ── */}
-      <div className="flex-none px-6 pt-10 pb-2 z-10 relative">
-        <div className="flex items-center justify-between mb-6">
+    <div className="h-full bg-background text-foreground overflow-hidden select-none relative">
+      {/* ── Background Character View ── */}
+      <div className="absolute inset-x-0 top-0 bottom-[35%] flex flex-col pt-10 px-6">
+        {/* HUD */}
+        <div className="flex items-center justify-between mb-8">
           <div className="flex items-center gap-4">
              <div className="w-12 h-12 rounded-2xl bg-white flex items-center justify-center border-[3px] border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
                <Trophy className="w-6 h-6 text-black" />
@@ -81,109 +82,79 @@ export default function Profile() {
           </button>
         </div>
 
-        {/* Stats Grid */}
-        <div className="grid grid-cols-3 gap-3">
-           <div className="bg-white border-[3px] border-black rounded-2xl p-3 flex flex-col items-center shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
-              <span className="text-[9px] font-black text-black uppercase tracking-widest mb-1.5 opacity-60">Stars</span>
-              <div className="flex items-center gap-2">
-                <Star className="w-4 h-4 fill-amber-400 text-amber-500" />
-                <span className="font-display font-black text-xl leading-none text-black">{currentUser.points}</span>
-              </div>
-           </div>
-           <div className="bg-white border-[3px] border-black rounded-2xl p-3 flex flex-col items-center shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
-              <span className="text-[9px] font-black text-black uppercase tracking-widest mb-1.5 opacity-60">Streak</span>
-              <div className="flex items-center gap-2">
-                <Flame className="w-4 h-4 fill-orange-500 text-orange-600" />
-                <span className="font-display font-black text-xl leading-none text-black">{currentUser.streak || 0}</span>
-              </div>
-           </div>
-           <div className="bg-white border-[3px] border-black rounded-2xl p-3 flex flex-col items-center shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
-              <span className="text-[9px] font-black text-black uppercase tracking-widest mb-1.5 opacity-60">Rank</span>
-               <div className="flex items-center gap-2">
-                <span className="text-sm font-black text-black">#</span>
-                <span className="font-display font-black text-xl leading-none text-black">1</span>
-              </div>
-           </div>
-        </div>
-      </div>
-
-      {/* ── Character Center-Top (2/5 of screen) ── */}
-      <div className="flex-[2] relative flex flex-col items-center justify-center px-6 min-h-0 pointer-events-none overflow-visible">
-        {/* Dynamic Rarity Glow */}
-        <AnimatePresence mode="wait">
-          <motion.div
-            key={selectedOutfit.rarity}
-            initial={{ opacity: 0, scale: 0.8 }}
-            animate={{ opacity: 0.25, scale: 1 }}
-            exit={{ opacity: 0, scale: 0.8 }}
-            className={cn(
-              "absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[120%] h-[120%] blur-[100px] rounded-full z-0",
-              selectedOutfit.rarity === "legendary" ? "bg-amber-400" :
-              selectedOutfit.rarity === "mythic" ? "bg-purple-500" :
-              selectedOutfit.rarity === "rare" ? "bg-blue-400" : "bg-slate-400"
-            )}
-          />
-        </AnimatePresence>
-        
-        {/* The Penguin */}
-        <div className="relative w-full h-full flex items-center justify-center z-10 scale-125">
-          <AnimatePresence mode="wait">
-            <motion.img
-              key={selectedId}
-              initial={{ opacity: 0, scale: 1.1, y: 15 }}
-              animate={{ opacity: 1, scale: 1.25, y: -20 }}
-              exit={{ opacity: 0, scale: 1.1, y: 15 }}
-              transition={{ type: "spring", stiffness: 260, damping: 20 }}
-              src={selectedOutfit.image}
-              alt={selectedOutfit.label}
-              className="h-full w-auto object-contain drop-shadow-[0_25px_40px_rgba(0,0,0,0.3)]"
-            />
-          </AnimatePresence>
-        </div>
-
-        {/* Shadow Podium */}
-        <div className="relative -mt-16 w-36 h-8 z-0">
-          <div className="absolute inset-0 bg-black/10 rounded-[100%] blur-[2px]" />
-        </div>
-
-        {/* Rarity Banner (Bottom Left of Preview) */}
-        <div className="absolute bottom-4 left-6 z-30 flex flex-col items-start pointer-events-auto">
+        {/* Character Center */}
+        <div className="flex-1 relative flex flex-col items-center justify-center min-h-0 pointer-events-none overflow-visible mb-12">
           <AnimatePresence mode="wait">
             <motion.div
-              key={selectedOutfit.id}
-              initial={{ x: -50, opacity: 0 }}
-              animate={{ x: 0, opacity: 1 }}
-              exit={{ x: -50, opacity: 0 }}
-              className="flex flex-col items-start"
-            >
-              <div className={cn(
-                "px-3 py-1 rounded-full border-[3px] border-black shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] flex items-center gap-1.5",
-                meta.bg, "text-white"
-              )}>
-                <span className="text-[10px] font-black uppercase tracking-widest">{meta.label}</span>
-              </div>
-              <h2 className="text-lg font-black text-black mt-1 drop-shadow-sm">{selectedOutfit.label}</h2>
-            </motion.div>
+              key={selectedOutfit.rarity}
+              initial={{ opacity: 0, scale: 0.8 }}
+              animate={{ opacity: 0.25, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.8 }}
+              className={cn(
+                "absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[120%] h-[120%] blur-[100px] rounded-full z-0",
+                selectedOutfit.rarity === "legendary" ? "bg-amber-400" :
+                selectedOutfit.rarity === "mythic" ? "bg-purple-500" :
+                selectedOutfit.rarity === "rare" ? "bg-blue-400" : "bg-slate-400"
+              )}
+            />
           </AnimatePresence>
+          <div className="relative w-full h-full flex items-center justify-center z-10 scale-[1.3]">
+            <AnimatePresence mode="wait">
+              <motion.img
+                key={selectedId}
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: 20 }}
+                src={selectedOutfit.image}
+                className="h-full w-auto object-contain drop-shadow-[0_25px_40px_rgba(0,0,0,0.3)]"
+              />
+            </AnimatePresence>
+          </div>
+          <div className="relative -mt-12 w-32 h-6 z-0">
+            <div className="absolute inset-0 bg-black/10 rounded-[100%] blur-[2px]" />
+          </div>
+        </div>
+
+        {/* Stats Grid - Moved above the drawer threshold */}
+        <div className="grid grid-cols-3 gap-3 mb-4">
+           <div className="bg-white border-[3px] border-black rounded-2xl p-2.5 flex flex-col items-center shadow-[3px_3px_0px_0px_rgba(0,0,0,1)]">
+              <span className="text-[8px] font-black text-black uppercase tracking-widest mb-1 opacity-50">Stars</span>
+              <div className="flex items-center gap-1.5">
+                <Star className="w-3.5 h-3.5 fill-amber-400 text-amber-500" />
+                <span className="font-display font-black text-lg text-black">{currentUser.points}</span>
+              </div>
+           </div>
+           <div className="bg-white border-[3px] border-black rounded-2xl p-2.5 flex flex-col items-center shadow-[3px_3px_0px_0px_rgba(0,0,0,1)]">
+              <span className="text-[8px] font-black text-black uppercase tracking-widest mb-1 opacity-50">Streak</span>
+              <div className="flex items-center gap-1.5">
+                <Flame className="w-3.5 h-3.5 fill-orange-500 text-orange-600" />
+                <span className="font-display font-black text-lg text-black">{currentUser.streak || 0}</span>
+              </div>
+           </div>
+           <div className="bg-white border-[3px] border-black rounded-2xl p-2.5 flex flex-col items-center shadow-[3px_3px_0px_0px_rgba(0,0,0,1)]">
+              <span className="text-[8px] font-black text-black uppercase tracking-widest mb-1 opacity-50">Rank</span>
+               <div className="flex items-center gap-1.5">
+                <span className="text-xs font-black text-black">#</span>
+                <span className="font-display font-black text-lg text-black">1</span>
+              </div>
+           </div>
         </div>
       </div>
 
       {/* ── Wardrobe Section (Resizable Drawer) ── */}
       <motion.div 
-        initial={{ y: 0 }}
+        initial={{ y: "62%" }}
         drag="y"
-        dragConstraints={{ top: -500, bottom: 200 }} // Allow pulling it down to hide it or up to cover everything
-        dragElastic={0.05}
-        className="flex-[3] relative z-20 flex flex-col bg-white border-t-[4px] border-black rounded-t-[3.5rem] shadow-[0_-20px_60px_rgba(0,0,0,0.15)] overflow-hidden"
+        dragConstraints={{ top: 0, bottom: 600 }}
+        dragElastic={0.02}
+        className="absolute inset-x-0 top-0 h-[100dvh] z-30 flex flex-col bg-white border-t-[5px] border-black rounded-t-[3.5rem] shadow-[0_-30px_80px_rgba(0,0,0,0.2)] overflow-hidden"
       >
-        {/* Massive Drag Handle Area (Includes the title) */}
+        {/* Massive Drag Handle Area */}
         <div 
-          className="flex-none flex flex-col items-center pt-4 pb-6 group cursor-grab active:cursor-grabbing select-none"
-          style={{ touchAction: "none" }} // Ensure touch events only trigger drag
+          className="flex-none flex flex-col items-center pt-5 pb-6 group cursor-grab active:cursor-grabbing select-none"
+          style={{ touchAction: "none" }}
         >
-          {/* Visual Handle Bar */}
-          <div className="w-16 h-2 bg-black/10 rounded-full group-hover:bg-black/20 transition-colors mb-4" />
-          
+          <div className="w-16 h-2.5 bg-black/10 rounded-full group-hover:bg-black/20 transition-colors mb-5" />
           <div className="w-full flex items-center justify-between px-8">
              <div>
                <h2 className="text-sm font-black uppercase tracking-[0.2em] text-black">Wardrobe</h2>
@@ -196,7 +167,7 @@ export default function Profile() {
         {/* Wardrobe Grid */}
         <div 
           className="flex-1 overflow-y-auto px-8 pb-32 pt-2 no-scrollbar touch-pan-y overscroll-contain"
-          onPointerDown={(e) => e.stopPropagation()} // Allow scrolling grid without dragging drawer
+          onPointerDown={(e) => e.stopPropagation()}
         >
           <div className="grid grid-cols-3 gap-5">
             {sortedOutfits.map((outfit) => {
@@ -222,14 +193,11 @@ export default function Profile() {
                   )}
                   style={{ borderColor: isSelected ? 'black' : 'transparent' }}
                 >
-                  {/* Rarity Border Overlay */}
                   <div className={cn(
                       "absolute inset-0 border-[3.5px] rounded-[inherit] pointer-events-none opacity-80",
                       outfitMeta.border
                   )} />
-
                   <img src={outfit.image} className="w-[85%] h-[85%] object-contain pointer-events-none drop-shadow-sm" />
-                  
                   {isSelected && (
                     <div className={cn(
                         "absolute top-2 right-2 w-6 h-6 rounded-full border-[2.5px] border-black flex items-center justify-center shadow-md",
@@ -238,8 +206,6 @@ export default function Profile() {
                       <Check className="w-3.5 h-3.5 text-white" strokeWidth={5} />
                     </div>
                   )}
-
-                  {/* Faded Rarity Overlay on selection */}
                   {isSelected && (
                     <div className={cn(
                         "absolute inset-0 pointer-events-none opacity-10",
