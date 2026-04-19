@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import { Check, Copy, Gift, Link as LinkIcon, Plus, Search, Settings, Shield, ShieldCheck, ShieldOff, Star, Trophy, Users as UsersIcon, X } from "lucide-react";
+import { Check, Copy, Gift, Link as LinkIcon, Plus, RefreshCw, Search, Settings, Shield, ShieldCheck, ShieldOff, Star, Trophy, Users as UsersIcon, X } from "lucide-react";
 import { useParams } from "wouter";
 import { api, buildUrl } from "../../../shared/routes";
 import type { User } from "../../../shared/schema";
