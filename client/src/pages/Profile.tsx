@@ -60,7 +60,12 @@ export default function Profile() {
   const meta = RARITY_META[selectedOutfit.rarity];
 
   return (
-    <div className="h-full bg-background text-foreground overflow-hidden select-none flex flex-col font-sans pb-32">
+    <div className={cn(
+      "h-full transition-colors duration-700 overflow-hidden select-none flex flex-col font-sans pb-32",
+      selectedOutfit.rarity === "legendary" ? "bg-amber-50/50" :
+      selectedOutfit.rarity === "mythic" ? "bg-purple-50/50" :
+      selectedOutfit.rarity === "rare" ? "bg-blue-50/50" : "bg-slate-50/50"
+    )}>
       
       {/* ── Top Section (flex: 3) ── */}
       <div className="flex-[3] flex flex-col pt-6 px-5 min-h-0">
@@ -105,16 +110,16 @@ export default function Profile() {
             <motion.div
               key={selectedOutfit.rarity}
               initial={{ opacity: 0 }}
-              animate={{ opacity: 0.15 }}
+              animate={{ opacity: 0.35 }}
               className={cn(
-                "absolute w-[150%] aspect-square blur-[100px] rounded-full z-0",
-                selectedOutfit.rarity === "legendary" ? "bg-amber-400" :
-                selectedOutfit.rarity === "mythic" ? "bg-purple-500" :
-                selectedOutfit.rarity === "rare" ? "bg-blue-400" : "bg-slate-400"
+                "absolute w-[180%] aspect-square blur-[120px] rounded-full z-0",
+                selectedOutfit.rarity === "legendary" ? "bg-amber-400/40" :
+                selectedOutfit.rarity === "mythic" ? "bg-purple-500/40" :
+                selectedOutfit.rarity === "rare" ? "bg-blue-400/40" : "bg-slate-400/40"
               )}
             />
           </AnimatePresence>
-          <div className="relative w-full h-[85%] flex items-center justify-center z-10">
+          <div className="relative w-full h-[92%] flex items-center justify-center z-10">
             <AnimatePresence mode="wait">
               <motion.img
                 key={selectedId}
@@ -126,12 +131,18 @@ export default function Profile() {
               />
             </AnimatePresence>
           </div>
-          <div className="w-24 h-4 bg-black/5 rounded-[100%] blur-[2px] -mt-4" />
+          <div className="w-32 h-4 bg-black/5 rounded-[100%] blur-[2px] -mt-4" />
         </div>
       </div>
 
       {/* ── Bottom Section (flex: 2) ── */}
-      <div className="flex-[2] bg-white border-t-[5px] border-x-[5px] border-black rounded-t-[3.5rem] shadow-[0_-15px_60px_rgba(0,0,0,0.15)] flex flex-col overflow-hidden mx-1 mb-[-4px]">
+      <div className="flex-[2] relative bg-white border-t-[5px] border-x-[5px] border-black rounded-t-[3.5rem] shadow-[0_-15px_60px_rgba(0,0,0,0.15)] flex flex-col overflow-hidden mx-1 mb-[-4px]">
+        {/* Inside Trace */}
+        <div className={cn(
+          "absolute inset-[6px] border-[2.5px] rounded-t-[3.1rem] pointer-events-none z-10 transition-colors duration-500",
+          meta.border,
+          "opacity-40"
+        )} />
         {/* Panel Header */}
         <div className="px-8 pt-6 pb-4 shrink-0">
           <div className="flex items-center justify-between">
@@ -144,8 +155,8 @@ export default function Profile() {
         </div>
 
         {/* Costume Grid (Internally Scrollable ViewPort) */}
-        <div className="flex-1 overflow-y-auto px-7 pb-10 no-scrollbar">
-          <div className="grid grid-cols-4 gap-4 pt-1">
+        <div className="flex-1 overflow-y-auto px-6 pb-10 no-scrollbar">
+          <div className="grid grid-cols-3 gap-4 pt-4">
             {sortedOutfits.map((outfit) => {
               const isSelected = selectedId === outfit.id;
               const outfitMeta = RARITY_META[outfit.rarity];
@@ -160,26 +171,53 @@ export default function Profile() {
                     }
                   }}
                   className={cn(
-                    "group relative aspect-square rounded-[1.8rem] border-[3.5px] transition-all duration-200 flex flex-col items-center justify-center p-2 overflow-hidden",
+                    "group relative aspect-square rounded-[1.5rem] border-[4px] transition-all duration-200 flex flex-col items-center justify-center p-2.5 overflow-hidden",
                     isSelected 
-                      ? "border-black bg-white shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]" 
-                      : "bg-slate-50 border-transparent hover:bg-slate-100",
-                    isSelected && outfit.rarity !== "common" && `bg-gradient-to-tr ${outfit.rarity === "legendary" ? "from-amber-50 to-white" : outfit.rarity === "mythic" ? "from-purple-50 to-white" : "from-blue-50 to-white"}`
+                      ? "border-black shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] scale-[1.02] z-10" 
+                      : "border-black/10 bg-slate-50/50 hover:border-black/20",
+                    isSelected 
+                      ? (outfit.rarity === "legendary" ? "bg-amber-100" : outfit.rarity === "mythic" ? "bg-purple-100" : outfit.rarity === "rare" ? "bg-blue-100" : "bg-white")
+                      : "bg-slate-50/50"
                   )}
                 >
+                  {/* Internal rarity border */}
                   <div className={cn(
-                      "absolute inset-0 border-[3px] rounded-[inherit] pointer-events-none opacity-40",
+                      "absolute inset-0 border-[3.5px] rounded-[inherit] pointer-events-none opacity-60",
                       outfitMeta.border
                   )} />
-                  <img src={outfit.image} className="w-[85%] h-[85%] object-contain pointer-events-none drop-shadow-sm" />
+
+                  {/* Item Image */}
+                  <div className="relative w-[88%] h-[88%] flex items-center justify-center">
+                    <img 
+                      src={outfit.image} 
+                      className={cn(
+                        "w-full h-full object-contain pointer-events-none drop-shadow-md transition-transform duration-300",
+                        isSelected && "scale-110"
+                      )} 
+                    />
+                  </div>
+
+                  {/* Selection Badge */}
                   {isSelected && (
-                    <div className={cn(
-                        "absolute top-1.5 right-1.5 w-5 h-5 rounded-full border-[2px] border-black flex items-center justify-center shadow-sm",
+                    <motion.div 
+                      initial={{ scale: 0 }}
+                      animate={{ scale: 1 }}
+                      className={cn(
+                        "absolute top-2 right-2 w-6 h-6 rounded-xl border-[2.5px] border-black flex items-center justify-center shadow-sm z-20",
                         outfitMeta.bg
-                    )}>
-                      <Check className="w-3 h-3 text-white" strokeWidth={5} />
-                    </div>
+                      )}
+                    >
+                      <Check className="w-3.5 h-3.5 text-white" strokeWidth={5} />
+                    </motion.div>
                   )}
+
+                  {/* Rarity Label (Bottom) */}
+                  <div className={cn(
+                    "absolute bottom-0 w-full py-1 text-[8px] font-black uppercase tracking-widest text-center backdrop-blur-sm",
+                    isSelected ? "bg-black text-white" : cn("bg-black/5 opacity-50", outfitMeta.color)
+                  )}>
+                    {outfit.rarity}
+                  </div>
                 </button>
               );
             })}
