@@ -57,6 +57,7 @@ export default function Profile() {
     return [...PENGUIN_OUTFITS].sort((a, b) => weights[b.rarity] - weights[a.rarity]);
   }, []);
 
+  const [isExpanded, setIsExpanded] = useState(false);
   const meta = RARITY_META[selectedOutfit.rarity];
 
   return (
@@ -130,46 +131,51 @@ export default function Profile() {
         </div>
       </div>
 
-      {/* ── Wardrobe Section (Strictly Limited Drawer) ── */}
+      {/* ── Vertical Wardrobe Drawer (With Peek State) ── */}
       <motion.div 
-        initial={{ y: "50dvh" }}
+        initial="collapsed"
+        animate={isExpanded ? "expanded" : "collapsed"}
         drag="y"
-        // Constraints: 
-        // 1/2 screen = 50dvh.
-        // 2/3 screen = 66.6dvh total (meaning it moves up by ~16.6% of the screen).
-        // We handle this by using a fixed travel distance.
-        dragConstraints={{ 
-          top: -Math.round(typeof window !== 'undefined' ? window.innerHeight * 0.17 : 140), 
-          bottom: 0 
+        dragConstraints={{ top: 0, bottom: 0 }}
+        dragElastic={0}
+        onDragEnd={(_, info) => {
+          // If we drag up more than 50px OR have high upward velocity
+          if (info.offset.y < -50 || info.velocity.y < -500) setIsExpanded(true);
+          // If we drag down more than 50px OR have high downward velocity
+          if (info.offset.y > 50 || info.velocity.y > 500) setIsExpanded(false);
         }}
-        dragElastic={0} // ABSOLUTE LOCK at those values
-        dragMomentum={false} // No "shooting" behavior
         className="absolute inset-x-0 top-0 h-[100dvh] z-30 flex flex-col bg-white border-t-[5px] border-black rounded-t-[3.5rem] shadow-[0_-30px_80px_rgba(0,0,0,0.25)] overflow-hidden"
+        variants={{
+          collapsed: { y: "calc(100% - 275px)" },
+          expanded: { y: "15%" }
+        }}
+        transition={{ type: "spring", damping: 28, stiffness: 220 }}
       >
         {/* Compact Drag Handle Area */}
         <div 
-          className="flex-none flex flex-col items-center pt-5 pb-5 group select-none cursor-grab active:cursor-grabbing"
+          className="flex-none flex flex-col items-center pt-5 pb-4 group select-none cursor-grab active:cursor-grabbing"
           style={{ touchAction: "none" }}
         >
           <div className="w-16 h-2 bg-black/10 rounded-full mb-5" />
           <div className="w-full flex items-center justify-between px-8">
              <div>
                <h2 className="text-sm font-black uppercase tracking-[0.1em] text-black">Wardrobe</h2>
-               <div className="h-1.5 w-10 bg-black rounded-full mt-1" />
+               <div className="h-1.5 w-8 bg-black rounded-full mt-1" />
              </div>
              <p className="text-[10px] font-black text-black/25 uppercase tracking-widest">{PENGUIN_OUTFITS.length} Items</p>
           </div>
         </div>
 
-        {/* Wardrobe Grid */}
+        {/* Wardrobe Grid - Height here determines the "Peek" exactly */}
         <div 
-          className="flex-1 overflow-y-auto px-7 pb-32 pt-2 no-scrollbar touch-pan-y overscroll-contain"
+          className="flex-1 overflow-y-auto px-7 pb-32 no-scrollbar touch-pan-y overscroll-contain"
           onPointerDown={(e) => e.stopPropagation()}
         >
-          <div className="grid grid-cols-3 gap-4 pb-20">
+          <div className="grid grid-cols-3 gap-4 pt-2">
             {sortedOutfits.map((outfit) => {
               const isSelected = selectedId === outfit.id;
               const outfitMeta = RARITY_META[outfit.rarity];
+              // Each item is roughly 100px. 1.5 rows = 150px.
               return (
                 <button
                   key={outfit.id}
@@ -184,7 +190,7 @@ export default function Profile() {
                     "group relative aspect-square rounded-[1.8rem] border-[3px] transition-all duration-200 flex flex-col items-center justify-center p-2.5 overflow-hidden",
                     isSelected 
                       ? "border-black bg-white shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]" 
-                      : "bg-slate-100/80 border-transparent hover:bg-slate-200/80",
+                      : "bg-slate-50 border-transparent hover:bg-slate-100",
                     isSelected && outfit.rarity !== "common" && `bg-gradient-to-tr ${outfit.rarity === "legendary" ? "from-amber-50 to-white" : outfit.rarity === "mythic" ? "from-purple-50 to-white" : "from-blue-50 to-white"}`
                   )}
                 >
@@ -192,10 +198,10 @@ export default function Profile() {
                       "absolute inset-0 border-[3px] rounded-[inherit] pointer-events-none opacity-40",
                       outfitMeta.border
                   )} />
-                  <img src={outfit.image} className="w-[80%] h-[80%] object-contain pointer-events-none drop-shadow-sm" />
+                  <img src={outfit.image} className="w-[85%] h-[85%] object-contain pointer-events-none drop-shadow-sm" />
                   {isSelected && (
                     <div className={cn(
-                        "absolute top-1.5 right-1.5 w-5 h-5 rounded-full border-[2px] border-black flex items-center justify-center shadow-sm",
+                        "absolute top-2 right-2 w-5 h-5 rounded-full border-[2px] border-black flex items-center justify-center shadow-sm",
                         outfitMeta.bg
                     )}>
                       <Check className="w-3 h-3 text-white" strokeWidth={5} />
