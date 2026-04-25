@@ -4,6 +4,7 @@ import confetti from "canvas-confetti";
 import { motion } from "framer-motion";
 import { useParams } from "wouter";
 import { Flame, Sparkles, Star, Trophy, Zap, CheckCircle2, TrendingUp, Menu, Shield } from "lucide-react";
+import { useLocation as useWouterLocation } from "wouter";
 import { calculateStreakMultiplier, getEffectiveStreakForDate, getFamilyTimeZone } from "../../../shared/streak";
 import type { Chore } from "../../../shared/schema";
 import { ChoreCard } from "../components/ChoreCard";
@@ -83,6 +84,7 @@ export default function Dashboard() {
   const { data: winners = [] } = useFamilyMonthlyWinners(id);
   const { data: onboarding } = useFamilyOnboarding(id);
   const completeMutation = useCompleteChore();
+  const [, navigate] = useWouterLocation();
 
   const today = new Date();
 
@@ -167,7 +169,7 @@ export default function Dashboard() {
                     Hi, {currentUser.username}! 👋
                   </h1>
                 </div>
-                <p className="text-sm text-white/70 mt-0.5">
+                <p className="text-sm text-white/80 mt-0.5" style={{ textShadow: '0 1px 3px rgba(0,0,0,0.3)' }}>
                   {rank === 1 ? "🥇 You're leading the family!" : `Rank #${rank || 1} in your family`}
                 </p>
               </div>
@@ -196,11 +198,11 @@ export default function Dashboard() {
           {/* Progress to next rank */}
           <div className="mb-0.5">
             <div className="flex justify-between items-center mb-1">
-              <p className="text-[9px] font-bold uppercase tracking-widest text-white/60 flex items-center gap-1">
+              <p className="text-[9px] font-bold uppercase tracking-widest text-white/80 flex items-center gap-1" style={{ textShadow: '0 1px 3px rgba(0,0,0,0.4)' }}>
                 <TrendingUp className="w-3 h-3" />
                 {userAbove ? `Progress to rank #${rank - 1}` : "You're #1 — keep it up!"}
               </p>
-              <p className="text-[9px] font-bold text-white/70">{progressToNext}%</p>
+              <p className="text-[9px] font-bold text-white/80" style={{ textShadow: '0 1px 3px rgba(0,0,0,0.4)' }}>{progressToNext}%</p>
             </div>
             <div className="h-1.5 rounded-full overflow-hidden" style={{ background: 'rgba(255, 255, 255, 0.1)' }}>
               <motion.div
@@ -221,9 +223,9 @@ export default function Dashboard() {
             { icon: Zap, label: "Next up", value: `${totalActionable}`, sub: "ready now", color: "text-yellow-300" },
           ].map(({ icon: Icon, label, value, sub, color }) => (
             <div key={label} className="flex flex-col items-center py-2.5 px-2">
-              <Icon className={cn("w-3.5 h-3.5 mb-0.5", color)} />
-              <p className="font-display text-base font-bold text-white leading-none">{value}</p>
-              <p className="text-[9px] font-bold uppercase tracking-widest text-white/50 mt-0.5 truncate w-full text-center">{sub}</p>
+              <Icon className={cn("w-3.5 h-3.5 mb-0.5", color)} style={{ filter: 'drop-shadow(0 0 3px currentColor)' }} />
+              <p className="font-display text-base font-bold text-white leading-none" style={{ textShadow: '0 1px 4px rgba(0,0,0,0.5)' }}>{value}</p>
+              <p className="text-[9px] font-bold uppercase tracking-widest text-white/70 mt-0.5 truncate w-full text-center" style={{ textShadow: '0 1px 3px rgba(0,0,0,0.4)' }}>{sub}</p>
             </div>
           ))}
         </div>
@@ -237,8 +239,8 @@ export default function Dashboard() {
         className="mb-5 rounded-[1.5rem] p-4 glass-card"
       >
         <div className="flex items-center justify-between mb-3">
-          <h2 className="font-display text-base font-bold text-white">This week</h2>
-          <p className="text-xs font-bold text-white/40">{format(today, "MMMM yyyy")}</p>
+          <h2 className="font-display text-base font-bold text-foreground" style={{ textShadow: '0 1px 4px rgba(0,0,0,0.3)' }}>This week</h2>
+          <p className="text-xs font-bold text-foreground/60">{format(today, "MMMM yyyy")}</p>
         </div>
         <CalendarStrip />
       </motion.div>

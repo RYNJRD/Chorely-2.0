@@ -76,14 +76,14 @@ export default function Profile() {
   return (
     <div className="h-full transition-colors duration-700 overflow-hidden select-none flex flex-col font-sans bg-tab-profile">
       
-      {/* ── Top Section (flex: 3) ── */}
-      <div className="flex-[3] flex flex-col pt-6 px-5 min-h-0">
+      {/* ── Top Section (flex: 2.5) ── */}
+      <div className="flex-[2.5] flex flex-col pt-5 px-5 min-h-0">
         {/* Top Header */}
         <div className="flex items-center justify-between h-10 mb-5">
           <div className="flex items-center gap-3">
               <div className="w-10 h-10 rounded-xl flex items-center justify-center flex-none glass"
-                style={{ boxShadow: '0 0 12px rgba(var(--glow-primary), 0.2)' }}>
-                <Trophy className="w-5 h-5 text-primary" />
+                style={{ boxShadow: '0 0 12px rgba(250, 204, 21, 0.3)' }}>
+                <Trophy className="w-5 h-5 text-yellow-400" style={{ filter: 'drop-shadow(0 0 6px rgba(250, 204, 21, 0.6))' }} />
               </div>
               <div className="flex flex-col justify-center">
                 <h1 className="text-xl font-black leading-none text-indigo-950 dark:text-white">{currentUser.username}</h1>
@@ -99,18 +99,18 @@ export default function Profile() {
         </div>
 
         {/* Stats Row - Frosted Glass Gems */}
-        <div className="flex justify-center gap-3 mb-4 shrink-0 mx-auto w-full max-w-[260px]">
-            <div className="glass-card flex-1 rounded-2xl py-2 flex flex-col items-center justify-center">
-              <Star className="w-4 h-4 fill-amber-400 text-amber-400 mb-0.5" style={{ filter: 'drop-shadow(0 0 4px rgba(250, 204, 21, 0.5))' }} />
-              <span className="font-display font-black text-[13px] text-foreground">{currentUser.points}</span>
+        <div className="flex justify-center gap-2.5 mb-2 shrink-0 mx-auto w-full max-w-[240px]">
+            <div className="glass-card flex-1 rounded-2xl py-1 flex flex-col items-center justify-center">
+              <Star className="w-3.5 h-3.5 fill-amber-400 text-amber-400 mb-0.5" style={{ filter: 'drop-shadow(0 0 4px rgba(250, 204, 21, 0.5))' }} />
+              <span className="font-display font-black text-[12px] text-foreground">{currentUser.points}</span>
             </div>
-            <div className="glass-card flex-1 rounded-2xl py-2 flex flex-col items-center justify-center">
-              <Flame className="w-4 h-4 fill-orange-500 text-orange-400 mb-0.5" style={{ filter: 'drop-shadow(0 0 4px rgba(249, 115, 22, 0.5))' }} />
-              <span className="font-display font-black text-[13px] text-foreground">{currentUser.streak || 0}</span>
+            <div className="glass-card flex-1 rounded-2xl py-1 flex flex-col items-center justify-center">
+              <Flame className="w-3.5 h-3.5 fill-orange-500 text-orange-400 mb-0.5" style={{ filter: 'drop-shadow(0 0 4px rgba(249, 115, 22, 0.5))' }} />
+              <span className="font-display font-black text-[12px] text-foreground">{currentUser.streak || 0}</span>
             </div>
-            <div className="glass-card flex-1 rounded-2xl py-2 flex flex-col items-center justify-center">
-              <span className="text-[14px] font-black text-muted-foreground/40 mb-0.5 leading-none">#</span>
-              <span className="font-display font-black text-[13px] text-foreground">1</span>
+            <div className="glass-card flex-1 rounded-2xl py-1 flex flex-col items-center justify-center">
+              <span className="text-[12px] font-black text-muted-foreground/40 mb-0.5 leading-none">#</span>
+              <span className="font-display font-black text-[12px] text-foreground">1</span>
             </div>
         </div>
 
@@ -146,8 +146,8 @@ export default function Profile() {
         </div>
       </div>
 
-      {/* ── Bottom Section (flex: 2) ── */}
-      <div className="flex-[2] relative rounded-t-[3.5rem] flex flex-col overflow-hidden mx-1 mb-[-4px]"
+      {/* ── Bottom Section (flex: 2.5) ── */}
+      <div className="flex-[2.5] relative rounded-t-[2.5rem] flex flex-col overflow-hidden mx-1 mb-[-4px]"
         style={{
           background: 'var(--glass-bg)',
           backdropFilter: 'blur(25px)',
@@ -160,7 +160,7 @@ export default function Profile() {
       >
         {/* Inside Trace - rarity glow */}
         <div className={cn(
-          "absolute inset-[6px] rounded-t-[3.1rem] pointer-events-none z-10 transition-all duration-500",
+          "absolute inset-[5px] rounded-t-[2.1rem] pointer-events-none z-10 transition-all duration-500",
           meta.border ? "border" : "",
         )} style={{
           borderColor: selectedOutfit.rarity === "legendary" ? 'rgba(255, 215, 0, 0.25)' :
@@ -172,19 +172,19 @@ export default function Profile() {
         }} />
 
         {/* Panel Header */}
-        <div className="px-8 pt-6 pb-4 shrink-0">
+        <div className="px-6 pt-4 pb-2 shrink-0">
           <div className="flex items-center justify-between">
             <div>
-              <h2 className="text-sm font-black uppercase tracking-[0.1em] text-foreground/90">Wardrobe</h2>
-              <div className="h-1.5 w-8 bg-primary rounded-full mt-1" style={{ boxShadow: '0 0 8px rgba(var(--glow-primary), 0.5)' }} />
+              <h2 className="text-xs font-black uppercase tracking-[0.1em] text-foreground/90">Wardrobe</h2>
+              <div className="h-1 w-6 bg-primary rounded-full mt-0.5" style={{ boxShadow: '0 0 8px rgba(var(--glow-primary), 0.5)' }} />
             </div>
-            <p className="text-[10px] font-black text-muted-foreground uppercase tracking-widest">{PENGUIN_OUTFITS.length} Items</p>
+            <p className="text-[9px] font-black text-muted-foreground uppercase tracking-widest">{PENGUIN_OUTFITS.length} Items</p>
           </div>
         </div>
 
         {/* Costume Grid (Internally Scrollable ViewPort) */}
-        <div className="flex-1 overflow-y-auto px-6 pb-28 no-scrollbar mask-bottom-fade">
-          <div className="grid grid-cols-3 gap-3 pt-4">
+        <div className="flex-1 overflow-y-auto px-5 pb-28 no-scrollbar mask-bottom-fade">
+          <div className="grid grid-cols-3 gap-2.5 pt-2">
             {sortedOutfits.map((outfit) => {
               const isSelected = selectedId === outfit.id;
               const outfitMeta = RARITY_META[outfit.rarity];

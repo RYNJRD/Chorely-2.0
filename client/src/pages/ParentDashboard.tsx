@@ -221,9 +221,12 @@ export default function ParentDashboard() {
         >
           <div className="flex items-center justify-between mb-3">
             <p className="text-[11px] font-bold uppercase tracking-widest text-muted-foreground">Top Stars</p>
-            <span className="flex items-center gap-0.5 text-[10px] font-bold text-accent">
+            <button 
+              onClick={() => setLocation(`/family/${id}/leaderboard`)}
+              className="flex items-center gap-0.5 text-[10px] font-bold text-accent active:scale-95 transition-transform"
+            >
               <TrendingUp className="w-3 h-3" /> Live ranking
-            </span>
+            </button>
           </div>
           <div className="rounded-2xl glass-card overflow-hidden">
             {[...leaderboard].sort((a, b) => b.points - a.points).slice(0, 3).map((u, i) => (

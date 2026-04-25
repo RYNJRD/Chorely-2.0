@@ -27,7 +27,7 @@ export function BottomNav() {
       className="absolute bottom-5 left-1/2 -translate-x-1/2 w-[92%] max-w-[400px] z-50"
       style={{ paddingBottom: "max(env(safe-area-inset-bottom, 0px), 0px)" }}
     >
-      <div className="rounded-[2.5rem] px-2 py-2 dock-glass">
+      <div className="rounded-[2rem] px-1.5 py-1 dock-glass">
           <div className="flex items-center">
             {navItems.map((item) => {
               const isActive = location === item.href;
@@ -37,14 +37,14 @@ export function BottomNav() {
                 <Link
                   key={item.href}
                   href={item.href}
-                  className="relative flex-1 min-w-0 flex flex-col items-center py-1.5 gap-0.5"
+                  className="relative flex-1 min-w-0 flex flex-col items-center py-1 gap-0"
                 >
-                  <div className="relative flex items-center justify-center w-12 h-12 rounded-full">
+                  <div className="relative flex items-center justify-center w-10 h-10 rounded-full">
                     {/* Active circular glow pad */}
                     {isActive && (
                       <motion.div
                         layoutId="nav-active-pad"
-                        className="absolute inset-0 m-auto w-[42px] h-[42px] rounded-full bg-primary/20"
+                        className="absolute inset-0 m-auto w-[36px] h-[36px] rounded-full bg-primary/20"
                         style={{
                           boxShadow: item.label === "Parent"
                             ? '0 0 16px rgba(245, 158, 11, 0.4)'
@@ -65,8 +65,8 @@ export function BottomNav() {
                       } : undefined}
                     >
                       <Icon
-                        size={isActive ? 22 : 22}
-                        strokeWidth={isActive ? 2.5 : 2}
+                        size={20}
+                        strokeWidth={isActive ? 2.5 : 1.8}
                         fill="currentColor"
                         fillOpacity={isActive ? 0.8 : 0.15}
                         className={cn(

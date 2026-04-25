@@ -211,39 +211,22 @@ export default function Chat() {
       </AnimatePresence>
 
       {/* ── Header ── */}
-      <div className="flex-none px-5 pt-[max(1.5rem,env(safe-area-inset-top))] pb-4 z-10 relative glass"
-        style={{ borderBottom: '1px solid var(--glass-border)' }}
-      >
+      <div className="flex-none px-4 pt-[max(0.75rem,env(safe-area-inset-top))] pb-2 z-10 relative">
         <div className="flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-2xl flex items-center justify-center"
-              style={{ background: 'rgba(var(--glow-primary), 0.12)', border: '1px solid rgba(var(--glow-primary), 0.2)' }}>
-              <MessageSquare className="w-5 h-5 text-primary" strokeWidth={2.5} style={{ filter: 'drop-shadow(0 0 4px rgba(var(--glow-primary), 0.4))' }} />
+          <div className="flex items-center gap-2.5">
+            <div className="w-9 h-9 rounded-xl flex items-center justify-center"
+              style={{ background: 'rgba(56, 189, 248, 0.12)', border: '1px solid rgba(56, 189, 248, 0.25)' }}>
+              <MessageSquare className="w-4.5 h-4.5 text-cyan-400" strokeWidth={2.5} style={{ filter: 'drop-shadow(0 0 6px rgba(56, 189, 248, 0.6))' }} />
             </div>
-            <div>
-              <h1 className="font-display text-xl font-bold text-foreground">Family Chat</h1>
-              <p className="text-xs text-muted-foreground font-semibold">
-                {users.length > 0 ? `${users.length} members` : "Keep the family in sync"}
-              </p>
-            </div>
+            <h1 className="font-display text-base font-bold text-foreground">Chat</h1>
           </div>
-          {/* Right side actions */}
-          <div className="flex items-center gap-3">
-            <div className="flex -space-x-1.5 hidden sm:flex">
-              {users.slice(0, 3).map((u) => (
-                <div key={u.id} className="w-7 h-7 rounded-full border border-white/10 overflow-hidden">
-                  <UserAvatar user={u} size="sm" />
-                </div>
-              ))}
-            </div>
-            
-            <button 
-              onClick={() => setShowBgPicker(true)}
-              className="w-10 h-10 rounded-2xl btn-glass flex items-center justify-center text-muted-foreground hover:text-primary transition-all duration-300"
-            >
-              <Palette className="w-5 h-5" />
-            </button>
-          </div>
+          <button 
+            onClick={() => setShowBgPicker(true)}
+            className="w-9 h-9 rounded-xl flex items-center justify-center text-muted-foreground hover:text-primary transition-all duration-300"
+            style={{ background: 'rgba(0, 0, 0, 0.15)', border: '1px solid rgba(0, 0, 0, 0.2)' }}
+          >
+            <Palette className="w-4 h-4" />
+          </button>
         </div>
       </div>
 
@@ -354,9 +337,11 @@ export default function Chat() {
 
           {messages.length === 0 && (
             <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="flex flex-col items-center justify-center flex-1 py-20 text-center">
-              <div className="w-24 h-24 rounded-full flex items-center justify-center mb-6 glass"
-                style={{ boxShadow: '0 0 20px rgba(var(--glow-primary), 0.15)' }}>
-                <span className="text-6xl">🐧</span>
+              <div className="relative w-28 h-28 flex items-center justify-center mb-6">
+                {/* Animated neon ring */}
+                <div className="absolute inset-0 rounded-full animate-spin" style={{ animationDuration: '4s', background: 'conic-gradient(from 0deg, rgba(56, 189, 248, 0.6), rgba(168, 85, 247, 0.6), rgba(250, 204, 21, 0.6), rgba(56, 189, 248, 0.6))', padding: '3px', WebkitMaskImage: 'radial-gradient(farthest-side, transparent calc(100% - 3px), black calc(100% - 3px))', maskImage: 'radial-gradient(farthest-side, transparent calc(100% - 3px), black calc(100% - 3px))' }} />
+                <div className="absolute inset-[3px] rounded-full" style={{ background: 'var(--glass-bg)', backdropFilter: 'blur(12px)' }} />
+                <span className="text-5xl relative z-10">🐧</span>
               </div>
               <p className="font-display text-2xl font-bold mb-2 text-foreground">Quiet in here!</p>
               <p className="text-sm text-muted-foreground font-medium w-64 max-w-full mx-auto">Say hi to your family or drop a quick emoji to get started.</p>
@@ -365,9 +350,8 @@ export default function Chat() {
         </div>
       </ScrollArea>
 
-      {/* ── Floating glass input bar ── */}
-      <div className="flex-none px-4 pt-3 pb-[max(1rem,env(safe-area-inset-bottom))] z-20 relative glass"
-        style={{ borderTop: '1px solid var(--glass-border)' }}
+      {/* ── Floating input bar ── */}
+      <div className="flex-none px-4 pt-2 pb-[max(0.5rem,env(safe-area-inset-bottom))] z-20 relative"
       >
         <form onSubmit={handleSend} className="flex gap-2 max-w-2xl mx-auto items-center">
           <input type="file" ref={fileInputRef} className="hidden" accept="image/*" onChange={handleFileChange} />
