@@ -144,18 +144,18 @@ export default function Chat() {
               initial={{ y: "100%" }} animate={{ y: 0 }} exit={{ y: "100%" }}
               className="absolute bottom-0 inset-x-0 p-6 pb-12 z-50 rounded-t-[2.5rem] glass-card"
             >
-              <h3 className="font-display text-xl font-bold text-white mb-4">Choose Background</h3>
+              <h3 className="font-display text-xl font-bold text-foreground mb-4">Choose Background</h3>
               <div className="grid grid-cols-3 gap-3">
                 {presets.map(p => (
                   <button 
                     key={p.id}
                     onClick={() => selectBg(p.id)}
                     className={cn(
-                      "h-20 rounded-2xl flex items-center justify-center p-2 text-center text-[10px] font-bold transition-all duration-300 active:scale-95",
+                      "h-20 rounded-2xl flex items-center justify-center p-2 text-center text-[10px] font-bold transition-all duration-300 active:scale-95 glass",
                       p.class,
                       chatBg === p.class ? "ring-2 ring-primary scale-95" : ""
                     )}
-                    style={{ border: '1px solid rgba(255,255,255,0.1)', color: 'rgba(255,255,255,0.7)' }}
+                    style={{ color: 'var(--foreground)' }}
                   >
                     {p.label}
                   </button>
@@ -211,13 +211,8 @@ export default function Chat() {
       </AnimatePresence>
 
       {/* ── Header ── */}
-      <div className="flex-none px-5 pt-[max(1.5rem,env(safe-area-inset-top))] pb-4 z-10 relative"
-        style={{
-          background: 'rgba(15, 15, 25, 0.7)',
-          backdropFilter: 'blur(20px)',
-          WebkitBackdropFilter: 'blur(20px)',
-          borderBottom: '1px solid rgba(255, 255, 255, 0.06)',
-        }}
+      <div className="flex-none px-5 pt-[max(1.5rem,env(safe-area-inset-top))] pb-4 z-10 relative glass"
+        style={{ borderBottom: '1px solid var(--glass-border)' }}
       >
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3">
@@ -226,8 +221,8 @@ export default function Chat() {
               <MessageSquare className="w-5 h-5 text-primary" strokeWidth={2.5} style={{ filter: 'drop-shadow(0 0 4px rgba(var(--glow-primary), 0.4))' }} />
             </div>
             <div>
-              <h1 className="font-display text-xl font-bold text-white">Family Chat</h1>
-              <p className="text-xs text-white/35 font-semibold">
+              <h1 className="font-display text-xl font-bold text-foreground">Family Chat</h1>
+              <p className="text-xs text-muted-foreground font-semibold">
                 {users.length > 0 ? `${users.length} members` : "Keep the family in sync"}
               </p>
             </div>
@@ -244,7 +239,7 @@ export default function Chat() {
             
             <button 
               onClick={() => setShowBgPicker(true)}
-              className="w-10 h-10 rounded-2xl btn-glass flex items-center justify-center text-white/40 hover:text-primary transition-all duration-300"
+              className="w-10 h-10 rounded-2xl btn-glass flex items-center justify-center text-muted-foreground hover:text-primary transition-all duration-300"
             >
               <Palette className="w-5 h-5" />
             </button>
@@ -283,7 +278,7 @@ export default function Chat() {
                     animate={{ opacity: 1, scale: 1 }}
                     className="flex justify-center my-3"
                   >
-                    <div className="px-5 py-2 rounded-2xl text-[11px] font-bold text-white/40 text-center max-w-[85%] shadow-sm glass">
+                    <div className="px-5 py-2 rounded-2xl text-[11px] font-bold text-muted-foreground text-center max-w-[85%] shadow-sm glass">
                       {message.content}
                     </div>
                   </motion.div>
@@ -311,31 +306,29 @@ export default function Chat() {
                   {/* Bubble */}
                   <div className={cn("flex flex-col min-w-0", isMe ? "items-end" : "items-start")}>
                     {!isSameAsPrev && (
-                      <span className="text-[10px] font-bold text-white/30 uppercase tracking-widest mb-1 px-1">
+                      <span className="text-[10px] font-bold text-muted-foreground/60 uppercase tracking-widest mb-1 px-1">
                         {isMe ? "You" : message.senderName} · {format(new Date(message.createdAt), "HH:mm")}
                       </span>
                     )}
                     <div className={cn(
-                      "text-sm font-medium leading-relaxed max-w-full break-all whitespace-pre-wrap overflow-hidden",
-                      message.content.startsWith("[IMAGE:]") ? "p-1 glass rounded-2xl" :
+                      "text-sm font-medium leading-relaxed max-w-full break-all whitespace-pre-wrap overflow-hidden glass",
+                      message.content.startsWith("[IMAGE:]") ? "p-1 rounded-2xl" :
                       isMe
                         ? cn(
-                            "text-white rounded-2xl",
+                            "text-white border-primary",
                             hasNextSame ? "rounded-br-2xl " : "rounded-br-md ",
                             isSameAsPrev ? "rounded-tr-md " : ""
                           )
                         : cn(
-                            "text-white/90 rounded-2xl",
+                            "text-foreground",
                             hasNextSame ? "rounded-bl-2xl " : "rounded-bl-md ",
                             isSameAsPrev ? "rounded-tl-md " : ""
                           )
                     )}
-                    style={!message.content.startsWith("[IMAGE:]") ? {
-                      background: isMe 
-                        ? 'linear-gradient(135deg, hsl(262, 83%, 50%), hsl(280, 75%, 52%))' 
-                        : 'rgba(255, 255, 255, 0.08)',
-                      border: `1px solid ${isMe ? 'rgba(var(--glow-primary), 0.3)' : 'rgba(255, 255, 255, 0.08)'}`,
-                      boxShadow: isMe ? '0 0 12px rgba(var(--glow-primary), 0.15)' : 'none',
+                    style={(!message.content.startsWith("[IMAGE:]") && isMe) ? {
+                      background: 'linear-gradient(135deg, hsl(262, 83%, 50%), hsl(280, 75%, 52%))',
+                      boxShadow: '0 0 12px rgba(var(--glow-primary), 0.15)',
+                      borderColor: 'transparent',
                     } : undefined}
                     >
                       {message.content.startsWith("[IMAGE:]") ? (
@@ -365,28 +358,23 @@ export default function Chat() {
                 style={{ boxShadow: '0 0 20px rgba(var(--glow-primary), 0.15)' }}>
                 <span className="text-6xl">🐧</span>
               </div>
-              <p className="font-display text-2xl font-bold mb-2 text-white">Quiet in here!</p>
-              <p className="text-sm text-white/40 font-medium w-64 max-w-full mx-auto">Say hi to your family or drop a quick emoji to get started.</p>
+              <p className="font-display text-2xl font-bold mb-2 text-foreground">Quiet in here!</p>
+              <p className="text-sm text-muted-foreground font-medium w-64 max-w-full mx-auto">Say hi to your family or drop a quick emoji to get started.</p>
             </motion.div>
           )}
         </div>
       </ScrollArea>
 
       {/* ── Floating glass input bar ── */}
-      <div className="flex-none px-4 pt-3 pb-[max(1rem,env(safe-area-inset-bottom))] z-20 relative"
-        style={{
-          background: 'rgba(15, 15, 25, 0.6)',
-          backdropFilter: 'blur(20px)',
-          WebkitBackdropFilter: 'blur(20px)',
-          borderTop: '1px solid rgba(255, 255, 255, 0.05)',
-        }}
+      <div className="flex-none px-4 pt-3 pb-[max(1rem,env(safe-area-inset-bottom))] z-20 relative glass"
+        style={{ borderTop: '1px solid var(--glass-border)' }}
       >
         <form onSubmit={handleSend} className="flex gap-2 max-w-2xl mx-auto items-center">
           <input type="file" ref={fileInputRef} className="hidden" accept="image/*" onChange={handleFileChange} />
           <button 
             type="button"
             onClick={() => fileInputRef.current?.click()}
-            className="w-12 h-12 rounded-2xl btn-glass flex items-center justify-center text-white/40 transition-all duration-300 active:scale-95"
+            className="w-12 h-12 rounded-2xl btn-glass flex items-center justify-center text-muted-foreground transition-all duration-300 active:scale-95"
           >
             <Camera className="w-5 h-5" />
           </button>
@@ -402,7 +390,7 @@ export default function Chat() {
               onFocus={() => setIsFocused(true)}
               onBlur={() => setIsFocused(false)}
               placeholder="Type a message…"
-              className="w-full h-12 px-4 bg-transparent text-sm font-medium text-white placeholder:text-white/25 outline-none"
+              className="w-full h-12 px-4 bg-transparent text-sm font-medium text-foreground placeholder:text-muted-foreground/50 outline-none"
             />
           </motion.div>
           <motion.button
@@ -413,7 +401,7 @@ export default function Chat() {
               "h-12 w-12 rounded-2xl flex items-center justify-center flex-shrink-0 transition-all duration-300",
               content.trim()
                 ? "btn-neon-primary text-white"
-                : "btn-glass text-white/30",
+                : "btn-glass text-muted-foreground",
             )}
           >
             <motion.div animate={content.trim() ? { rotate: -30 } : { rotate: 0 }} transition={{ type: "spring", stiffness: 400 }}>

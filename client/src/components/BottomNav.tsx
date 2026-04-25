@@ -28,15 +28,7 @@ export function BottomNav() {
       style={{ paddingBottom: "max(env(safe-area-inset-bottom, 0px), 8px)" }}
     >
       <div className="mx-4 mb-2">
-        <div className="max-w-md mx-auto rounded-[2rem] px-2 py-1.5"
-          style={{
-            background: 'rgba(15, 15, 25, 0.7)',
-            backdropFilter: 'blur(24px)',
-            WebkitBackdropFilter: 'blur(24px)',
-            border: '1px solid rgba(255, 255, 255, 0.08)',
-            boxShadow: '0 8px 32px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,255,255,0.04)',
-          }}
-        >
+        <div className="max-w-md mx-auto rounded-[2rem] px-2 py-1.5 glass-card">
           <div className="flex items-center">
             {navItems.map((item) => {
               const isActive = location === item.href;
@@ -53,14 +45,11 @@ export function BottomNav() {
                     {isActive && (
                       <motion.div
                         layoutId="nav-active-pill"
-                        className="absolute inset-0 rounded-2xl"
+                        className="absolute inset-0 rounded-2xl bg-primary/15"
                         style={{
-                          background: item.label === "Parent" 
-                            ? 'rgba(245, 158, 11, 0.15)' 
-                            : 'rgba(139, 92, 246, 0.15)',
                           boxShadow: item.label === "Parent"
                             ? '0 0 12px rgba(245, 158, 11, 0.3)'
-                            : '0 0 12px rgba(139, 92, 246, 0.3)',
+                            : '0 0 12px rgba(var(--glow-primary), 0.3)',
                         }}
                         transition={{ type: "spring", stiffness: 450, damping: 32 }}
                       />
@@ -73,7 +62,7 @@ export function BottomNav() {
                       style={isActive ? {
                         filter: item.label === "Parent"
                           ? 'drop-shadow(0 0 6px rgba(245, 158, 11, 0.6))'
-                          : 'drop-shadow(0 0 6px rgba(139, 92, 246, 0.6))',
+                          : 'drop-shadow(0 0 6px rgba(var(--glow-primary), 0.6))',
                       } : undefined}
                     >
                       <Icon
@@ -82,22 +71,22 @@ export function BottomNav() {
                         className={cn(
                           "transition-colors duration-300",
                           isActive
-                            ? item.label === "Parent" ? "text-amber-400" : "text-primary"
-                            : "text-white/40",
-                          item.label === "Parent" && !isActive && "text-amber-400/40",
+                            ? item.label === "Parent" ? "text-amber-500" : "text-primary"
+                            : "text-muted-foreground/70",
+                          item.label === "Parent" && !isActive && "text-amber-500/40",
                         )}
                       />
                     </motion.div>
                   </div>
 
                   <motion.span
-                    animate={isActive ? { opacity: 1 } : { opacity: 0.45 }}
+                    animate={isActive ? { opacity: 1 } : { opacity: 0.6 }}
                     className={cn(
                       "text-[9px] font-bold tracking-wide uppercase truncate max-w-full px-0.5 leading-none transition-colors duration-300",
                       isActive
-                        ? item.label === "Parent" ? "text-amber-400" : "text-primary"
-                        : "text-white/35",
-                      item.label === "Parent" && !isActive && "text-amber-400/35",
+                        ? item.label === "Parent" ? "text-amber-500" : "text-primary"
+                        : "text-muted-foreground",
+                      item.label === "Parent" && !isActive && "text-amber-500/60",
                     )}
                   >
                     {item.label}

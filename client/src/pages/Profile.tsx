@@ -86,31 +86,31 @@ export default function Profile() {
                 <Trophy className="w-5 h-5 text-primary" />
               </div>
               <div className="flex flex-col justify-center">
-                <h1 className="text-xl font-black leading-none text-white">{currentUser.username}</h1>
-                <p className="text-[9px] font-black uppercase tracking-wider text-white/35 mt-1">Explorer Level 1</p>
+                <h1 className="text-xl font-black leading-none text-foreground">{currentUser.username}</h1>
+                <p className="text-[9px] font-black uppercase tracking-wider text-muted-foreground/80 mt-1">Explorer Level 1</p>
               </div>
           </div>
           <button 
             onClick={() => setIsDrawerOpen(true)}
             className="w-10 h-10 rounded-xl glass flex items-center justify-center active:scale-95 transition-all duration-300 flex-none"
           >
-              <SettingsIcon className="w-5 h-5 text-white/50" />
+              <SettingsIcon className="w-5 h-5 text-foreground/50" />
           </button>
         </div>
 
-        {/* Stats Row - Frosted Glass */}
-        <div className="grid grid-cols-3 gap-2.5 mb-4 shrink-0">
-            <div className="glass-card rounded-xl py-2.5 flex items-center justify-center gap-2">
-              <Star className="w-3.5 h-3.5 fill-amber-400 text-amber-400" style={{ filter: 'drop-shadow(0 0 4px rgba(250, 204, 21, 0.5))' }} />
-              <span className="font-display font-black text-sm text-white">{currentUser.points}</span>
+        {/* Stats Row - Frosted Glass Gems */}
+        <div className="flex justify-center gap-3 mb-4 shrink-0 mx-auto w-full max-w-sm">
+            <div className="glass-card flex-1 rounded-2xl py-2 flex flex-col items-center justify-center">
+              <Star className="w-4 h-4 fill-amber-400 text-amber-400 mb-0.5" style={{ filter: 'drop-shadow(0 0 4px rgba(250, 204, 21, 0.5))' }} />
+              <span className="font-display font-black text-[13px] text-foreground">{currentUser.points}</span>
             </div>
-            <div className="glass-card rounded-xl py-2.5 flex items-center justify-center gap-2">
-              <Flame className="w-3.5 h-3.5 fill-orange-500 text-orange-400" style={{ filter: 'drop-shadow(0 0 4px rgba(249, 115, 22, 0.5))' }} />
-              <span className="font-display font-black text-sm text-white">{currentUser.streak || 0}</span>
+            <div className="glass-card flex-1 rounded-2xl py-2 flex flex-col items-center justify-center">
+              <Flame className="w-4 h-4 fill-orange-500 text-orange-400 mb-0.5" style={{ filter: 'drop-shadow(0 0 4px rgba(249, 115, 22, 0.5))' }} />
+              <span className="font-display font-black text-[13px] text-foreground">{currentUser.streak || 0}</span>
             </div>
-            <div className="glass-card rounded-xl py-2.5 flex items-center justify-center gap-2">
-              <span className="text-[10px] font-black text-white/25">#</span>
-              <span className="font-display font-black text-sm text-white">1</span>
+            <div className="glass-card flex-1 rounded-2xl py-2 flex flex-col items-center justify-center">
+              <span className="text-[14px] font-black text-muted-foreground/40 mb-0.5 leading-none">#</span>
+              <span className="font-display font-black text-[13px] text-foreground">1</span>
             </div>
         </div>
 
@@ -147,16 +147,7 @@ export default function Profile() {
       </div>
 
       {/* ── Bottom Section (flex: 2) ── */}
-      <div className="flex-[2] relative rounded-t-[3.5rem] flex flex-col overflow-hidden mx-1 mb-[-4px]"
-        style={{
-          background: 'rgba(18, 18, 32, 0.8)',
-          backdropFilter: 'blur(32px)',
-          WebkitBackdropFilter: 'blur(32px)',
-          borderTop: '1px solid rgba(255, 255, 255, 0.1)',
-          borderLeft: '1px solid rgba(255, 255, 255, 0.06)',
-          borderRight: '1px solid rgba(255, 255, 255, 0.06)',
-          boxShadow: '0 -15px 60px rgba(0,0,0,0.3)',
-        }}
+      <div className="flex-[2] relative rounded-t-[3.5rem] flex flex-col overflow-hidden mx-1 mb-[-4px] glass-card"
       >
         {/* Inside Trace - rarity glow */}
         <div className={cn(
@@ -175,10 +166,10 @@ export default function Profile() {
         <div className="px-8 pt-6 pb-4 shrink-0">
           <div className="flex items-center justify-between">
             <div>
-              <h2 className="text-sm font-black uppercase tracking-[0.1em] text-white/90">Wardrobe</h2>
+              <h2 className="text-sm font-black uppercase tracking-[0.1em] text-foreground/90">Wardrobe</h2>
               <div className="h-1.5 w-8 bg-primary rounded-full mt-1" style={{ boxShadow: '0 0 8px rgba(var(--glow-primary), 0.5)' }} />
             </div>
-            <p className="text-[10px] font-black text-white/25 uppercase tracking-widest">{PENGUIN_OUTFITS.length} Items</p>
+            <p className="text-[10px] font-black text-muted-foreground uppercase tracking-widest">{PENGUIN_OUTFITS.length} Items</p>
           </div>
         </div>
 

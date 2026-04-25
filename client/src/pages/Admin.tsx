@@ -219,24 +219,24 @@ export default function Admin() {
   };
 
   const filteredUsers = familyUsers.filter((user) => user.username.toLowerCase().includes(searchQuery.toLowerCase()));
-  const inputClass = "w-full rounded-2xl px-4 py-3 font-medium focus:outline-none transition-all duration-300 text-white placeholder:text-white/30 glass-input";
+  const inputClass = "w-full rounded-2xl px-4 py-3 font-medium focus:outline-none transition-all duration-300 text-foreground placeholder:text-muted-foreground/50 glass-input";
 
   return (
     <div className="pt-[max(2rem,env(safe-area-inset-top))] px-5 pb-32 min-h-screen bg-tab-admin">
       <div className="flex items-center gap-3 mb-8">
         <div className="w-12 h-12 rounded-2xl flex items-center justify-center glass" style={{ boxShadow: '0 0 12px rgba(var(--glow-primary), 0.15)' }}>
-          <Settings className="text-white/70" />
+          <Settings className="text-muted-foreground" />
         </div>
         <div>
-          <h1 className="font-display text-3xl font-bold text-white">Admin</h1>
-          <p className="text-sm text-white/35 font-medium">Keep the house fair, warm, and moving.</p>
+          <h1 className="font-display text-3xl font-bold text-foreground">Admin</h1>
+          <p className="text-sm text-muted-foreground/70 font-medium">Keep the house fair, warm, and moving.</p>
         </div>
       </div>
 
       <div className="space-y-8">
         <section className="rounded-[1.75rem] p-5 glass-card" style={{ border: '1px solid rgba(var(--glow-primary), 0.15)' }}>
           <div className="flex items-center justify-between mb-3">
-            <h2 className="font-display text-lg font-bold flex items-center gap-2 text-white">
+            <h2 className="font-display text-lg font-bold flex items-center gap-2 text-foreground">
               <UsersIcon className="w-5 h-5 text-primary" style={{ filter: 'drop-shadow(0 0 4px rgba(var(--glow-primary), 0.4))' }} />
               Family invite
             </h2>
@@ -253,19 +253,19 @@ export default function Admin() {
             </button>
           </div>
           <div className="space-y-3">
-            <div className="rounded-2xl p-3 flex items-center justify-between gap-3 glass-input" style={{ boxShadow: 'inset 0 0 15px rgba(var(--glow-primary), 0.05)' }}>
+            <div className="rounded-2xl p-3 flex items-center justify-between gap-3 inset-glass">
               <div>
-                <p className="text-[10px] font-bold uppercase tracking-[0.18em] text-white/35">Code</p>
-                <p className="font-mono text-lg font-bold text-white">{inviteCode || "Loading..."}</p>
+                <p className="text-[10px] font-bold uppercase tracking-[0.18em] text-muted-foreground/80">Code</p>
+                <p className="font-mono text-lg font-bold text-foreground">{inviteCode || "Loading..."}</p>
               </div>
               <button className="rounded-xl p-3 shrink-0 transition-all duration-300 active:scale-95 btn-neon-primary text-white" onClick={() => copyToClipboard(inviteCode, "Invite code")}>
                 {copiedField === "Invite code" ? <Check className="w-4 h-4" /> : <Copy className="w-4 h-4" />}
               </button>
             </div>
-            <div className="rounded-2xl p-3 flex items-center justify-between gap-3 glass-input" style={{ boxShadow: 'inset 0 0 15px rgba(var(--glow-accent), 0.05)' }}>
+            <div className="rounded-2xl p-3 flex items-center justify-between gap-3 inset-glass">
               <div className="min-w-0">
-                <p className="text-[10px] font-bold uppercase tracking-[0.18em] text-white/35">Invite link</p>
-                <p className="truncate text-sm text-white/50">{inviteUrl || "Loading..."}</p>
+                <p className="text-[10px] font-bold uppercase tracking-[0.18em] text-muted-foreground/80">Invite link</p>
+                <p className="truncate text-sm text-muted-foreground">{inviteUrl || "Loading..."}</p>
               </div>
               <button className="rounded-xl p-3 shrink-0 transition-all duration-300 active:scale-95 btn-neon-accent" onClick={() => copyToClipboard(inviteUrl, "Invite link")}>
                 {copiedField === "Invite link" ? <Check className="w-4 h-4" /> : <LinkIcon className="w-4 h-4" />}

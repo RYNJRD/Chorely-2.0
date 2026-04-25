@@ -93,15 +93,15 @@ export default function Rewards() {
             style={{ background: 'rgba(var(--glow-secondary), 0.15)', border: '1px solid rgba(var(--glow-secondary), 0.2)' }}>
             <Gift className="w-7 h-7 text-cyan-400" strokeWidth={2.5} style={{ filter: 'drop-shadow(0 0 6px rgba(56, 189, 248, 0.5))' }} />
           </div>
-          <h1 className="font-display text-3xl font-bold text-white">Rewards</h1>
-          <p className="text-sm text-white/40 mt-1">Turn your stars into something fun.</p>
+          <h1 className="font-display text-3xl font-bold text-foreground">Rewards</h1>
+          <p className="text-sm text-muted-foreground mt-1">Turn your stars into something fun.</p>
         </div>
         <div className="text-right">
-          <p className="text-sm font-bold text-white/40 mb-1">Your balance</p>
+          <p className="text-sm font-bold text-muted-foreground mb-1">Your balance</p>
           <div className="inline-flex items-center gap-1 px-3 py-1.5 rounded-xl glass"
             style={{ boxShadow: '0 0 12px rgba(var(--glow-accent), 0.15)' }}>
             <Star className="w-5 h-5 fill-amber-400 text-amber-400" style={{ filter: 'drop-shadow(0 0 4px rgba(250, 204, 21, 0.5))' }} />
-            <span className="font-display font-bold text-xl text-white">{currentUser.points}</span>
+            <span className="font-display font-bold text-xl text-foreground">{currentUser.points}</span>
           </div>
         </div>
       </div>
@@ -119,14 +119,10 @@ export default function Rewards() {
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: index * 0.04 }}
               className={cn(
-                "rounded-[1.75rem] p-4 transition-all duration-300",
+                "glass-card rounded-[1.75rem] p-4 transition-all duration-300",
                 !canAfford && !reward.requiresApproval && "opacity-60",
+                canAfford ? "" : "border-opacity-50"
               )}
-              style={{
-                background: 'rgba(255, 255, 255, 0.04)',
-                backdropFilter: 'blur(16px)',
-                border: `1px solid ${canAfford ? 'rgba(255, 255, 255, 0.08)' : 'rgba(255, 255, 255, 0.04)'}`,
-              }}
             >
               <div className="flex items-start gap-4">
                 <div className="h-14 w-14 rounded-[1.5rem] flex items-center justify-center text-3xl shrink-0"
@@ -136,10 +132,10 @@ export default function Rewards() {
                 <div className="min-w-0 flex-1">
                   <div className="flex items-start justify-between gap-3">
                     <div>
-                      <h2 className="font-display text-lg font-bold leading-tight text-white">{reward.title}</h2>
-                      {reward.description ? <p className="text-sm text-white/40 mt-1">{reward.description}</p> : null}
+                      <h2 className="font-display text-lg font-bold leading-tight text-foreground">{reward.title}</h2>
+                      {reward.description ? <p className="text-sm text-muted-foreground mt-1">{reward.description}</p> : null}
                     </div>
-                    {!canAfford && !reward.requiresApproval && <Lock className="w-5 h-5 text-white/20 shrink-0" />}
+                    {!canAfford && !reward.requiresApproval && <Lock className="w-5 h-5 text-muted-foreground/50 shrink-0" />}
                   </div>
 
                   <div className="flex flex-wrap gap-2 mt-3">
@@ -162,31 +158,31 @@ export default function Rewards() {
                       <div className="flex items-center justify-between gap-3">
                         <div className="flex items-center gap-2">
                           <button className="h-9 w-9 rounded-xl btn-glass flex items-center justify-center" onClick={() => setQuantity((value) => Math.max(1, value - 1))}>
-                            <Minus size={16} className="text-white/70" />
+                            <Minus size={16} />
                           </button>
-                          <span className="min-w-8 text-center font-bold text-lg text-white">{quantity}</span>
+                          <span className="min-w-8 text-center font-bold text-lg text-foreground">{quantity}</span>
                           <button className="h-9 w-9 rounded-xl btn-glass flex items-center justify-center" onClick={() => setQuantity((value) => value + 1)}>
-                            <Plus size={16} className="text-white/70" />
+                            <Plus size={16} />
                           </button>
                         </div>
                         <div className="text-right">
-                          <p className="text-[11px] font-bold uppercase tracking-[0.18em] text-white/40">Total</p>
-                          <p className="font-display text-lg font-bold text-white">{totalCost} stars</p>
+                          <p className="text-[11px] font-bold uppercase tracking-[0.18em] text-muted-foreground">Total</p>
+                          <p className="font-display text-lg font-bold text-foreground">{totalCost} stars</p>
                         </div>
                       </div>
-                      <div className="mt-3 flex gap-2">
+                      <div className="mt-3 flex gap-2 justify-center">
                         <button 
-                          className="flex-1 min-h-[48px] rounded-2xl font-bold text-white btn-neon-primary disabled:opacity-50" 
+                          className="rounded-full px-6 min-h-[48px] font-bold text-white btn-neon-primary disabled:opacity-50" 
                           disabled={!canAfford && !reward.requiresApproval || isSubmitting} 
                           onClick={() => handleClaim(reward.id)}
                         >
                           {reward.requiresApproval ? "Request reward" : "Claim reward"}
                         </button>
-                        <button className="rounded-2xl px-4 btn-glass font-bold text-white/60" onClick={() => { setActiveRewardId(null); setQuantity(1); }}>
+                        <button className="rounded-full px-5 btn-glass font-bold text-foreground" onClick={() => { setActiveRewardId(null); setQuantity(1); }}>
                           Cancel
                         </button>
                       </div>
-                      <p className="text-xs text-white/30 mt-2">
+                      <p className="text-xs text-muted-foreground/70 mt-3 text-center">
                         {reward.requiresApproval
                           ? "Stars are deducted only if this request gets approved."
                           : `You will have ${Math.max(0, currentUser.points - totalCost)} stars left after claiming.`}
@@ -197,14 +193,9 @@ export default function Rewards() {
                       onClick={() => { setActiveRewardId(reward.id); setQuantity(1); }}
                       disabled={!canAfford && !reward.requiresApproval}
                       className={cn(
-                        "mt-4 rounded-full font-bold py-3 px-6 mx-auto block transition-all duration-300 active:scale-95 text-sm",
+                        "mt-4 rounded-full font-bold py-3 px-6 mx-auto block transition-all duration-300 active:scale-95 text-sm btn-neon-primary",
                         !canAfford && !reward.requiresApproval && "opacity-50 cursor-not-allowed",
                       )}
-                      style={{
-                        background: 'linear-gradient(135deg, hsl(262, 83%, 58%), hsl(280, 75%, 60%))',
-                        boxShadow: '0 0 16px rgba(var(--glow-primary), 0.3)',
-                        color: 'white',
-                      }}
                     >
                       {reward.requiresApproval ? "Request this reward" : `Claim for ${reward.costPoints} ⭐`}
                     </button>
