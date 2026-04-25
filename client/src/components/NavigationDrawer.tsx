@@ -37,7 +37,12 @@ export function NavigationDrawer({ isOpen, onClose }: NavigationDrawerProps) {
     onClose();
   };
 
-  const handleLogout = () => {
+  const handleLogout = async () => {
+    try {
+      await auth.signOut();
+    } catch (error) {
+      console.error("Firebase sign out failed:", error);
+    }
     logout();
     setLocation("/auth");
     onClose();

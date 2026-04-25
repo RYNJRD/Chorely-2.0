@@ -8,6 +8,7 @@ import {
   Pencil, RefreshCw, Shield, ShieldCheck, Smartphone,
   Sun, Trash2, Users, X, AlertTriangle, UserX, TrendingUp
 } from "lucide-react";
+import { auth } from "../lib/firebase";
 import { useStore } from "../store/useStore";
 import { useSettings, type PointsResetCycle } from "../hooks/use-settings";
 import { isParent } from "../lib/permissions";
@@ -233,13 +234,15 @@ export default function Settings() {
     setTimeout(() => setCopiedInvite(false), 2500);
   }
 
-  function handleResetAll() {
+  async function handleResetAll() {
+    await auth.signOut().catch(() => undefined);
     resetAllSettings();
     logout();
     setLocation("/get-started");
   }
 
-  function handleLeaveFamily() {
+  async function handleLeaveFamily() {
+    await auth.signOut().catch(() => undefined);
     logout();
     setShowLeaveConfirm(false);
     setLocation("/get-started");
@@ -267,7 +270,8 @@ export default function Settings() {
     toast({ title: "Data exported" });
   }
 
-  function handleDeleteAccount() {
+  async function handleDeleteAccount() {
+    await auth.signOut().catch(() => undefined);
     resetAllSettings();
     logout();
     setShowDeleteConfirm(false);
