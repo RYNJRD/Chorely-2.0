@@ -20,7 +20,7 @@ export async function createMessage(args: CreateMessageArgs) {
       userId: args.userId,
       type: "chat_message",
       title: `${args.senderName} sent a message`,
-      body: args.content,
+      body: args.content.startsWith("[IMAGE:]") ? "📷 Photo" : args.content.slice(0, 100),
       relatedEntityType: "message",
       relatedEntityId: message.id,
     });
