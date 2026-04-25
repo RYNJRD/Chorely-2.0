@@ -237,8 +237,8 @@
   }
 
   .mask-bottom-fade {
-    mask-image: linear-gradient(to bottom, black 0%, black calc(100% - 110px), transparent 100%);
-    -webkit-mask-image: linear-gradient(to bottom, black 0%, black calc(100% - 110px), transparent 100%);
+    mask-image: linear-gradient(to bottom, black 0%, black calc(100% - 80px), transparent 100%);
+    -webkit-mask-image: linear-gradient(to bottom, black 0%, black calc(100% - 80px), transparent 100%);
   }
 
   /* ── Neon Glow System ── */
@@ -533,6 +533,10 @@
   }
   @keyframes shimmer-slide {
     to { transform: translateX(100%); }
+  }
+
+  @keyframes spin {
+    to { transform: rotate(360deg); }
   }
 
   /* ── Per-tab background gradients (dark, immersive) ── */

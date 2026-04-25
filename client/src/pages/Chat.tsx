@@ -267,7 +267,7 @@ export default function Chat() {
               style={{ background: 'rgba(56, 189, 248, 0.12)', border: '1px solid rgba(56, 189, 248, 0.25)' }}>
               <MessageSquare className="w-4.5 h-4.5 text-cyan-400" strokeWidth={2.5} style={{ filter: 'drop-shadow(0 0 6px rgba(56, 189, 248, 0.6))' }} />
             </div>
-            <h1 className="font-display text-base font-bold text-foreground">Chat</h1>
+            <h1 className="font-display text-base font-bold text-foreground">{(() => { const n = family?.name || 'Family'; const lower = n.toLowerCase(); if (lower.endsWith("s'") || lower.endsWith("s's")) return `${n} Chat`; if (lower === lower && !lower.endsWith('s')) return `The ${n}'s Chat`; return lower.endsWith('s') ? `The ${n}' Chat` : `${n}'s Chat`; })()}</h1>
           </div>
           <button 
             onClick={() => setShowBgPicker(true)}
@@ -280,7 +280,7 @@ export default function Chat() {
       </div>
 
       {/* ── Messages ── */}
-      <ScrollArea className="flex-1 px-4 mask-bottom-fade" ref={scrollRef} onScroll={handleScroll}>
+      <ScrollArea className="flex-1 px-4" ref={scrollRef} onScroll={handleScroll}>
         <div className="flex flex-col py-4">
           <AnimatePresence initial={false}>
             {messages.map((message, index) => {

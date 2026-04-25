@@ -93,8 +93,8 @@ export default function Rewards() {
             style={{ background: 'rgba(var(--glow-secondary), 0.15)', border: '1px solid rgba(var(--glow-secondary), 0.2)' }}>
             <Gift className="w-7 h-7 text-cyan-400" strokeWidth={2.5} style={{ filter: 'drop-shadow(0 0 6px rgba(56, 189, 248, 0.5))' }} />
           </div>
-          <h1 className="font-display text-3xl font-bold text-foreground">Rewards</h1>
-          <p className="text-sm text-muted-foreground mt-1">Turn your stars into something fun.</p>
+          <h1 className="font-display text-3xl font-bold text-foreground" style={{ textShadow: '0 1px 4px rgba(0,0,0,0.3)' }}>Rewards</h1>
+          <p className="text-sm text-muted-foreground mt-1" style={{ textShadow: '0 1px 3px rgba(0,0,0,0.2)' }}>Turn your stars into something fun.</p>
         </div>
         <div className="text-right">
           <p className="text-sm font-bold text-muted-foreground mb-1">Your balance</p>
@@ -132,8 +132,8 @@ export default function Rewards() {
                 <div className="min-w-0 flex-1">
                   <div className="flex items-start justify-between gap-3">
                     <div>
-                      <h2 className="font-display text-lg font-bold leading-tight text-foreground">{reward.title}</h2>
-                      {reward.description ? <p className="text-sm text-muted-foreground mt-1">{reward.description}</p> : null}
+                      <h2 className="font-display text-lg font-bold leading-tight text-foreground" style={{ textShadow: '0 1px 3px rgba(0,0,0,0.2)' }}>{reward.title}</h2>
+                      {reward.description ? <p className="text-sm text-muted-foreground mt-1" style={{ textShadow: '0 1px 2px rgba(0,0,0,0.15)' }}>{reward.description}</p> : null}
                     </div>
                     {!canAfford && !reward.requiresApproval && <Lock className="w-5 h-5 text-muted-foreground/50 shrink-0" />}
                   </div>

@@ -63,13 +63,20 @@ export const ChoreCard = forwardRef<HTMLDivElement, ChoreCardProps>(
           border: `1px solid ${accentBorder}`,
           borderLeft: `3px solid ${accentBorder}`,
           boxShadow: !isDone && !isPending ? `0 0 12px ${accentBorder}` : 'none',
+          cursor: !isDone && !isCompleting && !isPending ? 'pointer' : 'default',
+        }}
+        onClick={() => {
+          if (isDone || isCompleting || isPending) return;
+          if (!confirming) setConfirming(true);
+          else setConfirming(false);
         }}
       >
         <div className="flex gap-3">
           {/* Check button */}
           <motion.button
             whileTap={!isDone && !isCompleting ? { scale: 0.88 } : undefined}
-            onClick={() => {
+            onClick={(e) => {
+              e.stopPropagation();
               if (!confirming) setConfirming(true);
               else setConfirming(false);
             }}

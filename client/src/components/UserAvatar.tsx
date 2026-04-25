@@ -36,7 +36,7 @@ export function UserAvatar({ user, size = "md", className }: UserAvatarProps) {
         className={cn(
           "absolute inset-0 w-full h-full pointer-events-none select-none",
           isSmall
-            ? "object-cover object-top scale-[1.6] origin-top"
+            ? "object-cover scale-[1.8] -translate-y-[15%]"
             : "object-contain object-bottom",
         )}
       />

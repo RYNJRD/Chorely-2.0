@@ -1,7 +1,7 @@
-import { useMemo } from "react";
+import { useMemo, useRef, useEffect, useState as useStateReact } from "react";
 import { addDays, format, isSameDay, startOfToday } from "date-fns";
 import confetti from "canvas-confetti";
-import { motion } from "framer-motion";
+import { motion, useInView } from "framer-motion";
 import { useParams } from "wouter";
 import { Flame, Sparkles, Star, Trophy, Zap, CheckCircle2, TrendingUp, Menu, Shield } from "lucide-react";
 import { useLocation as useWouterLocation } from "wouter";
@@ -63,8 +63,8 @@ function CalendarStrip() {
                 boxShadow: '0 0 16px rgba(var(--glow-primary), 0.4)',
               } : undefined}
             >
-              <span className="text-[10px] font-bold uppercase">{format(day, "EEE")}</span>
-              <span className={cn("text-sm font-bold mt-0.5", isToday && "text-white")}>{format(day, "d")}</span>
+              <span className="text-[10px] font-bold uppercase" style={{ textShadow: '0 1px 2px rgba(0,0,0,0.3)' }}>{format(day, "EEE")}</span>
+              <span className={cn("text-base font-bold mt-0.5", isToday && "text-white")} style={{ textShadow: '0 1px 2px rgba(0,0,0,0.3)' }}>{format(day, "d")}</span>
               {isToday && <div className="w-1 h-1 rounded-full bg-white/70 mt-1" />}
             </motion.div>
           );
@@ -73,6 +73,89 @@ function CalendarStrip() {
     </div>
   );
 }
+
+/* ─── Monthly Spotlight with animated trophy and confetti ─── */
+function MonthlySpotlight({ winner }: { winner: { title: string; summary: string; monthKey: string } }) {
+  const ref = useRef<HTMLDivElement>(null);
+  const isInView = useInView(ref, { once: true, margin: "-50px" });
+  const [hasFired, setHasFired] = useStateReact(false);
+
+  useEffect(() => {
+    if (isInView && !hasFired) {
+      setHasFired(true);
+      const timer = setTimeout(() => {
+        confetti({
+          particleCount: 80,
+          spread: 100,
+          origin: { y: 0.7, x: 0.5 },
+          colors: ["#FFD700", "#FDB931", "#FF8C00", "#F59E0B"],
+          gravity: 1.2,
+        });
+      }, 600);
+      return () => clearTimeout(timer);
+    }
+  }, [isInView, hasFired]);
+
+  return (
+    <motion.section
+      ref={ref}
+      initial={{ opacity: 0, y: 20 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true, margin: "-30px" }}
+      transition={{ duration: 0.5 }}
+      className="mb-8"
+    >
+      <div className="rounded-[2rem] overflow-hidden relative" style={{
+        border: '2px solid transparent',
+        backgroundClip: 'padding-box',
+      }}>
+        {/* Neon gold worm ring */}
+        <div className="absolute inset-0 rounded-[2rem] z-0 overflow-hidden">
+          <div className="absolute inset-[-2px] rounded-[2rem]" style={{
+            background: 'conic-gradient(from 0deg, rgba(255, 215, 0, 0.6), rgba(245, 158, 11, 0.1), rgba(255, 215, 0, 0.6), rgba(245, 158, 11, 0.1), rgba(255, 215, 0, 0.6))',
+            animation: isInView ? 'spin 3s linear infinite' : 'none',
+          }} />
+          <div className="absolute inset-[2px] rounded-[1.85rem]" style={{
+            background: 'var(--glass-bg)',
+          }} />
+        </div>
+
+        <div className="absolute inset-[2px] rounded-[1.85rem] bg-gradient-to-br from-accent/15 via-transparent to-primary/5 z-[1]" />
+        <div className="relative p-5 z-[2]">
+          <div className="flex flex-col items-center text-center gap-2 mb-3">
+            {/* Trophy rising from top */}
+            <motion.div
+              initial={{ y: -40, opacity: 0, scale: 0.6 }}
+              animate={isInView ? { y: 0, opacity: 1, scale: 1 } : {}}
+              transition={{ delay: 0.2, type: "spring", stiffness: 300, damping: 15 }}
+              className="w-16 h-16 rounded-2xl flex items-center justify-center"
+              style={{ background: 'rgba(255, 215, 0, 0.15)', boxShadow: isInView ? '0 0 24px rgba(255, 215, 0, 0.3)' : 'none' }}
+            >
+              <Trophy className="w-8 h-8 text-amber-400" style={{ filter: 'drop-shadow(0 0 8px rgba(255, 215, 0, 0.5))' }} />
+            </motion.div>
+            <motion.div
+              initial={{ opacity: 0, y: 8 }}
+              animate={isInView ? { opacity: 1, y: 0 } : {}}
+              transition={{ delay: 0.5 }}
+            >
+              <p className="text-[10px] font-bold uppercase tracking-widest text-amber-400" style={{ textShadow: '0 0 8px rgba(255, 215, 0, 0.3)' }}>Monthly spotlight</p>
+              <h2 className="font-display text-lg font-bold text-foreground" style={{ textShadow: '0 1px 3px rgba(0,0,0,0.2)' }}>{winner.title}</h2>
+            </motion.div>
+          </div>
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={isInView ? { opacity: 1 } : {}}
+            transition={{ delay: 0.7 }}
+          >
+            <p className="text-sm text-muted-foreground leading-relaxed text-center" style={{ textShadow: '0 1px 2px rgba(0,0,0,0.1)' }}>{winner.summary}</p>
+            <p className="text-[10px] font-bold text-muted-foreground/60 mt-2 uppercase tracking-widest text-center">{winner.monthKey}</p>
+          </motion.div>
+        </div>
+      </div>
+    </motion.section>
+  );
+}
+
 
 export default function Dashboard() {
   const { familyId } = useParams();
@@ -145,7 +228,7 @@ export default function Dashboard() {
   };
 
   return (
-    <div className="pt-6 px-5 pb-32 min-h-screen bg-tab-home">
+    <div className="pt-6 px-5 pb-20 min-h-screen bg-tab-home">
 
       {/* ── Hero Card ── */}
       <motion.div
@@ -158,24 +241,24 @@ export default function Dashboard() {
         <div className="absolute inset-0" style={{ backdropFilter: 'blur(20px)', WebkitBackdropFilter: 'blur(20px)', background: 'rgba(15, 15, 25, 0.4)', border: '1px solid rgba(139, 92, 246, 0.2)' }} />
 
         <div className="relative px-4 pt-3 pb-2">
-          {/* Top row: avatar + greeting + stars + menu */}
+          {/* Top row: avatar + greeting + menu */}
           <div className="flex items-start justify-between mb-2.5">
             <div className="flex items-center gap-2.5">
               <UserAvatar user={currentUser} size="sm" className="border-2 border-white/40 shadow-lg" />
               <div>
                 <p className="text-[10px] font-bold uppercase tracking-widest text-white/60">Welcome back</p>
-                <div className="flex items-center gap-2">
-                  <h1 className="font-display text-xl font-bold text-white leading-tight">
-                    Hi, {currentUser.username}! 👋
-                  </h1>
-                </div>
-                <p className="text-sm text-white/80 mt-0.5" style={{ textShadow: '0 1px 3px rgba(0,0,0,0.3)' }}>
-                  {rank === 1 ? "🥇 You're leading the family!" : `Rank #${rank || 1} in your family`}
-                </p>
+                <h1 className="font-display text-xl font-bold text-white leading-tight">
+                  Hi, {currentUser.username}! 👋
+                </h1>
               </div>
             </div>
             {/* Action Buttons Top Right */}
             <div className="flex items-center gap-2">
+              {/* Stars counter - inline */}
+              <div className="rounded-xl px-3 py-1.5 flex items-center gap-1.5 glass">
+                <Star className="w-3.5 h-3.5 fill-yellow-300 text-yellow-300" style={{ filter: 'drop-shadow(0 0 4px rgba(250, 204, 21, 0.5))' }} />
+                <p className="font-display text-base font-bold text-white leading-none">{currentUser.points}</p>
+              </div>
               <button
                 onClick={() => setIsDrawerOpen(true)}
                 className="w-10 h-10 flex items-center justify-center rounded-xl btn-glass text-white hover:bg-white/10 transition-all duration-300 active:scale-95"
@@ -185,15 +268,11 @@ export default function Dashboard() {
               </button>
             </div>
           </div>
-            {/* Stars counter */}
-            <div className="rounded-xl px-3 py-1.5 text-right glass">
-              <p className="text-[9px] font-bold uppercase tracking-widest text-white/50">Stars</p>
-              <div className="flex items-center gap-1 justify-end">
-                <Star className="w-3.5 h-3.5 fill-yellow-300 text-yellow-300" style={{ filter: 'drop-shadow(0 0 4px rgba(250, 204, 21, 0.5))' }} />
-                <p className="font-display text-xl font-bold text-white leading-none">{currentUser.points}</p>
-              </div>
-            </div>
-          </div>
+          
+          {/* Rank info */}
+          <p className="text-sm text-white/80 mb-2" style={{ textShadow: '0 1px 3px rgba(0,0,0,0.3)' }}>
+            {rank === 1 ? "🥇 You're leading the family!" : `Rank #${rank || 1} in your family`}
+          </p>
 
           {/* Progress to next rank */}
           <div className="mb-0.5">
@@ -214,6 +293,7 @@ export default function Dashboard() {
               />
             </div>
           </div>
+        </div>
 
         {/* Stats row */}
         <div className="relative grid grid-cols-3 divide-x divide-white/5" style={{ borderTop: '1px solid rgba(255,255,255,0.06)' }}>
@@ -359,29 +439,7 @@ export default function Dashboard() {
 
       {/* ── Monthly Spotlight ── */}
       {latestWinner && (
-        <motion.section
-          initial={{ opacity: 0, y: 8 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.4 }}
-          className="mb-8"
-        >
-          <div className="rounded-[2rem] overflow-hidden shadow-lg shadow-accent/10 relative">
-            <div className="absolute inset-0 bg-gradient-to-br from-accent/20 via-amber-50 to-primary/10 dark:from-accent/10 dark:via-amber-950/20 dark:to-primary/5" />
-            <div className="relative p-5">
-              <div className="flex items-center gap-3 mb-3">
-                <div className="w-12 h-12 rounded-2xl bg-accent/20 flex items-center justify-center">
-                  <Trophy className="w-6 h-6 text-accent" />
-                </div>
-                <div>
-                  <p className="text-[10px] font-bold uppercase tracking-widest text-accent">Monthly spotlight</p>
-                  <h2 className="font-display text-lg font-bold">{latestWinner.title}</h2>
-                </div>
-              </div>
-              <p className="text-sm text-muted-foreground leading-relaxed">{latestWinner.summary}</p>
-              <p className="text-[10px] font-bold text-muted-foreground/60 mt-2 uppercase tracking-widest">{latestWinner.monthKey}</p>
-            </div>
-          </div>
-        </motion.section>
+        <MonthlySpotlight winner={latestWinner} />
       )}
 
     </div>

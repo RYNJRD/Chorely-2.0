@@ -204,11 +204,13 @@ export default function Profile() {
                   )}
                   style={{
                     background: isSelected ? RARITY_BG_GLOW[outfit.rarity] : 'rgba(255, 255, 255, 0.04)',
-                    border: `1px solid ${isSelected 
-                      ? (outfit.rarity === "legendary" ? 'rgba(255, 215, 0, 0.4)' : 
-                         outfit.rarity === "mythic" ? 'rgba(168, 85, 247, 0.4)' : 
-                         outfit.rarity === "rare" ? 'rgba(56, 189, 248, 0.4)' : 'rgba(255, 255, 255, 0.15)')
-                      : 'rgba(255, 255, 255, 0.06)'}`,
+                    border: `1.5px solid ${isSelected 
+                      ? (outfit.rarity === "legendary" ? 'rgba(255, 215, 0, 0.6)' : 
+                         outfit.rarity === "mythic" ? 'rgba(168, 85, 247, 0.6)' : 
+                         outfit.rarity === "rare" ? 'rgba(56, 189, 248, 0.6)' : 'rgba(255, 255, 255, 0.2)')
+                      : (outfit.rarity === "legendary" ? 'rgba(255, 215, 0, 0.15)' : 
+                         outfit.rarity === "mythic" ? 'rgba(168, 85, 247, 0.15)' : 
+                         outfit.rarity === "rare" ? 'rgba(56, 189, 248, 0.15)' : 'rgba(255, 255, 255, 0.06)')}`,
                   }}
                 >
                   {/* Item Image */}
