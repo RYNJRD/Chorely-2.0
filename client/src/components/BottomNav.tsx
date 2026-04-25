@@ -24,11 +24,10 @@ export function BottomNav() {
 
   return (
     <div
-      className="absolute bottom-0 w-full z-50"
-      style={{ paddingBottom: "max(env(safe-area-inset-bottom, 0px), 8px)" }}
+      className="absolute bottom-5 left-1/2 -translate-x-1/2 w-[92%] max-w-[400px] z-50"
+      style={{ paddingBottom: "max(env(safe-area-inset-bottom, 0px), 0px)" }}
     >
-      <div className="mx-4 mb-2">
-        <div className="max-w-md mx-auto rounded-[2rem] px-2 py-1.5 glass-card">
+      <div className="rounded-[2.5rem] px-2 py-2 dock-glass">
           <div className="flex items-center">
             {navItems.map((item) => {
               const isActive = location === item.href;
@@ -40,16 +39,16 @@ export function BottomNav() {
                   href={item.href}
                   className="relative flex-1 min-w-0 flex flex-col items-center py-1.5 gap-0.5"
                 >
-                  <div className="relative flex items-center justify-center w-11 h-9 rounded-2xl">
-                    {/* Active glow pill */}
+                  <div className="relative flex items-center justify-center w-12 h-12 rounded-full">
+                    {/* Active circular glow pad */}
                     {isActive && (
                       <motion.div
-                        layoutId="nav-active-pill"
-                        className="absolute inset-0 rounded-2xl bg-primary/15"
+                        layoutId="nav-active-pad"
+                        className="absolute inset-0 m-auto w-[42px] h-[42px] rounded-full bg-primary/20"
                         style={{
                           boxShadow: item.label === "Parent"
-                            ? '0 0 12px rgba(245, 158, 11, 0.3)'
-                            : '0 0 12px rgba(var(--glow-primary), 0.3)',
+                            ? '0 0 16px rgba(245, 158, 11, 0.4)'
+                            : '0 0 16px rgba(var(--glow-primary), 0.4)',
                         }}
                         transition={{ type: "spring", stiffness: 450, damping: 32 }}
                       />
@@ -66,8 +65,10 @@ export function BottomNav() {
                       } : undefined}
                     >
                       <Icon
-                        size={isActive ? 21 : 20}
+                        size={isActive ? 22 : 22}
                         strokeWidth={isActive ? 2.5 : 2}
+                        fill="currentColor"
+                        fillOpacity={isActive ? 0.8 : 0.15}
                         className={cn(
                           "transition-colors duration-300",
                           isActive
@@ -80,11 +81,11 @@ export function BottomNav() {
                   </div>
 
                   <motion.span
-                    animate={isActive ? { opacity: 1 } : { opacity: 0.6 }}
+                    animate={isActive ? { opacity: 1, y: 0 } : { opacity: 0.6, y: -2 }}
                     className={cn(
-                      "text-[9px] font-bold tracking-wide uppercase truncate max-w-full px-0.5 leading-none transition-colors duration-300",
+                      "text-[9px] font-bold tracking-wide uppercase truncate max-w-full px-0.5 leading-none transition-colors duration-300 relative z-20",
                       isActive
-                        ? item.label === "Parent" ? "text-amber-500" : "text-primary"
+                        ? item.label === "Parent" ? "text-amber-500 drop-shadow-md" : "text-primary drop-shadow-md"
                         : "text-muted-foreground",
                       item.label === "Parent" && !isActive && "text-amber-500/60",
                     )}

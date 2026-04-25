@@ -86,8 +86,8 @@ export default function Profile() {
                 <Trophy className="w-5 h-5 text-primary" />
               </div>
               <div className="flex flex-col justify-center">
-                <h1 className="text-xl font-black leading-none text-foreground">{currentUser.username}</h1>
-                <p className="text-[9px] font-black uppercase tracking-wider text-muted-foreground/80 mt-1">Explorer Level 1</p>
+                <h1 className="text-xl font-black leading-none text-indigo-950 dark:text-white">{currentUser.username}</h1>
+                <p className="text-[9px] font-black uppercase tracking-wider text-indigo-900/70 dark:text-white/60 mt-1">Explorer Level 1</p>
               </div>
           </div>
           <button 
@@ -99,7 +99,7 @@ export default function Profile() {
         </div>
 
         {/* Stats Row - Frosted Glass Gems */}
-        <div className="flex justify-center gap-3 mb-4 shrink-0 mx-auto w-full max-w-sm">
+        <div className="flex justify-center gap-3 mb-4 shrink-0 mx-auto w-full max-w-[260px]">
             <div className="glass-card flex-1 rounded-2xl py-2 flex flex-col items-center justify-center">
               <Star className="w-4 h-4 fill-amber-400 text-amber-400 mb-0.5" style={{ filter: 'drop-shadow(0 0 4px rgba(250, 204, 21, 0.5))' }} />
               <span className="font-display font-black text-[13px] text-foreground">{currentUser.points}</span>
@@ -147,7 +147,16 @@ export default function Profile() {
       </div>
 
       {/* ── Bottom Section (flex: 2) ── */}
-      <div className="flex-[2] relative rounded-t-[3.5rem] flex flex-col overflow-hidden mx-1 mb-[-4px] glass-card"
+      <div className="flex-[2] relative rounded-t-[3.5rem] flex flex-col overflow-hidden mx-1 mb-[-4px]"
+        style={{
+          background: 'var(--glass-bg)',
+          backdropFilter: 'blur(25px)',
+          WebkitBackdropFilter: 'blur(25px)',
+          borderTop: '1px solid rgba(255, 255, 255, 0.15)',
+          borderLeft: '1px solid rgba(255, 255, 255, 0.08)',
+          borderRight: '1px solid rgba(255, 255, 255, 0.08)',
+          boxShadow: '0 -10px 40px rgba(0,0,0,0.1)',
+        }}
       >
         {/* Inside Trace - rarity glow */}
         <div className={cn(

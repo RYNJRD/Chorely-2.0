@@ -217,6 +217,26 @@
     border-radius: var(--radius);
   }
 
+  .dock-glass {
+    background: rgba(0, 0, 0, 0.4);
+    backdrop-filter: blur(25px);
+    -webkit-backdrop-filter: blur(25px);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
+    transition: background 0.5s ease, border-color 0.5s ease;
+  }
+  
+  .light .dock-glass {
+    background: rgba(255, 255, 255, 0.4);
+    border: 1px solid rgba(255, 255, 255, 0.5);
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+  }
+
+  .mask-bottom-fade {
+    mask-image: linear-gradient(to bottom, black 0%, black calc(100% - 110px), transparent 100%);
+    -webkit-mask-image: linear-gradient(to bottom, black 0%, black calc(100% - 110px), transparent 100%);
+  }
+
   /* ── Neon Glow System ── */
   .glow-primary {
     box-shadow: 0 0 15px rgba(var(--glow-primary), 0.5),

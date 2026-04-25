@@ -26,9 +26,10 @@ export function Layout({ children }: { children: React.ReactNode }) {
         <NavigationDrawer isOpen={isDrawerOpen} onClose={() => setIsDrawerOpen(false)} />
 
         <main className={cn(
-          "flex-1 overflow-x-hidden relative no-scrollbar rounded-[inherit]",
+          "flex-1 relative no-scrollbar rounded-[inherit]",
           (location.includes("/profile") || location.includes("/me")) ? "overflow-hidden touch-none" : "overflow-y-auto",
-          isOnboarding && "flex flex-col overflow-hidden touch-none h-full"
+          isOnboarding && "flex flex-col overflow-hidden touch-none h-full",
+          showNav && "mask-bottom-fade pb-[110px]"
         )}>
           {children}
         </main>
