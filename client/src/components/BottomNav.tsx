@@ -98,6 +98,5 @@ export function BottomNav() {
           </div>
         </div>
       </div>
-    </div>
-  );
-}
+    );
+  }
