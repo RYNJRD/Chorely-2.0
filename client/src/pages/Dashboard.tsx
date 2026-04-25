@@ -52,15 +52,19 @@ function CalendarStrip() {
               key={day.toISOString()}
               whileTap={{ scale: 0.92 }}
               className={cn(
-                "flex flex-col items-center rounded-2xl py-2.5 px-3 min-w-[46px] transition-all",
+                "flex flex-col items-center rounded-2xl py-2.5 px-3 min-w-[46px] transition-all duration-300",
                 isToday
-                  ? "bg-primary text-primary-foreground shadow-lg shadow-primary/30"
-                  : "text-muted-foreground hover:bg-muted/60",
+                  ? "text-white"
+                  : "text-white/35 hover:bg-white/5",
               )}
+              style={isToday ? {
+                background: 'linear-gradient(135deg, hsl(262, 83%, 58%), hsl(280, 75%, 60%))',
+                boxShadow: '0 0 16px rgba(var(--glow-primary), 0.4)',
+              } : undefined}
             >
               <span className="text-[10px] font-bold uppercase">{format(day, "EEE")}</span>
-              <span className={cn("text-sm font-bold mt-0.5", isToday && "text-primary-foreground")}>{format(day, "d")}</span>
-              {isToday && <div className="w-1 h-1 rounded-full bg-primary-foreground/70 mt-1" />}
+              <span className={cn("text-sm font-bold mt-0.5", isToday && "text-white")}>{format(day, "d")}</span>
+              {isToday && <div className="w-1 h-1 rounded-full bg-white/70 mt-1" />}
             </motion.div>
           );
         })}
@@ -145,11 +149,11 @@ export default function Dashboard() {
       <motion.div
         initial={{ opacity: 0, y: -12 }}
         animate={{ opacity: 1, y: 0 }}
-        className="mb-5 rounded-[2rem] overflow-hidden shadow-lg shadow-primary/15 relative"
+        className="mb-5 rounded-[2rem] overflow-hidden relative glow-primary"
       >
         {/* Gradient background */}
-        <div className="absolute inset-0 bg-gradient-to-br from-primary via-violet-600 to-indigo-600" />
-        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,rgba(255,255,255,0.15),transparent_60%)]" />
+        <div className="absolute inset-0" style={{ background: 'linear-gradient(135deg, rgba(139, 92, 246, 0.3), rgba(99, 102, 241, 0.2), rgba(79, 70, 229, 0.25))' }} />
+        <div className="absolute inset-0" style={{ backdropFilter: 'blur(20px)', WebkitBackdropFilter: 'blur(20px)', background: 'rgba(15, 15, 25, 0.4)', border: '1px solid rgba(139, 92, 246, 0.2)' }} />
 
         <div className="relative px-4 pt-3 pb-2">
           {/* Top row: avatar + greeting + stars + menu */}
@@ -172,7 +176,7 @@ export default function Dashboard() {
             <div className="flex items-center gap-2">
               <button
                 onClick={() => setIsDrawerOpen(true)}
-                className="w-10 h-10 flex items-center justify-center rounded-xl bg-black/20 backdrop-blur-md border border-white/20 shadow-lg text-white hover:bg-black/30 transition-colors"
+                className="w-10 h-10 flex items-center justify-center rounded-xl btn-glass text-white hover:bg-white/10 transition-all duration-300 active:scale-95"
                 aria-label="Open menu"
               >
                 <Menu className="w-5 h-5" />
@@ -180,10 +184,10 @@ export default function Dashboard() {
             </div>
           </div>
             {/* Stars counter */}
-            <div className="bg-white/15 backdrop-blur-sm rounded-xl px-3 py-1.5 text-right border border-white/20">
-              <p className="text-[9px] font-bold uppercase tracking-widest text-white/60">Stars</p>
+            <div className="rounded-xl px-3 py-1.5 text-right glass">
+              <p className="text-[9px] font-bold uppercase tracking-widest text-white/50">Stars</p>
               <div className="flex items-center gap-1 justify-end">
-                <Star className="w-3.5 h-3.5 fill-yellow-300 text-yellow-300" />
+                <Star className="w-3.5 h-3.5 fill-yellow-300 text-yellow-300" style={{ filter: 'drop-shadow(0 0 4px rgba(250, 204, 21, 0.5))' }} />
                 <p className="font-display text-xl font-bold text-white leading-none">{currentUser.points}</p>
               </div>
             </div>
@@ -198,18 +202,19 @@ export default function Dashboard() {
               </p>
               <p className="text-[9px] font-bold text-white/70">{progressToNext}%</p>
             </div>
-            <div className="h-1.5 bg-white/20 rounded-full overflow-hidden">
+            <div className="h-1.5 rounded-full overflow-hidden" style={{ background: 'rgba(255, 255, 255, 0.1)' }}>
               <motion.div
                 initial={{ width: 0 }}
                 animate={{ width: `${progressToNext}%` }}
                 transition={{ duration: 1.2, ease: "easeOut", delay: 0.3 }}
-                className="h-full rounded-full bg-gradient-to-r from-yellow-300 to-amber-400"
+                className="h-full rounded-full"
+                style={{ background: 'linear-gradient(90deg, rgb(250, 204, 21), rgb(245, 158, 11))', boxShadow: '0 0 8px rgba(250, 204, 21, 0.4)' }}
               />
             </div>
           </div>
 
         {/* Stats row */}
-        <div className="relative grid grid-cols-3 divide-x divide-white/10 border-t border-white/10">
+        <div className="relative grid grid-cols-3 divide-x divide-white/5" style={{ borderTop: '1px solid rgba(255,255,255,0.06)' }}>
           {[
             { icon: Flame, label: "Streak", value: `${currentUser.streak}d`, sub: bonusPercent ? `+${bonusPercent}%` : "Build it!", color: "text-orange-300" },
             { icon: CheckCircle2, label: "This week", value: `${completedThisWeek}`, sub: "chores done", color: "text-green-300" },
@@ -229,11 +234,11 @@ export default function Dashboard() {
         initial={{ opacity: 0, y: 8 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.15 }}
-        className="mb-5 rounded-[1.5rem] bg-card border border-border/60 p-4 shadow-sm"
+        className="mb-5 rounded-[1.5rem] p-4 glass-card"
       >
         <div className="flex items-center justify-between mb-3">
-          <h2 className="font-display text-base font-bold">This week</h2>
-          <p className="text-xs font-bold text-muted-foreground">{format(today, "MMMM yyyy")}</p>
+          <h2 className="font-display text-base font-bold text-white">This week</h2>
+          <p className="text-xs font-bold text-white/40">{format(today, "MMMM yyyy")}</p>
         </div>
         <CalendarStrip />
       </motion.div>
@@ -303,11 +308,11 @@ export default function Dashboard() {
       >
         <div className="flex items-center justify-between mb-3">
           <div>
-            <p className="text-[11px] font-bold uppercase tracking-widest text-primary">Do next</p>
-            <h2 className="font-display text-xl font-bold">Today&apos;s chores</h2>
+            <p className="text-[11px] font-bold uppercase tracking-widest text-primary text-glow-primary">Do next</p>
+            <h2 className="font-display text-xl font-bold text-white">Today&apos;s chores</h2>
           </div>
           {totalActionable > 0 && (
-            <span className="text-xs font-bold bg-primary/10 text-primary rounded-xl px-2.5 py-1">
+            <span className="text-xs font-bold rounded-xl px-2.5 py-1" style={{ background: 'rgba(var(--glow-primary), 0.1)', color: 'hsl(262, 83%, 65%)' }}>
               {totalActionable} ready
             </span>
           )}
@@ -340,11 +345,11 @@ export default function Dashboard() {
             <motion.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
-              className="rounded-[2rem] border-2 border-dashed border-border bg-card p-8 text-center"
+              className="rounded-[2rem] p-8 text-center glass-card" style={{ border: '1px dashed rgba(255,255,255,0.1)' }}
             >
               <div className="text-4xl mb-3">🎉</div>
-              <h3 className="font-display text-lg font-bold mb-1">You&apos;re all clear!</h3>
-              <p className="text-sm text-muted-foreground">No chores pressing right now. Check back later or chat with your family.</p>
+              <h3 className="font-display text-lg font-bold mb-1 text-white">You&apos;re all clear!</h3>
+              <p className="text-sm text-white/40">No chores pressing right now. Check back later or chat with your family.</p>
             </motion.div>
           )}
         </div>

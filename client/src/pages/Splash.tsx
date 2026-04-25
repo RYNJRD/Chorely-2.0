@@ -50,10 +50,10 @@ export default function Splash() {
               transition={{ type: "spring", bounce: 0.4 }}
               className="text-center mb-2"
             >
-              <h1 className="font-display text-5xl font-bold mb-1" style={{ color: "hsl(262 83% 58%)" }}>
+              <h1 className="font-display text-5xl font-bold mb-1 text-primary logo-glow">
                 Taskling
               </h1>
-              <div className="h-1 w-24 mx-auto rounded-full bg-gradient-to-r from-primary to-accent opacity-60 mt-1" />
+              <div className="h-1 w-24 mx-auto rounded-full opacity-60 mt-1" style={{ background: 'linear-gradient(90deg, hsl(262, 83%, 58%), hsl(43, 96%, 56%))', boxShadow: '0 0 12px rgba(var(--glow-primary), 0.4)' }} />
             </motion.div>
           )}
         </AnimatePresence>
@@ -64,7 +64,7 @@ export default function Splash() {
               initial={{ opacity: 0, y: 16 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ type: "spring", bounce: 0.3 }}
-              className="text-muted-foreground font-bold text-base mt-3"
+              className="text-white/40 font-bold text-base mt-3"
             >
               Making chores fun for the whole family ✨
             </motion.p>
@@ -81,8 +81,8 @@ export default function Splash() {
         {[0, 1, 2].map((i) => (
           <motion.div
             key={i}
-            className="w-2.5 h-2.5 rounded-full"
-            style={{ background: "hsl(262 83% 58%)" }}
+            className="w-2.5 h-2.5 rounded-full bg-primary"
+            style={{ boxShadow: '0 0 8px rgba(var(--glow-primary), 0.5)' }}
             animate={{ scale: [1, 1.5, 1], opacity: [0.3, 1, 0.3] }}
             transition={{ repeat: Infinity, duration: 1.1, delay: i * 0.22 }}
           />

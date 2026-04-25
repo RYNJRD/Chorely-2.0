@@ -53,7 +53,12 @@ export function NavigationDrawer({ isOpen, onClose }: NavigationDrawerProps) {
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             onClick={onClose}
-            className="absolute inset-0 z-[100] bg-background/60 backdrop-blur-sm"
+            className="absolute inset-0 z-[100]"
+            style={{
+              background: 'rgba(0, 0, 0, 0.5)',
+              backdropFilter: 'blur(8px)',
+              WebkitBackdropFilter: 'blur(8px)',
+            }}
           />
 
           {/* Drawer */}
@@ -62,77 +67,96 @@ export function NavigationDrawer({ isOpen, onClose }: NavigationDrawerProps) {
             animate={{ x: 0 }}
             exit={{ x: "100%" }}
             transition={{ type: "spring", damping: 25, stiffness: 200 }}
-            className="absolute top-0 right-0 h-full w-[280px] z-[101] bg-card border-l-2 border-slate-300/50 dark:border-slate-700/50 shadow-2xl flex flex-col"
+            className="absolute top-0 right-0 h-full w-[280px] z-[101] flex flex-col"
+            style={{
+              background: 'rgba(18, 18, 32, 0.85)',
+              backdropFilter: 'blur(32px)',
+              WebkitBackdropFilter: 'blur(32px)',
+              borderLeft: '1px solid rgba(255, 255, 255, 0.08)',
+              boxShadow: '-8px 0 40px rgba(0, 0, 0, 0.5)',
+            }}
           >
             {/* Header */}
             <div className="flex items-center justify-between p-6 pb-4">
-              <h2 className="font-display text-xl font-bold bg-gradient-to-r from-primary to-violet-500 bg-clip-text text-transparent">
-                Taskling — Menu
+              <h2 className="font-display text-xl font-bold text-gradient-brand">
+                Taskling
               </h2>
               <button 
                 onClick={onClose}
-                className="w-10 h-10 flex items-center justify-center rounded-xl bg-muted/50 hover:bg-muted transition-colors"
+                className="w-10 h-10 flex items-center justify-center rounded-xl btn-glass active:scale-95"
               >
-                <X className="w-5 h-5 text-muted-foreground" />
+                <X className="w-5 h-5 text-white/60" />
               </button>
             </div>
 
             {/* Navigation Links */}
-            <div className="flex-1 overflow-y-auto px-4 py-2 space-y-1.5">
+            <div className="flex-1 overflow-y-auto px-4 py-2 space-y-1">
               {navItems.map((item) => (
                 <button
                   key={item.label}
                   onClick={() => handleNavigate(item.path)}
-                  className="w-full flex items-center gap-3 px-4 py-3.5 rounded-2xl hover:bg-primary/5 transition-colors group text-left"
+                  className="w-full flex items-center gap-3 px-4 py-3.5 rounded-2xl hover:bg-white/5 transition-all duration-300 group text-left active:scale-[0.97]"
                 >
-                  <div className="w-10 h-10 flex items-center justify-center rounded-xl bg-muted/50 text-muted-foreground group-hover:bg-primary/10 group-hover:text-primary transition-colors">
-                    <item.icon className="w-5 h-5" />
+                  <div className="w-10 h-10 flex items-center justify-center rounded-xl transition-all duration-300"
+                    style={{
+                      background: 'rgba(255, 255, 255, 0.05)',
+                      border: '1px solid rgba(255, 255, 255, 0.06)',
+                    }}
+                  >
+                    <item.icon className="w-5 h-5 text-white/50 group-hover:text-primary transition-colors duration-300" />
                   </div>
-                  <span className="font-bold text-sm text-foreground/80 group-hover:text-foreground">
+                  <span className="font-bold text-sm text-white/70 group-hover:text-white transition-colors duration-300">
                     {item.label}
                   </span>
                 </button>
               ))}
 
               {/* Dark Mode Toggle */}
-              <div className="mt-4 px-4 py-4 rounded-[1.5rem] bg-muted/30 border border-border/50">
+              <div className="mt-4 px-4 py-4 rounded-[1.5rem] glass">
                 <div className="flex items-center justify-between mb-3">
                   <div className="flex items-center gap-2">
-                    {settings.darkMode ? <Moon className="w-4 h-4 text-primary" /> : <Sun className="w-4 h-4 text-amber-500" />}
-                    <span className="text-xs font-bold uppercase tracking-wider text-muted-foreground">Appearance</span>
+                    {settings.darkMode ? <Moon className="w-4 h-4 text-primary" /> : <Sun className="w-4 h-4 text-amber-400" />}
+                    <span className="text-xs font-bold uppercase tracking-wider text-white/50">Appearance</span>
                   </div>
                   <button
                     onClick={() => updateSetting("darkMode", !settings.darkMode)}
-                    className="relative w-11 h-6 rounded-full bg-muted-foreground/20 transition-colors"
+                    className="relative w-11 h-6 rounded-full transition-colors duration-300"
+                    style={{ background: settings.darkMode ? 'rgba(139, 92, 246, 0.3)' : 'rgba(255, 255, 255, 0.15)' }}
                   >
                     <motion.div
                       animate={{ x: settings.darkMode ? 22 : 2 }}
                       className={cn(
-                        "absolute top-1 left-0 w-4 h-4 rounded-full shadow-sm",
-                        settings.darkMode ? "bg-primary" : "bg-white"
+                        "absolute top-1 left-0 w-4 h-4 rounded-full shadow-sm transition-colors",
+                        settings.darkMode ? "bg-primary" : "bg-white/80"
                       )}
+                      style={settings.darkMode ? { boxShadow: '0 0 8px rgba(139, 92, 246, 0.5)' } : undefined}
                     />
                   </button>
                 </div>
-                <p className="text-[10px] font-medium text-muted-foreground/70">
+                <p className="text-[10px] font-medium text-white/30">
                   {settings.darkMode ? "Dark mode active" : "Bright mode active"}
                 </p>
               </div>
             </div>
 
             {/* Footer / User Info */}
-            <div className="p-6 border-t border-border/50 bg-muted/20">
+            <div className="p-6" style={{ borderTop: '1px solid rgba(255, 255, 255, 0.06)' }}>
               <div className="flex items-center gap-3 mb-6">
-                <UserAvatar user={currentUser} size="md" className="border-2 border-slate-300 dark:border-slate-600" />
+                <UserAvatar user={currentUser} size="md" className="border border-white/10" />
                 <div className="min-w-0">
-                  <p className="font-bold text-sm truncate">{currentUser?.username || "Guest"}</p>
-                  <p className="text-[11px] text-muted-foreground truncate">{firebaseUser?.email || "No email linked"}</p>
+                  <p className="font-bold text-sm text-white/90 truncate">{currentUser?.username || "Guest"}</p>
+                  <p className="text-[11px] text-white/35 truncate">{firebaseUser?.email || "No email linked"}</p>
                 </div>
               </div>
 
               <button
                 onClick={handleLogout}
-                className="w-full flex items-center justify-center gap-2 py-3.5 rounded-2xl border-2 border-rose-200 dark:border-rose-900/30 text-rose-500 font-bold text-sm hover:bg-rose-50 dark:hover:bg-rose-950/20 transition-all active:scale-[0.98]"
+                className="w-full flex items-center justify-center gap-2 py-3.5 rounded-2xl font-bold text-sm transition-all duration-300 active:scale-[0.96]"
+                style={{
+                  background: 'rgba(244, 63, 94, 0.1)',
+                  border: '1px solid rgba(244, 63, 94, 0.2)',
+                  color: 'rgb(251, 113, 133)',
+                }}
               >
                 <LogOut className="w-4 h-4" />
                 Sign Out

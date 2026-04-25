@@ -1,4 +1,4 @@
-﻿import { useState } from "react";
+import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Users, X, Crown, Star, ChevronRight } from "lucide-react";
 import { useStore } from "../store/useStore";
@@ -29,7 +29,8 @@ export function DemoSwitcher() {
         animate={{ opacity: 1, y: 0 }}
         onClick={() => setOpen(true)}
         data-testid="button-demo-switcher"
-        className="fixed top-3 left-1/2 -translate-x-1/2 z-[100] flex items-center gap-2 bg-gray-900/90 backdrop-blur-xl text-white text-xs font-bold px-3 py-1.5 rounded-full shadow-xl border border-white/10"
+        className="fixed top-3 left-1/2 -translate-x-1/2 z-[100] flex items-center gap-2 text-white text-xs font-bold px-3 py-1.5 rounded-full shadow-xl"
+        style={{ background: 'rgba(15, 15, 25, 0.8)', backdropFilter: 'blur(20px)', border: '1px solid rgba(255,255,255,0.08)' }}
       >
         <div className="w-1.5 h-1.5 rounded-full bg-amber-400 animate-pulse" />
         <span className="opacity-60 uppercase tracking-widest text-[10px]">Demo</span>
@@ -56,27 +57,28 @@ export function DemoSwitcher() {
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: "100%" }}
               transition={{ type: "spring", stiffness: 300, damping: 30 }}
-              className="fixed bottom-0 left-0 right-0 z-[120] max-w-md mx-auto bg-card rounded-t-[2rem] shadow-2xl border-t border-border/60 p-6 pb-10"
+              className="fixed bottom-0 left-0 right-0 z-[120] max-w-md mx-auto rounded-t-[2rem] shadow-2xl p-6 pb-10"
+              style={{ background: 'rgba(18, 18, 32, 0.9)', backdropFilter: 'blur(32px)', borderTop: '1px solid rgba(255,255,255,0.08)' }}
             >
               <div className="flex items-center justify-between mb-5">
                 <div>
-                  <h3 className="font-bold text-lg text-foreground">Switch Character</h3>
+                  <h3 className="font-bold text-lg text-white">Switch Character</h3>
                   <p className="text-xs text-muted-foreground font-medium">Demo mode — dev only</p>
                 </div>
                 <button
                   onClick={() => setOpen(false)}
-                  className="w-8 h-8 rounded-full bg-muted flex items-center justify-center hover:bg-muted/80 transition-colors"
+                  className="w-8 h-8 rounded-full btn-glass flex items-center justify-center"
                 >
                   <X className="w-4 h-4" />
                 </button>
               </div>
 
               {/* Current user */}
-              <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground mb-2">Playing as</p>
-              <div className="flex items-center gap-3 bg-primary/8 rounded-2xl p-3 mb-4 border-2 border-primary/20">
+              <p className="text-[10px] font-bold uppercase tracking-widest text-white/35 mb-2">Playing as</p>
+              <div className="flex items-center gap-3 rounded-2xl p-3 mb-4" style={{ background: 'rgba(var(--glow-primary), 0.08)', border: '1px solid rgba(var(--glow-primary), 0.2)' }}>
                 <UserAvatar user={currentUser} size="md" />
                 <div>
-                  <p className="font-bold text-foreground">{currentUser.username}</p>
+                  <p className="font-bold text-white">{currentUser.username}</p>
                   {(() => {
                     const b = getRoleBadge(currentUser);
                     const Icon = b.icon;
@@ -91,7 +93,7 @@ export function DemoSwitcher() {
               </div>
 
               {/* Other characters */}
-              <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground mb-2">Switch to</p>
+              <p className="text-[10px] font-bold uppercase tracking-widest text-white/35 mb-2">Switch to</p>
               <div className="space-y-2">
                 {otherUsers.map((user) => {
                   const badge = getRoleBadge(user);
@@ -101,17 +103,17 @@ export function DemoSwitcher() {
                       key={user.id}
                       data-testid={`switch-character-${user.id}`}
                       onClick={() => { setCurrentUser(user); setOpen(false); }}
-                      className="w-full flex items-center gap-3 bg-muted/40 hover:bg-muted/80 rounded-2xl p-3 border-2 border-transparent hover:border-primary/30 active:scale-[0.98] transition-all text-left"
+                      className="w-full flex items-center gap-3 hover:bg-white/5 rounded-2xl p-3 active:scale-[0.98] transition-all text-left glass-card"
                     >
                       <UserAvatar user={user} size="md" />
                       <div className="flex-1">
-                        <p className="font-bold text-foreground">{user.username}</p>
+                        <p className="font-bold text-white">{user.username}</p>
                         <div className={cn("inline-flex items-center gap-1 text-xs font-bold px-2 py-0.5 rounded-full border", badge.color)}>
                           <BadgeIcon className="w-3 h-3" />
                           {badge.label}
                         </div>
                       </div>
-                      <ChevronRight className="w-4 h-4 text-muted-foreground" />
+                      <ChevronRight className="w-4 h-4 text-white/30" />
                     </button>
                   );
                 })}

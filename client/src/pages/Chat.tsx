@@ -30,11 +30,11 @@ export default function Chat() {
 
   const presets = [
     { id: "none", label: "Default", class: "bg-tab-chat" },
-    { id: "purple", label: "Purple Haze", class: "bg-gradient-to-br from-violet-100 to-purple-200 dark:from-violet-950 dark:to-purple-900" },
-    { id: "peach", label: "Warm Peach", class: "bg-gradient-to-br from-orange-50 to-rose-100 dark:from-orange-950 dark:to-rose-900" },
-    { id: "sky", label: "Sky Blue", class: "bg-gradient-to-br from-sky-100 to-indigo-100 dark:from-sky-950 dark:to-indigo-900" },
-    { id: "mint", label: "Soft Mint", class: "bg-gradient-to-br from-emerald-50 to-teal-100 dark:from-emerald-950 dark:to-teal-900" },
-    { id: "stars", label: "Night Stars", class: "bg-zinc-900 text-white" },
+    { id: "purple", label: "Purple Haze", class: "bg-gradient-to-br from-violet-950/50 to-purple-950/50" },
+    { id: "peach", label: "Warm Peach", class: "bg-gradient-to-br from-orange-950/30 to-rose-950/30" },
+    { id: "sky", label: "Sky Blue", class: "bg-gradient-to-br from-sky-950/30 to-indigo-950/30" },
+    { id: "mint", label: "Soft Mint", class: "bg-gradient-to-br from-emerald-950/30 to-teal-950/30" },
+    { id: "stars", label: "Night Stars", class: "bg-zinc-950" },
   ];
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -137,23 +137,25 @@ export default function Chat() {
             <motion.div 
               initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
               onClick={() => setShowBgPicker(false)}
-              className="absolute inset-0 bg-black/20 backdrop-blur-sm z-40"
+              className="absolute inset-0 z-40"
+              style={{ background: 'rgba(0,0,0,0.4)', backdropFilter: 'blur(4px)' }}
             />
             <motion.div 
               initial={{ y: "100%" }} animate={{ y: 0 }} exit={{ y: "100%" }}
-              className="absolute bottom-0 inset-x-0 bg-card rounded-t-[2.5rem] p-6 pb-12 z-50 border-t-2 border-border shadow-2xl"
+              className="absolute bottom-0 inset-x-0 p-6 pb-12 z-50 rounded-t-[2.5rem] glass-card"
             >
-              <h3 className="font-display text-xl font-bold mb-4">Choose Background</h3>
+              <h3 className="font-display text-xl font-bold text-white mb-4">Choose Background</h3>
               <div className="grid grid-cols-3 gap-3">
                 {presets.map(p => (
                   <button 
                     key={p.id}
                     onClick={() => selectBg(p.id)}
                     className={cn(
-                      "h-20 rounded-2xl border-2 flex items-center justify-center p-2 text-center text-[10px] font-bold transition-all",
+                      "h-20 rounded-2xl flex items-center justify-center p-2 text-center text-[10px] font-bold transition-all duration-300 active:scale-95",
                       p.class,
-                      chatBg === p.class ? "border-primary scale-95" : "border-border"
+                      chatBg === p.class ? "ring-2 ring-primary scale-95" : ""
                     )}
+                    style={{ border: '1px solid rgba(255,255,255,0.1)', color: 'rgba(255,255,255,0.7)' }}
                   >
                     {p.label}
                   </button>
@@ -177,13 +179,13 @@ export default function Chat() {
             <div className="flex gap-4 mt-8 w-full max-w-md">
               <button 
                 onClick={() => setPreviewOpen(false)}
-                className="flex-1 h-16 rounded-3xl bg-white/10 text-white font-bold flex items-center justify-center gap-2 border border-white/20 active:scale-95 transition-transform"
+                className="flex-1 h-16 rounded-3xl btn-glass text-white font-bold flex items-center justify-center gap-2 active:scale-95 transition-transform"
               >
                 <X className="w-5 h-5" /> Cancel
               </button>
               <button 
                 onClick={handleSendImage}
-                className="flex-1 h-16 rounded-3xl bg-primary text-white font-bold flex items-center justify-center gap-2 shadow-xl shadow-primary/30 active:scale-95 transition-transform"
+                className="flex-1 h-16 rounded-3xl btn-neon-primary text-white font-bold flex items-center justify-center gap-2 active:scale-95 transition-transform"
               >
                 <Check className="w-5 h-5" /> Send
               </button>
@@ -200,7 +202,7 @@ export default function Chat() {
             onClick={() => setLightboxImage(null)}
             className="fixed inset-0 bg-black z-[100] flex items-center justify-center p-2"
           >
-            <button className="absolute top-10 right-6 w-12 h-12 rounded-full bg-white/10 text-white flex items-center justify-center border border-white/20">
+            <button className="absolute top-10 right-6 w-12 h-12 rounded-full btn-glass text-white flex items-center justify-center">
               <X className="w-6 h-6" />
             </button>
             <img src={lightboxImage} className="max-w-full max-h-full object-contain" alt="Zoomed" />
@@ -208,15 +210,24 @@ export default function Chat() {
         )}
       </AnimatePresence>
 
-      <div className="flex-none px-5 pr-14 pt-[max(1.5rem,env(safe-area-inset-top))] pb-4 border-b-2 border-slate-200/80 dark:border-slate-800/60 bg-card/95 dark:bg-zinc-950/95 backdrop-blur-md z-10 relative">
+      {/* ── Header ── */}
+      <div className="flex-none px-5 pt-[max(1.5rem,env(safe-area-inset-top))] pb-4 z-10 relative"
+        style={{
+          background: 'rgba(15, 15, 25, 0.7)',
+          backdropFilter: 'blur(20px)',
+          WebkitBackdropFilter: 'blur(20px)',
+          borderBottom: '1px solid rgba(255, 255, 255, 0.06)',
+        }}
+      >
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-2xl bg-primary/10 flex items-center justify-center">
-              <MessageSquare className="w-5 h-5 text-primary" strokeWidth={2.5} />
+            <div className="w-10 h-10 rounded-2xl flex items-center justify-center"
+              style={{ background: 'rgba(var(--glow-primary), 0.12)', border: '1px solid rgba(var(--glow-primary), 0.2)' }}>
+              <MessageSquare className="w-5 h-5 text-primary" strokeWidth={2.5} style={{ filter: 'drop-shadow(0 0 4px rgba(var(--glow-primary), 0.4))' }} />
             </div>
             <div>
-              <h1 className="font-display text-xl font-bold">Family Chat</h1>
-              <p className="text-xs text-muted-foreground font-semibold">
+              <h1 className="font-display text-xl font-bold text-white">Family Chat</h1>
+              <p className="text-xs text-white/35 font-semibold">
                 {users.length > 0 ? `${users.length} members` : "Keep the family in sync"}
               </p>
             </div>
@@ -225,7 +236,7 @@ export default function Chat() {
           <div className="flex items-center gap-3">
             <div className="flex -space-x-1.5 hidden sm:flex">
               {users.slice(0, 3).map((u) => (
-                <div key={u.id} className="w-7 h-7 rounded-full border-2 border-background overflow-hidden bg-primary/10">
+                <div key={u.id} className="w-7 h-7 rounded-full border border-white/10 overflow-hidden">
                   <UserAvatar user={u} size="sm" />
                 </div>
               ))}
@@ -233,7 +244,7 @@ export default function Chat() {
             
             <button 
               onClick={() => setShowBgPicker(true)}
-              className="w-10 h-10 rounded-2xl bg-muted/50 border-2 border-slate-300/50 dark:border-slate-700/50 flex items-center justify-center text-muted-foreground hover:text-primary transition-colors active:scale-95"
+              className="w-10 h-10 rounded-2xl btn-glass flex items-center justify-center text-white/40 hover:text-primary transition-all duration-300"
             >
               <Palette className="w-5 h-5" />
             </button>
@@ -272,7 +283,7 @@ export default function Chat() {
                     animate={{ opacity: 1, scale: 1 }}
                     className="flex justify-center my-3"
                   >
-                    <div className="px-5 py-2 rounded-2xl text-[11px] font-bold text-muted-foreground bg-card/80 border-2 border-slate-300/60 dark:border-slate-700/60 text-center max-w-[85%] shadow-sm">
+                    <div className="px-5 py-2 rounded-2xl text-[11px] font-bold text-white/40 text-center max-w-[85%] shadow-sm glass">
                       {message.content}
                     </div>
                   </motion.div>
@@ -300,17 +311,33 @@ export default function Chat() {
                   {/* Bubble */}
                   <div className={cn("flex flex-col min-w-0", isMe ? "items-end" : "items-start")}>
                     {!isSameAsPrev && (
-                      <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest mb-1 px-1">
+                      <span className="text-[10px] font-bold text-white/30 uppercase tracking-widest mb-1 px-1">
                         {isMe ? "You" : message.senderName} · {format(new Date(message.createdAt), "HH:mm")}
                       </span>
                     )}
                     <div className={cn(
-                      "text-sm font-medium shadow-sm leading-relaxed max-w-full break-all whitespace-pre-wrap overflow-hidden",
-                      message.content.startsWith("[IMAGE:]") ? "p-1 bg-white/30 backdrop-blur-md border border-white/20 rounded-2xl" :
+                      "text-sm font-medium leading-relaxed max-w-full break-all whitespace-pre-wrap overflow-hidden",
+                      message.content.startsWith("[IMAGE:]") ? "p-1 glass rounded-2xl" :
                       isMe
-                        ? "bg-primary text-primary-foreground shadow-primary/20 border border-primary/80 rounded-2xl " + (hasNextSame ? "rounded-br-2xl " : "rounded-br-md ") + (isSameAsPrev ? "rounded-tr-md " : "")
-                        : "bg-card text-card-foreground border-2 border-slate-300/70 dark:border-slate-700/70 rounded-2xl " + (hasNextSame ? "rounded-bl-2xl " : "rounded-bl-md ") + (isSameAsPrev ? "rounded-tl-md " : "")
-                    )}>
+                        ? cn(
+                            "text-white rounded-2xl",
+                            hasNextSame ? "rounded-br-2xl " : "rounded-br-md ",
+                            isSameAsPrev ? "rounded-tr-md " : ""
+                          )
+                        : cn(
+                            "text-white/90 rounded-2xl",
+                            hasNextSame ? "rounded-bl-2xl " : "rounded-bl-md ",
+                            isSameAsPrev ? "rounded-tl-md " : ""
+                          )
+                    )}
+                    style={!message.content.startsWith("[IMAGE:]") ? {
+                      background: isMe 
+                        ? 'linear-gradient(135deg, hsl(262, 83%, 50%), hsl(280, 75%, 52%))' 
+                        : 'rgba(255, 255, 255, 0.08)',
+                      border: `1px solid ${isMe ? 'rgba(var(--glow-primary), 0.3)' : 'rgba(255, 255, 255, 0.08)'}`,
+                      boxShadow: isMe ? '0 0 12px rgba(var(--glow-primary), 0.15)' : 'none',
+                    } : undefined}
+                    >
                       {message.content.startsWith("[IMAGE:]") ? (
                         <div 
                           onClick={() => setLightboxImage(message.content.replace("[IMAGE:]", ""))}
@@ -334,34 +361,39 @@ export default function Chat() {
 
           {messages.length === 0 && (
             <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="flex flex-col items-center justify-center flex-1 py-20 text-center">
-              <div className="w-24 h-24 bg-primary/5 rounded-full flex items-center justify-center mb-6 inner-shadow">
-                <span className="text-6xl text-primary">🐧</span>
+              <div className="w-24 h-24 rounded-full flex items-center justify-center mb-6 glass"
+                style={{ boxShadow: '0 0 20px rgba(var(--glow-primary), 0.15)' }}>
+                <span className="text-6xl">🐧</span>
               </div>
-              <p className="font-display text-2xl font-bold mb-2 text-foreground">Quiet in here!</p>
-              <p className="text-sm text-muted-foreground font-medium w-64 max-w-full mx-auto">Say hi to your family or drop a quick emoji to get started.</p>
+              <p className="font-display text-2xl font-bold mb-2 text-white">Quiet in here!</p>
+              <p className="text-sm text-white/40 font-medium w-64 max-w-full mx-auto">Say hi to your family or drop a quick emoji to get started.</p>
             </motion.div>
           )}
         </div>
       </ScrollArea>
 
-      {/* ── Floating input bar ── */}
-      <div className={cn(
-        "flex-none px-4 pt-3 pb-[max(1rem,env(safe-area-inset-bottom))] border-t transition-all z-20 relative",
-        chatBg ? "bg-white/20 dark:bg-black/20 backdrop-blur-xl border-white/10" : "border-slate-200/60 dark:border-slate-800/60 bg-white/95 dark:bg-zinc-950/95 shadow-[0_-8px_30px_rgba(0,0,0,0.03)]"
-      )}>
+      {/* ── Floating glass input bar ── */}
+      <div className="flex-none px-4 pt-3 pb-[max(1rem,env(safe-area-inset-bottom))] z-20 relative"
+        style={{
+          background: 'rgba(15, 15, 25, 0.6)',
+          backdropFilter: 'blur(20px)',
+          WebkitBackdropFilter: 'blur(20px)',
+          borderTop: '1px solid rgba(255, 255, 255, 0.05)',
+        }}
+      >
         <form onSubmit={handleSend} className="flex gap-2 max-w-2xl mx-auto items-center">
           <input type="file" ref={fileInputRef} className="hidden" accept="image/*" onChange={handleFileChange} />
           <button 
             type="button"
             onClick={() => fileInputRef.current?.click()}
-            className="w-12 h-12 rounded-2xl bg-muted/80 border-2 border-slate-300/50 flex items-center justify-center text-muted-foreground transition-all active:scale-90"
+            className="w-12 h-12 rounded-2xl btn-glass flex items-center justify-center text-white/40 transition-all duration-300 active:scale-95"
           >
             <Camera className="w-5 h-5" />
           </button>
           
           <motion.div
-            animate={isFocused ? { boxShadow: "0 0 0 2px rgb(139 92 246 / 0.4)" } : { boxShadow: "0 0 0 0px transparent" }}
-            className="flex-1 rounded-2xl overflow-hidden border-2 border-slate-300 dark:border-slate-600 bg-card shadow-sm transition-colors relative"
+            animate={isFocused ? { boxShadow: '0 0 20px rgba(var(--glow-primary), 0.2)' } : { boxShadow: '0 0 0px transparent' }}
+            className="flex-1 rounded-2xl overflow-hidden transition-all duration-300 glass-input"
           >
             <input
               ref={inputRef}
@@ -370,7 +402,7 @@ export default function Chat() {
               onFocus={() => setIsFocused(true)}
               onBlur={() => setIsFocused(false)}
               placeholder="Type a message…"
-              className="w-full h-12 px-4 bg-transparent text-sm font-medium placeholder:text-muted-foreground/60 outline-none"
+              className="w-full h-12 px-4 bg-transparent text-sm font-medium text-white placeholder:text-white/25 outline-none"
             />
           </motion.div>
           <motion.button
@@ -378,10 +410,10 @@ export default function Chat() {
             disabled={sendMessage.isPending || !content.trim()}
             whileTap={{ scale: 0.92 }}
             className={cn(
-              "h-12 w-12 rounded-2xl flex items-center justify-center flex-shrink-0 transition-all shadow-md border-2",
+              "h-12 w-12 rounded-2xl flex items-center justify-center flex-shrink-0 transition-all duration-300",
               content.trim()
-                ? "bg-primary text-primary-foreground shadow-primary/30 border-primary/80 active:scale-95"
-                : "bg-muted text-muted-foreground border-slate-300 dark:border-slate-600",
+                ? "btn-neon-primary text-white"
+                : "btn-glass text-white/30",
             )}
           >
             <motion.div animate={content.trim() ? { rotate: -30 } : { rotate: 0 }} transition={{ type: "spring", stiffness: 400 }}>

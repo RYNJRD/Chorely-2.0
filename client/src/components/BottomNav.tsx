@@ -27,9 +27,16 @@ export function BottomNav() {
       className="absolute bottom-0 w-full z-50"
       style={{ paddingBottom: "max(env(safe-area-inset-bottom, 0px), 8px)" }}
     >
-      {/* Frosted glass backing */}
-      <div className="mx-3 mb-2">
-        <div className="max-w-md mx-auto bg-card/95 backdrop-blur-2xl border-2 border-slate-300/80 dark:border-slate-700/80 rounded-[1.75rem] shadow-[0_-4px_24px_rgba(0,0,0,0.08),0_8px_32px_rgba(0,0,0,0.12)] px-2 py-1.5">
+      <div className="mx-4 mb-2">
+        <div className="max-w-md mx-auto rounded-[2rem] px-2 py-1.5"
+          style={{
+            background: 'rgba(15, 15, 25, 0.7)',
+            backdropFilter: 'blur(24px)',
+            WebkitBackdropFilter: 'blur(24px)',
+            border: '1px solid rgba(255, 255, 255, 0.08)',
+            boxShadow: '0 8px 32px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,255,255,0.04)',
+          }}
+        >
           <div className="flex items-center">
             {navItems.map((item) => {
               const isActive = location === item.href;
@@ -42,43 +49,55 @@ export function BottomNav() {
                   className="relative flex-1 min-w-0 flex flex-col items-center py-1.5 gap-0.5"
                 >
                   <div className="relative flex items-center justify-center w-11 h-9 rounded-2xl">
-                    {/* Active pill */}
+                    {/* Active glow pill */}
                     {isActive && (
                       <motion.div
                         layoutId="nav-active-pill"
-                        className="absolute inset-0 bg-primary/12 rounded-2xl"
+                        className="absolute inset-0 rounded-2xl"
+                        style={{
+                          background: item.label === "Parent" 
+                            ? 'rgba(245, 158, 11, 0.15)' 
+                            : 'rgba(139, 92, 246, 0.15)',
+                          boxShadow: item.label === "Parent"
+                            ? '0 0 12px rgba(245, 158, 11, 0.3)'
+                            : '0 0 12px rgba(139, 92, 246, 0.3)',
+                        }}
                         transition={{ type: "spring", stiffness: 450, damping: 32 }}
                       />
                     )}
                     {/* Icon */}
                     <motion.div
-                      animate={isActive ? { scale: 1.1 } : { scale: 1 }}
+                      animate={isActive ? { scale: 1.15 } : { scale: 1 }}
                       transition={{ type: "spring", stiffness: 400, damping: 25 }}
-                      className={cn(
-                        "relative z-10 transition-colors",
-                        isActive ? "text-primary" : "text-foreground/50",
-                      )}
+                      className="relative z-10 transition-all duration-300"
+                      style={isActive ? {
+                        filter: item.label === "Parent"
+                          ? 'drop-shadow(0 0 6px rgba(245, 158, 11, 0.6))'
+                          : 'drop-shadow(0 0 6px rgba(139, 92, 246, 0.6))',
+                      } : undefined}
                     >
                       <Icon
                         size={isActive ? 21 : 20}
                         strokeWidth={isActive ? 2.5 : 2}
                         className={cn(
-                          item.label === "Parent" && isActive
-                            ? "text-amber-500"
-                            : item.label === "Parent"
-                              ? "text-amber-400"
-                              : "",
+                          "transition-colors duration-300",
+                          isActive
+                            ? item.label === "Parent" ? "text-amber-400" : "text-primary"
+                            : "text-white/40",
+                          item.label === "Parent" && !isActive && "text-amber-400/40",
                         )}
                       />
                     </motion.div>
                   </div>
 
                   <motion.span
-                    animate={isActive ? { opacity: 1 } : { opacity: 0.65 }}
+                    animate={isActive ? { opacity: 1 } : { opacity: 0.45 }}
                     className={cn(
-                      "text-[9px] font-bold tracking-wide uppercase truncate max-w-full px-0.5 leading-none",
-                      isActive ? "text-primary" : "text-muted-foreground",
-                      item.label === "Parent" && "text-amber-500",
+                      "text-[9px] font-bold tracking-wide uppercase truncate max-w-full px-0.5 leading-none transition-colors duration-300",
+                      isActive
+                        ? item.label === "Parent" ? "text-amber-400" : "text-primary"
+                        : "text-white/35",
+                      item.label === "Parent" && !isActive && "text-amber-400/35",
                     )}
                   >
                     {item.label}

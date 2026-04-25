@@ -70,7 +70,7 @@ export default function ParentDashboard() {
           <p className="text-[11px] font-bold uppercase tracking-widest text-muted-foreground">
             {family?.name ?? "Your Family"}
           </p>
-          <h1 className="font-display text-2xl font-bold text-foreground leading-tight">
+          <h1 className="font-display text-2xl font-bold text-white leading-tight">
             Hi, {currentUser.username} 👋
           </h1>
         </div>
@@ -89,7 +89,7 @@ export default function ParentDashboard() {
           </div>
           <button
             onClick={() => setIsDrawerOpen(true)}
-            className="w-10 h-10 flex items-center justify-center rounded-2xl bg-black/20 backdrop-blur-md border border-white/20 shadow-sm text-foreground hover:bg-black/30 transition-colors"
+            className="w-10 h-10 flex items-center justify-center rounded-2xl btn-glass text-white/70 hover:text-white transition-all duration-300 active:scale-95"
             aria-label="Open menu"
           >
             <Menu className="w-5 h-5" />
@@ -112,9 +112,13 @@ export default function ParentDashboard() {
               whileTap={{ scale: 0.94 }}
               onClick={action}
               className={cn(
-                "flex flex-col items-center gap-2 rounded-2xl border-2 p-3.5 shadow-sm transition-all active:scale-95",
-                color
+                "flex flex-col items-center gap-2 rounded-2xl p-3.5 transition-all duration-300 active:scale-95",
               )}
+              style={{
+                background: 'rgba(255, 255, 255, 0.04)',
+                border: '1px solid rgba(255, 255, 255, 0.08)',
+                backdropFilter: 'blur(12px)',
+              }}
             >
               <Icon className="w-5 h-5" strokeWidth={2} />
               <span className="text-[11px] font-bold text-center leading-tight">{label}</span>
@@ -143,7 +147,7 @@ export default function ParentDashboard() {
         </div>
 
         {children.length === 0 ? (
-          <div className="rounded-2xl border-2 border-dashed border-border bg-card p-6 text-center">
+          <div className="rounded-2xl p-6 text-center glass-card" style={{ border: '1px dashed rgba(255,255,255,0.1)' }}>
             <p className="text-sm text-muted-foreground font-medium">No children added yet. Invite your family!</p>
           </div>
         ) : (
@@ -158,7 +162,7 @@ export default function ParentDashboard() {
                   initial={{ opacity: 0, x: -12 }}
                   animate={{ opacity: 1, x: 0 }}
                   transition={{ delay: 0.2 + i * 0.06 }}
-                  className="rounded-2xl border-2 border-border bg-card p-4 shadow-sm"
+                  className="rounded-2xl p-4 glass-card transition-all duration-300"
                 >
                   <div className="flex items-center gap-3 mb-3">
                     <UserAvatar user={child} size="md" />
@@ -221,7 +225,7 @@ export default function ParentDashboard() {
               <TrendingUp className="w-3 h-3" /> Live ranking
             </span>
           </div>
-          <div className="rounded-2xl border-2 border-border bg-card shadow-sm overflow-hidden">
+          <div className="rounded-2xl glass-card overflow-hidden">
             {[...leaderboard].sort((a, b) => b.points - a.points).slice(0, 3).map((u, i) => (
               <div
                 key={u.id}
@@ -263,11 +267,11 @@ export default function ParentDashboard() {
         </div>
 
         {activity.length === 0 ? (
-          <div className="rounded-2xl border-2 border-dashed border-border bg-card p-5 text-center">
+          <div className="rounded-2xl p-5 text-center glass-card" style={{ border: '1px dashed rgba(255,255,255,0.1)' }}>
             <p className="text-sm text-muted-foreground font-medium">No activity yet. Assign some chores to get started!</p>
           </div>
         ) : (
-          <div className="rounded-2xl border-2 border-border bg-card shadow-sm overflow-hidden">
+          <div className="rounded-2xl glass-card overflow-hidden">
             {activity.slice(0, 5).map((event, i) => (
               <div
                 key={event.id}

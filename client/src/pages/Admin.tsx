@@ -219,32 +219,32 @@ export default function Admin() {
   };
 
   const filteredUsers = familyUsers.filter((user) => user.username.toLowerCase().includes(searchQuery.toLowerCase()));
-  const inputClass = "w-full rounded-2xl border-2 border-border bg-input px-4 py-3 font-medium focus:outline-none focus:ring-2 focus:ring-primary/50";
+  const inputClass = "w-full rounded-2xl px-4 py-3 font-medium focus:outline-none transition-all duration-300 text-white placeholder:text-white/30 glass-input";
 
   return (
     <div className="pt-[max(2rem,env(safe-area-inset-top))] px-5 pb-32 min-h-screen bg-tab-admin">
       <div className="flex items-center gap-3 mb-8">
-        <div className="w-12 h-12 bg-muted rounded-2xl flex items-center justify-center">
-          <Settings className="text-foreground" />
+        <div className="w-12 h-12 rounded-2xl flex items-center justify-center glass" style={{ boxShadow: '0 0 12px rgba(var(--glow-primary), 0.15)' }}>
+          <Settings className="text-white/70" />
         </div>
         <div>
-          <h1 className="font-display text-3xl font-bold text-foreground">Admin</h1>
-          <p className="text-sm text-muted-foreground font-medium">Keep the house fair, warm, and moving.</p>
+          <h1 className="font-display text-3xl font-bold text-white">Admin</h1>
+          <p className="text-sm text-white/35 font-medium">Keep the house fair, warm, and moving.</p>
         </div>
       </div>
 
       <div className="space-y-8">
-        <section className="rounded-[1.75rem] border-2 border-primary/20 bg-gradient-to-br from-primary/10 via-primary/5 to-accent/10 p-5">
+        <section className="rounded-[1.75rem] p-5 glass-card" style={{ border: '1px solid rgba(var(--glow-primary), 0.15)' }}>
           <div className="flex items-center justify-between mb-3">
-            <h2 className="font-display text-lg font-bold flex items-center gap-2">
-              <UsersIcon className="w-5 h-5 text-primary" />
+            <h2 className="font-display text-lg font-bold flex items-center gap-2 text-white">
+              <UsersIcon className="w-5 h-5 text-primary" style={{ filter: 'drop-shadow(0 0 4px rgba(var(--glow-primary), 0.4))' }} />
               Family invite
             </h2>
             <button 
               onClick={handleRegenerateInvite}
               disabled={isSpawning}
               className={cn(
-                "text-[10px] font-black uppercase tracking-widest px-3 py-1.5 rounded-xl border-2 border-primary/20 bg-primary/5 hover:bg-primary/10 transition-all flex items-center gap-1.5",
+                "text-[10px] font-black uppercase tracking-widest px-3 py-1.5 rounded-xl btn-neon-accent transition-all flex items-center gap-1.5 text-black",
                 isSpawning && "animate-pulse scale-95 opacity-50"
               )}
             >
@@ -253,31 +253,31 @@ export default function Admin() {
             </button>
           </div>
           <div className="space-y-3">
-            <div className="rounded-2xl bg-background/80 p-3 border-2 border-primary/20 flex items-center justify-between gap-3">
+            <div className="rounded-2xl p-3 flex items-center justify-between gap-3 glass-input" style={{ boxShadow: 'inset 0 0 15px rgba(var(--glow-primary), 0.05)' }}>
               <div>
-                <p className="text-[10px] font-bold uppercase tracking-[0.18em] text-muted-foreground">Code</p>
-                <p className="font-mono text-lg font-bold">{inviteCode || "Loading..."}</p>
+                <p className="text-[10px] font-bold uppercase tracking-[0.18em] text-white/35">Code</p>
+                <p className="font-mono text-lg font-bold text-white">{inviteCode || "Loading..."}</p>
               </div>
-              <button className="rounded-xl bg-primary text-primary-foreground p-3 shrink-0 transition-transform active:scale-95" onClick={() => copyToClipboard(inviteCode, "Invite code")}>
+              <button className="rounded-xl p-3 shrink-0 transition-all duration-300 active:scale-95 btn-neon-primary text-white" onClick={() => copyToClipboard(inviteCode, "Invite code")}>
                 {copiedField === "Invite code" ? <Check className="w-4 h-4" /> : <Copy className="w-4 h-4" />}
               </button>
             </div>
-            <div className="rounded-2xl bg-background/80 p-3 border-2 border-accent/20 flex items-center justify-between gap-3">
+            <div className="rounded-2xl p-3 flex items-center justify-between gap-3 glass-input" style={{ boxShadow: 'inset 0 0 15px rgba(var(--glow-accent), 0.05)' }}>
               <div className="min-w-0">
-                <p className="text-[10px] font-bold uppercase tracking-[0.18em] text-muted-foreground">Invite link</p>
-                <p className="truncate text-sm text-foreground/70">{inviteUrl || "Loading..."}</p>
+                <p className="text-[10px] font-bold uppercase tracking-[0.18em] text-white/35">Invite link</p>
+                <p className="truncate text-sm text-white/50">{inviteUrl || "Loading..."}</p>
               </div>
-              <button className="rounded-xl bg-accent text-accent-foreground p-3 shrink-0 transition-transform active:scale-95" onClick={() => copyToClipboard(inviteUrl, "Invite link")}>
+              <button className="rounded-xl p-3 shrink-0 transition-all duration-300 active:scale-95 btn-neon-accent" onClick={() => copyToClipboard(inviteUrl, "Invite link")}>
                 {copiedField === "Invite link" ? <Check className="w-4 h-4" /> : <LinkIcon className="w-4 h-4" />}
               </button>
             </div>
           </div>
         </section>
 
-        <section className="rounded-[1.75rem] border-2 border-primary/30 bg-card p-5 shadow-md">
+        <section className="rounded-[1.75rem] p-5 glass-card">
           <div className="flex items-center justify-between mb-4">
             <h2 className="font-display text-lg font-bold flex items-center gap-2">
-              <ShieldCheck className="w-5 h-5 text-primary" />
+              <ShieldCheck className="w-5 h-5 text-primary" style={{ filter: 'drop-shadow(0 0 4px rgba(var(--glow-primary), 0.4))' }} />
               Pending approvals
             </h2>
             {(pendingChores.length + pendingRewards.length) > 0 && (
@@ -439,7 +439,7 @@ export default function Admin() {
           </div>
         </section>
 
-        <section className="rounded-[1.75rem] border-2 border-slate-300 dark:border-slate-600 bg-card p-5 shadow-md">
+        <section className="rounded-[1.75rem] p-5 glass-card">
           <h2 className="font-display text-lg font-bold mb-3 flex items-center gap-2">
             <Trophy className="w-5 h-5 text-accent" />
             Leaderboard visibility
@@ -470,7 +470,7 @@ export default function Admin() {
           </div>
         </section>
 
-        <section id="members-section" className="rounded-[1.75rem] border-2 border-slate-300 dark:border-slate-600 bg-card p-5 shadow-md">
+        <section id="members-section" className="rounded-[1.75rem] p-5 glass-card">
           <div className="flex items-center justify-between mb-4">
             <h2 className="font-display text-lg font-bold flex items-center gap-2">
               <Shield className="w-5 h-5 text-primary" />
@@ -530,7 +530,7 @@ export default function Admin() {
           </div>
         </section>
 
-        <section className="rounded-[1.75rem] border-2 border-slate-300 dark:border-slate-600 bg-card p-5 shadow-md">
+        <section className="rounded-[1.75rem] p-5 glass-card">
           <h2 className="font-display text-xl font-bold mb-4 flex items-center gap-2">
             <Plus className="text-primary" /> Create chore
           </h2>
@@ -556,13 +556,13 @@ export default function Admin() {
               <input type="checkbox" checked={choreNeedsApproval} onChange={(event) => setChoreNeedsApproval(event.target.checked)} />
               Require parent approval
             </label>
-            <button type="submit" className="w-full rounded-2xl bg-primary px-4 py-4 font-bold text-primary-foreground border-2 border-primary/80 shadow-md shadow-primary/20 active:scale-[0.98] transition-transform">
+            <button type="submit" className="w-full rounded-2xl px-4 py-4 font-bold text-white btn-neon-primary active:scale-[0.96] transition-transform">
               Add chore
             </button>
           </form>
         </section>
 
-        <section className="rounded-[1.75rem] border-2 border-slate-300 dark:border-slate-600 bg-card p-5 shadow-md">
+        <section className="rounded-[1.75rem] p-5 glass-card">
           <h2 className="font-display text-xl font-bold mb-4 flex items-center gap-2">
             <Gift className="text-secondary" /> Create reward
           </h2>
@@ -574,7 +574,7 @@ export default function Admin() {
               <input type="checkbox" checked={rewardNeedsApproval} onChange={(event) => setRewardNeedsApproval(event.target.checked)} />
               Require parent approval
             </label>
-            <button type="submit" className="w-full rounded-2xl bg-secondary px-4 py-4 font-bold text-secondary-foreground border-2 border-secondary/80 shadow-md shadow-secondary/20 active:scale-[0.98] transition-transform">
+            <button type="submit" className="w-full rounded-2xl px-4 py-4 font-bold text-white active:scale-[0.96] transition-transform" style={{ background: 'linear-gradient(135deg, hsl(189, 71%, 50%), hsl(189, 71%, 40%))', boxShadow: '0 0 20px rgba(var(--glow-secondary), 0.3)' }}>
               Add reward
             </button>
           </form>

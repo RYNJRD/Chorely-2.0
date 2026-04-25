@@ -18,9 +18,9 @@ export function Layout({ children }: { children: React.ReactNode }) {
   const showNav = !isOnboarding;
 
   return (
-    <div className="flex items-center justify-center min-h-screen bg-zinc-100 dark:bg-zinc-950 font-sans text-foreground selection:bg-primary/20">
+    <div className="flex items-center justify-center min-h-screen bg-zinc-950 font-sans text-foreground selection:bg-primary/20">
       <div 
-        className="w-full h-[100dvh] sm:w-[390px] sm:h-[844px] overflow-hidden relative bg-background sm:rounded-[2.5rem] sm:border-[8px] sm:border-zinc-900 shadow-2xl flex flex-col isolate transform-gpu"
+        className="w-full h-[100dvh] sm:w-[390px] sm:h-[844px] overflow-hidden relative bg-animated sm:rounded-[2.5rem] sm:border sm:border-white/10 shadow-2xl shadow-purple-900/30 flex flex-col isolate transform-gpu"
         style={{ WebkitMaskImage: '-webkit-radial-gradient(white, black)' }} // Forces hardware-accelerated clipping on rounded borders
       >
         <NavigationDrawer isOpen={isDrawerOpen} onClose={() => setIsDrawerOpen(false)} />

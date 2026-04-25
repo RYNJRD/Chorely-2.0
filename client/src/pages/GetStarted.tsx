@@ -57,16 +57,7 @@ export default function GetStarted() {
       <div className="blob-primary absolute w-80 h-80 top-[-12%] left-[-14%] pointer-events-none" />
       <div className="blob-accent absolute w-72 h-72 bottom-[-10%] right-[-12%] pointer-events-none" />
 
-      <button
-        data-testid="button-back-get-started"
-        onClick={() => {
-          if (selectingChar) { setSelectingChar(false); setDemoData(null); }
-          else setLocation("/");
-        }}
-        className="absolute top-6 left-6 w-10 h-10 rounded-2xl bg-white/80 backdrop-blur-sm flex items-center justify-center hover:bg-white active:scale-90 transition-all shadow-sm z-20 border border-border/50"
-      >
-        <ChevronLeft className="w-5 h-5 text-foreground" />
-      </button>
+
 
       <div className="relative z-10 flex flex-col items-center w-full max-w-sm">
         <AnimatePresence mode="wait">
@@ -96,12 +87,12 @@ export default function GetStarted() {
               </motion.div>
 
               <motion.div initial={{ y: 20, opacity: 0 }} animate={{ y: 0, opacity: 1 }} transition={{ delay: 0.15 }} className="mb-1">
-                <h1 className="font-display text-4xl font-bold" style={{ color: "hsl(262 83% 58%)" }}>
+                <h1 className="font-display text-4xl font-bold text-primary logo-glow">
                   Taskling
                 </h1>
               </motion.div>
 
-              <motion.p initial={{ y: 16, opacity: 0 }} animate={{ y: 0, opacity: 1 }} transition={{ delay: 0.2 }} className="text-muted-foreground font-semibold mb-8 text-sm max-w-[260px]">
+              <motion.p initial={{ y: 16, opacity: 0 }} animate={{ y: 0, opacity: 1 }} transition={{ delay: 0.2 }} className="text-white/40 font-semibold mb-8 text-sm max-w-[260px]">
                 Make chores fun — reward your whole family! ⭐
               </motion.p>
 
@@ -109,8 +100,7 @@ export default function GetStarted() {
                 <button
                   data-testid="button-create-family"
                   onClick={handleCreate}
-                  className="w-full py-4 rounded-2xl font-display font-bold text-lg text-primary-foreground flex items-center justify-center gap-3 group btn-glow-primary shimmer"
-                  style={{ background: "linear-gradient(135deg, hsl(262 83% 60%) 0%, hsl(280 75% 62%) 100%)" }}
+                  className="w-full py-4 rounded-2xl font-display font-bold text-lg text-white flex items-center justify-center gap-3 group btn-neon-primary shimmer"
                 >
                   <UserPlus className="w-5 h-5 group-hover:scale-110 transition-transform" />
                   Create New Family
@@ -119,24 +109,23 @@ export default function GetStarted() {
                 <button
                   data-testid="button-join-family"
                   onClick={handleJoin}
-                  className="w-full py-4 rounded-2xl bg-white font-display font-bold text-lg text-foreground flex items-center justify-center gap-3 group btn-glow-white border-2 border-border/60"
+                  className="w-full py-4 rounded-2xl font-display font-bold text-lg text-white flex items-center justify-center gap-3 group btn-glass"
                 >
-                  <Users className="w-5 h-5 group-hover:scale-110 transition-transform text-primary" />
+                  <Users className="w-5 h-5 group-hover:scale-110 transition-transform text-primary" style={{ filter: 'drop-shadow(0 0 4px rgba(var(--glow-primary), 0.4))' }} />
                   Join Existing Family
                 </button>
 
                 <div className="flex items-center gap-4 py-1.5">
-                  <div className="flex-1 h-px bg-border" />
-                  <span className="text-xs font-bold text-muted-foreground uppercase tracking-widest">or</span>
-                  <div className="flex-1 h-px bg-border" />
+                  <div className="flex-1 h-px" style={{ background: 'rgba(255,255,255,0.1)' }} />
+                  <span className="text-xs font-bold text-white/25 uppercase tracking-widest">or</span>
+                  <div className="flex-1 h-px" style={{ background: 'rgba(255,255,255,0.1)' }} />
                 </div>
 
                 <button
                   data-testid="button-demo"
                   onClick={handleDemo}
                   disabled={demoMutation.isPending}
-                  className="w-full py-3.5 rounded-2xl font-bold text-sm flex items-center justify-center gap-2 transition-all active:scale-[0.98] border-2 border-accent/30"
-                  style={{ background: "hsl(43 96% 56% / 0.12)", color: "hsl(43 70% 30%)" }}
+                  className="w-full py-3.5 rounded-2xl font-bold text-sm flex items-center justify-center gap-2 transition-all active:scale-[0.98] btn-neon-accent"
                 >
                   {demoMutation.isPending ? "Setting up..." : (
                     <><Sparkles className="w-4 h-4" /> Try Demo Family</>
@@ -161,8 +150,8 @@ export default function GetStarted() {
                 🐧
               </motion.div>
 
-              <h2 className="font-display text-3xl font-bold text-foreground mb-1">Pick a character</h2>
-              <p className="text-sm text-muted-foreground font-semibold mb-6 max-w-[240px]">
+              <h2 className="font-display text-3xl font-bold text-white mb-1">Pick a character</h2>
+              <p className="text-sm text-white/40 font-semibold mb-6 max-w-[240px]">
                 Choose who you want to explore the demo as
               </p>
 
@@ -178,17 +167,17 @@ export default function GetStarted() {
                       transition={{ delay: i * 0.08 }}
                       data-testid={`demo-character-${user.id}`}
                       onClick={() => handlePickCharacter(user)}
-                      className="w-full flex items-center gap-4 bg-white/80 backdrop-blur-sm rounded-2xl p-4 border-2 border-border/60 hover:border-primary/50 hover:bg-white active:scale-[0.98] transition-all text-left shadow-sm"
+                      className="w-full flex items-center gap-4 rounded-2xl p-4 active:scale-[0.98] transition-all text-left glass-card hover:bg-white/8"
                     >
                       <UserAvatar user={user} size="lg" className="flex-shrink-0" />
                       <div className="flex-1 min-w-0">
-                        <p className="font-bold text-lg text-foreground">{user.username}</p>
-                        <div className={cn("inline-flex items-center gap-1 text-xs font-bold px-2 py-0.5 rounded-full border mt-0.5", badge.color)}>
+                        <p className="font-bold text-lg text-white">{user.username}</p>
+                        <div className={cn("inline-flex items-center gap-1 text-xs font-bold px-2 py-0.5 rounded-full mt-0.5")} style={{ background: 'rgba(var(--glow-primary), 0.1)', color: 'hsl(262, 83%, 70%)', border: '1px solid rgba(var(--glow-primary), 0.2)' }}>
                           <BadgeIcon className="w-3 h-3" />
                           {badge.label}
                         </div>
                       </div>
-                      <div className="text-primary/40">
+                      <div className="text-white/20">
                         <ChevronLeft className="w-5 h-5 rotate-180" />
                       </div>
                     </motion.button>
@@ -198,7 +187,7 @@ export default function GetStarted() {
 
               <button
                 onClick={() => { setSelectingChar(false); setDemoData(null); }}
-                className="mt-5 flex items-center gap-1.5 text-sm font-bold text-muted-foreground hover:text-foreground transition-colors"
+                className="mt-5 flex items-center gap-1.5 text-sm font-bold text-white/35 hover:text-white transition-colors"
               >
                 <ArrowLeft className="w-4 h-4" />
                 Back to options
