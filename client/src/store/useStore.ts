@@ -10,12 +10,14 @@ interface AppState {
   firebaseUid: string | null;
   pendingFamilyId: number | null;
   isDrawerOpen: boolean;
+  isNavHidden: boolean;
   setFamily: (family: Family | null) => void;
   setCurrentUser: (user: User | null) => void;
   setDemoUsers: (users: User[]) => void;
   setOnboardingIntent: (intent: 'create' | 'join' | null) => void;
   setFirebaseUid: (uid: string | null) => void;
   setIsDrawerOpen: (isOpen: boolean) => void;
+  setIsNavHidden: (isHidden: boolean) => void;
   logout: () => void;
 }
 
@@ -36,7 +38,9 @@ export const useStore = create<AppState>()(
       setPendingFamilyId: (id) => set({ pendingFamilyId: id }),
       isDrawerOpen: false,
       setIsDrawerOpen: (isOpen) => set({ isDrawerOpen: isOpen }),
-      logout: () => set({ family: null, currentUser: null, onboardingIntent: null, firebaseUid: null, pendingFamilyId: null, demoUsers: [], isDrawerOpen: false }),
+      isNavHidden: false,
+      setIsNavHidden: (isHidden) => set({ isNavHidden: isHidden }),
+      logout: () => set({ family: null, currentUser: null, onboardingIntent: null, firebaseUid: null, pendingFamilyId: null, demoUsers: [], isDrawerOpen: false, isNavHidden: false }),
     }),
     {
       name: 'chore-app-storage',

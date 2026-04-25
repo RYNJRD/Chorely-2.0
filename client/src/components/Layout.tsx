@@ -10,12 +10,12 @@ import { cn } from "../lib/utils";
 
 export function Layout({ children }: { children: React.ReactNode }) {
   const [location] = useLocation();
-  const { family, isDrawerOpen, setIsDrawerOpen } = useStore();
+  const { family, isDrawerOpen, setIsDrawerOpen, isNavHidden } = useStore();
   const onboardingPaths = ["/", "/get-started", "/auth", "/verify-email", "/email-action", "/join-family", "/setup-family", "/home"];
   const isOnboarding = onboardingPaths.includes(location) || location.startsWith("/join/");
   useFamilyLive(family?.id);
 
-  const showNav = !isOnboarding;
+  const showNav = !isOnboarding && !isNavHidden;
 
   return (
     <div className="flex items-center justify-center min-h-screen bg-zinc-950 font-sans text-foreground selection:bg-primary/20">

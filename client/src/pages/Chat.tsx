@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { format } from "date-fns";
 import { motion, AnimatePresence } from "framer-motion";
-import { Send, MessageSquare, Camera, X, Check, Image as ImageIcon, Palette } from "lucide-react";
+import { Send, MessageSquare, Camera, X, Check, Image as ImageIcon, Palette, ArrowLeft } from "lucide-react";
 import { api, buildUrl } from "../../../shared/routes";
 import type { Message, User } from "../../../shared/schema";
 import { useStore } from "../store/useStore";
@@ -13,7 +13,7 @@ import { cn } from "../lib/utils";
 
 export default function Chat() {
   const queryClient = useQueryClient();
-  const { family, currentUser } = useStore();
+  const { family, currentUser, setIsNavHidden } = useStore();
   const [content, setContent] = useState("");
   const [shouldAutoScroll, setShouldAutoScroll] = useState(true);
   const [isFocused, setIsFocused] = useState(false);
@@ -27,6 +27,11 @@ export default function Chat() {
   const [lightboxImage, setLightboxImage] = useState<string | null>(null);
   const [chatBg, setChatBg] = useState<string | null>(() => localStorage.getItem("chat_bg_preset"));
   const [showBgPicker, setShowBgPicker] = useState(false);
+  
+  useEffect(() => {
+    setIsNavHidden(previewOpen);
+    return () => setIsNavHidden(false);
+  }, [previewOpen, setIsNavHidden]);
 
   const presets = [
     { id: "none", label: "Default", class: "bg-tab-chat" },
@@ -171,20 +176,34 @@ export default function Chat() {
         {previewOpen && selectedImage && (
           <motion.div 
             initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-            className="absolute inset-0 bg-black/95 z-50 p-6 flex flex-col justify-center items-center"
+            onClick={() => setPreviewOpen(false)}
+            className="absolute inset-0 bg-black/95 z-[60] p-6 flex flex-col justify-center items-center"
           >
-            <div className="relative max-w-full max-h-[80%] rounded-3xl overflow-hidden shadow-2xl">
+            {/* Top Bar with Back Arrow */}
+            <div className="absolute top-[max(1rem,env(safe-area-inset-top))] left-6 z-[70]">
+              <button 
+                onClick={(e) => { e.stopPropagation(); setPreviewOpen(false); }}
+                className="w-12 h-12 rounded-2xl btn-glass text-white flex items-center justify-center active:scale-95 transition-transform"
+              >
+                <ArrowLeft className="w-6 h-6" />
+              </button>
+            </div>
+
+            <div 
+              className="relative max-w-full max-h-[70%] rounded-3xl overflow-hidden shadow-2xl"
+              onClick={(e) => e.stopPropagation()}
+            >
               <img src={selectedImage} className="w-full h-full object-contain" alt="Preview" />
             </div>
-            <div className="flex gap-4 mt-8 w-full max-w-md">
+            <div className="flex gap-4 mt-8 w-full max-w-md relative z-[70]">
               <button 
-                onClick={() => setPreviewOpen(false)}
+                onClick={(e) => { e.stopPropagation(); setPreviewOpen(false); }}
                 className="flex-1 h-16 rounded-3xl btn-glass text-white font-bold flex items-center justify-center gap-2 active:scale-95 transition-transform"
               >
                 <X className="w-5 h-5" /> Cancel
               </button>
               <button 
-                onClick={handleSendImage}
+                onClick={(e) => { e.stopPropagation(); handleSendImage(); }}
                 className="flex-1 h-16 rounded-3xl btn-neon-primary text-white font-bold flex items-center justify-center gap-2 active:scale-95 transition-transform"
               >
                 <Check className="w-5 h-5" /> Send
