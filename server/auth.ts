@@ -145,27 +145,6 @@ export async function verifyBearerToken(token: string) {
   return getAuth().verifyIdToken(token, true);
 }
 
-// ── Helpers ───────────────────────────────────────────────────────────────────
-function decodeJwtPayload(token: string): Record<string, unknown> | null {
-  try {
-    const parts = token.split(".");
-    if (parts.length !== 3) return null;
-    const base64 = parts[1].replace(/-/g, "+").replace(/_/g, "/");
-    const padded = base64 + "=".repeat((4 - (base64.length % 4)) % 4);
-    return JSON.parse(Buffer.from(padded, "base64").toString("utf8"));
-  } catch {
-    return null;
-  }
-}
-
-function extractUid(payload: Record<string, unknown>): string | null {
-  for (const field of ["user_id", "sub", "uid"]) {
-    const val = payload[field];
-    if (typeof val === "string" && val.trim().length > 0) return val.trim();
-  }
-  return null;
-}
-
 // ── Middleware ────────────────────────────────────────────────────────────────
 export async function requireAuth(req: AuthRequest, res: Response, next: NextFunction) {
   // Demo user shortcut (dev only)
@@ -187,30 +166,16 @@ export async function requireAuth(req: AuthRequest, res: Response, next: NextFun
     return res.status(401).json({ message: "Missing bearer token" });
   }
 
-  // ── Step 1: Try public-key verification (works without service account) ────
+  // ── Step 1: Try public-key verification ─────────────────────────────────────
+  // This works even without a Firebase Admin service account JSON key
   const verified = await verifyFirebaseToken(token);
   if (verified) {
     req.auth = { uid: verified.uid };
     return next();
   }
 
-  // ── Step 2: Dev fallback — trust decoded payload (no signature check) ──────
-  if (IS_DEV) {
-    const payload = decodeJwtPayload(token);
-    if (payload) {
-      const uid = extractUid(payload);
-      if (uid) {
-        req.auth = { uid };
-        return next();
-      }
-      console.warn("[auth] JWT payload decoded but no uid found. Keys:", Object.keys(payload));
-      return res.status(401).json({ message: "Could not extract uid from token" });
-    }
-    console.warn("[auth] Bearer token is not a valid JWT. Length:", token.length);
-    return res.status(401).json({ message: "Bearer token is not a valid JWT" });
-  }
-
-  // ── Step 3: Production — full Firebase Admin verification ─────────────────
+  // ── Step 2: Production — full Firebase Admin verification ─────────────────
+  // Requires FIREBASE_PRIVATE_KEY and FIREBASE_CLIENT_EMAIL to be set
   try {
     const decoded = await verifyBearerToken(token);
     req.auth = { uid: decoded.uid };
@@ -220,7 +185,7 @@ export async function requireAuth(req: AuthRequest, res: Response, next: NextFun
       error instanceof Error && error.message.includes("environment variable")
         ? error.message
         : "Invalid or expired auth token";
-    console.error("[auth] All auth methods failed:", error instanceof Error ? error.message : error);
+    console.error("[auth] Token verification failed:", error instanceof Error ? error.message : error);
     return res.status(message.startsWith("Missing required") ? 500 : 401).json({ message });
   }
 }

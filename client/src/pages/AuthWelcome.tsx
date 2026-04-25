@@ -145,13 +145,10 @@ export default function AuthWelcome() {
       setOtpError("");
       setView("verification");
       
-      // Auto-include code in notification for easy copying
-      if (data.code) {
-        toast({ 
-          title: "Code sent! 📧", 
-          description: `Your verification code is ${data.code}. We've also sent it to your email.`,
-        });
-      }
+      toast({ 
+        title: "Code sent! 📧", 
+        description: "Check your inbox — your 6-digit code expires in 10 minutes.",
+      });
     } catch (err: any) {
       console.error("[OTP] Send error:", err);
       const msg = err.message || "A server error has occurred";
@@ -190,11 +187,7 @@ export default function AuthWelcome() {
       setOtp(["", "", "", "", "", ""]);
       setOtpError("");
       
-      const desc = data.code 
-        ? `Your new code is ${data.code}. Check your inbox!` 
-        : "Check your inbox — it expires in 10 minutes.";
-        
-      toast({ title: "New code sent!", description: desc });
+      toast({ title: "New code sent!", description: "Check your inbox — it expires in 10 minutes." });
       otpRefs.current[0]?.focus();
     } catch (err: any) {
       console.error("[OTP] Resend error:", err);

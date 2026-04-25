@@ -1,5 +1,8 @@
 import "dotenv/config";
 import express, { type Request, Response, NextFunction } from "express";
+import cors from "cors";
+import helmet from "helmet";
+import { rateLimit } from "express-rate-limit";
 import { registerRoutes } from "./routes.js";
 import { setupDemoMode } from "./mock.js";
 import { serveStatic } from "./static.js";
@@ -24,6 +27,35 @@ app.use(
 );
 
 app.use(express.urlencoded({ extended: false }));
+app.set("trust proxy", 1); // Trust first proxy (Vercel/Replit)
+
+// Security headers
+app.use(helmet({
+  contentSecurityPolicy: false, // Disable CSP as it can break some dev environments, but keep other headers
+}));
+
+// CORS protection
+app.use(cors());
+
+// Global API Rate Limiting
+const apiLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  limit: 100, // Limit each IP to 100 requests per window
+  standardHeaders: "draft-7",
+  legacyHeaders: false,
+  message: { message: "Too many requests from this IP, please try again after 15 minutes" },
+  skip: (req) => req.path.startsWith("/api/events"), // Don't rate limit SSE
+});
+
+// Stricter Auth Rate Limiting
+const authLimiter = rateLimit({
+  windowMs: 60 * 60 * 1000, // 1 hour
+  limit: 10, // Limit each IP to 10 auth requests per hour
+  message: { message: "Too many authentication attempts, please try again later" },
+});
+
+app.use("/api", apiLimiter);
+app.use("/api/auth", authLimiter);
 
 export function log(message: string, source = "express") {
   const formattedTime = new Date().toLocaleTimeString("en-US", {

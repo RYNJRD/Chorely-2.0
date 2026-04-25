@@ -46,7 +46,7 @@ function sameFamilyOrReject(res: Response, currentFamilyId: number | null | unde
 
 export async function registerRoutes(httpServer: Server, app: Express): Promise<Server> {
   // Dev-only debug endpoint — shows token decode result without Firebase Admin
-  if (process.env.NODE_ENV !== "production") {
+  if (process.env.NODE_ENV !== "production" && !process.env.VERCEL) {
     app.get("/api/debug/auth", (req, res) => {
       const authHeader = req.headers.authorization ?? "";
       const token = authHeader.startsWith("Bearer ") ? authHeader.slice(7).trim() : "";
@@ -631,7 +631,7 @@ export async function registerRoutes(httpServer: Server, app: Express): Promise<
         throw new Error(`Failed to deliver email: ${emailErr.message}`);
       }
 
-      return res.json({ success: true, code });
+      return res.json({ success: true });
     } catch (e: any) {
       console.error("[OTP] FINAL_FAILURE. Full error:", e);
       return res.status(500).json({ 

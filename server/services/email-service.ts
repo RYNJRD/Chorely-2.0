@@ -4,6 +4,15 @@ import { getEnv } from "../env.js";
 const resend = new Resend(process.env.RESEND_API_KEY || "dummy_key");
 const FROM_EMAIL = "Taskling <hello@contact.taskling.co>";
 
+function escapeHtml(unsafe: string): string {
+  return unsafe
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#039;");
+}
+
 function getFooter(isMarketing: boolean) {
   if (!isMarketing) return "";
   return `
@@ -46,7 +55,7 @@ function getBaseTemplate(title: string, content: string, isMarketing = false) {
 export async function sendWelcomeEmail(to: string, parentName: string) {
   const subject = "Welcome to Taskling! 🌟";
   const html = getBaseTemplate(subject, `
-    <h2 style="color: #a855f7; font-size: 24px; margin-top: 0;">Hi ${parentName}! 👋</h2>
+    <h2 style="color: #a855f7; font-size: 24px; margin-top: 0;">Hi ${escapeHtml(parentName)}! 👋</h2>
     <p style="font-size: 16px; line-height: 1.6;">We're so excited to have you and your family join Taskling. Get ready to turn chores into fun adventures and reward your kids for their hard work!</p>
     <p style="font-size: 16px; line-height: 1.6;">Start by adding your kids, setting up their first chores, and choosing some cool rewards.</p>
     <div style="text-align: center; margin: 30px 0;">
@@ -107,7 +116,7 @@ export async function sendOtpEmail(to: string, code: string) {
     <div style="background: linear-gradient(135deg, #f3e8ff 0%, #ede9fe 100%); border-radius: 20px; padding: 32px 20px; margin: 28px 0; text-align: center; border: 3px solid #7C3AED;">
       <p style="margin: 0 0 8px 0; font-size: 13px; font-weight: 700; color: #7C3AED; letter-spacing: 3px; text-transform: uppercase;">Your verification code</p>
       <div style="display: block; margin-bottom: 20px;">
-        <span style="font-size: 42px; font-weight: 900; color: #1a1a2e; letter-spacing: 4px; background: white; padding: 10px 24px; border-radius: 12px; border: 2px solid #c4b5fd; display: inline-block;">${code}</span>
+        <span style="font-size: 42px; font-weight: 900; color: #1a1a2e; letter-spacing: 4px; background: white; padding: 10px 24px; border-radius: 12px; border: 2px solid #c4b5fd; display: inline-block;">${escapeHtml(code)}</span>
       </div>
       <p style="margin: 0; font-size: 14px; color: #6d28d9; font-weight: 600;">Tap and hold to copy the code</p>
       <p style="margin: 16px 0 0 0; font-size: 13px; color: #94a3b8;">Didn't request this? You can safely ignore this email.</p>
@@ -159,9 +168,9 @@ export async function sendChoreCompletedEmail(to: string, parentName: string, ch
   const subject = `${childName} completed a chore! 🎉`;
   const html = getBaseTemplate(subject, `
     <h2 style="color: #10b981; font-size: 24px; margin-top: 0;">Woohoo! 🙌</h2>
-    <p style="font-size: 16px; line-height: 1.6;">Hi ${parentName}, great news! <strong>${childName}</strong> just finished marking a chore as complete:</p>
+    <p style="font-size: 16px; line-height: 1.6;">Hi ${escapeHtml(parentName)}, great news! <strong>${escapeHtml(childName)}</strong> just finished marking a chore as complete:</p>
     <div style="background-color: #ecfdf5; border-radius: 16px; padding: 20px; text-align: center; margin: 20px 0; border: 2px dashed #34d399;">
-      <strong style="color: #059669; font-size: 20px;">🧹 ${choreName}</strong>
+      <strong style="color: #059669; font-size: 20px;">🧹 ${escapeHtml(choreName)}</strong>
     </div>
     <p style="font-size: 16px; line-height: 1.6;">Time to review and approve their hard work so they can earn their stars! ⭐</p>
   `);
@@ -182,9 +191,9 @@ export async function sendRewardClaimedEmail(to: string, parentName: string, chi
   const subject = `${childName} wants to claim a reward! 🎁`;
   const html = getBaseTemplate(subject, `
     <h2 style="color: #f59e0b; font-size: 24px; margin-top: 0;">Reward Time! 🏆</h2>
-    <p style="font-size: 16px; line-height: 1.6;">Hi ${parentName}, <strong>${childName}</strong> has been saving up their stars and wants to claim a reward:</p>
+    <p style="font-size: 16px; line-height: 1.6;">Hi ${escapeHtml(parentName)}, <strong>${escapeHtml(childName)}</strong> has been saving up their stars and wants to claim a reward:</p>
     <div style="background-color: #fffbeb; border-radius: 16px; padding: 20px; text-align: center; margin: 20px 0; border: 2px dashed #fbbf24;">
-      <strong style="color: #b45309; font-size: 20px;">🎁 ${rewardName}</strong>
+      <strong style="color: #b45309; font-size: 20px;">🎁 ${escapeHtml(rewardName)}</strong>
     </div>
     <p style="font-size: 16px; line-height: 1.6;">Log in to approve the reward and celebrate their awesome effort!</p>
   `);
@@ -206,7 +215,7 @@ export async function sendWeeklySummaryEmail(to: string, parentName: string, chi
   
   const statsHtml = childrenStats.map(stat => `
     <div style="background-color: white; border-radius: 16px; padding: 16px; margin-bottom: 16px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); border: 2px solid #e2e8f0; display: flex; justify-content: space-between; align-items: center;">
-      <strong style="font-size: 18px; color: #a855f7;">${stat.name}</strong>
+      <strong style="font-size: 18px; color: #a855f7;">${escapeHtml(stat.name)}</strong>
       <div style="text-align: right;">
         <span style="display: block; font-size: 14px; color: #64748b;">✅ ${stat.choresCompleted} Chores</span>
         <span style="display: block; font-size: 14px; color: #eab308; font-weight: bold;">⭐ ${stat.starsEarned} Stars</span>
@@ -216,7 +225,7 @@ export async function sendWeeklySummaryEmail(to: string, parentName: string, chi
 
   const html = getBaseTemplate(subject, `
     <h2 style="color: #a855f7; font-size: 24px; margin-top: 0;">Weekly Wrap-up 📝</h2>
-    <p style="font-size: 16px; line-height: 1.6;">Hi ${parentName}, another great week in the books! Here is how your awesome kids did this week:</p>
+    <p style="font-size: 16px; line-height: 1.6;">Hi ${escapeHtml(parentName)}, another great week in the books! Here is how your awesome kids did this week:</p>
     <div style="background-color: #f8fafc; padding: 16px; border-radius: 16px; margin: 20px 0;">
       ${statsHtml || '<p style="text-align: center; color: #94a3b8;">No activity this week. Let\'s get to it!</p>'}
     </div>
