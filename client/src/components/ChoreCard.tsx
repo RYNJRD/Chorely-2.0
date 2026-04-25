@@ -82,7 +82,7 @@ export const ChoreCard = forwardRef<HTMLDivElement, ChoreCardProps>(
             }}
             disabled={isDone || isCompleting}
             className={cn(
-              "h-12 w-12 shrink-0 rounded-2xl flex items-center justify-center transition-all duration-300",
+              "h-12 w-12 shrink-0 rounded-2xl flex items-center justify-center transition-all duration-300 relative overflow-visible",
             )}
             style={{
               background: isDone
@@ -114,7 +114,48 @@ export const ChoreCard = forwardRef<HTMLDivElement, ChoreCardProps>(
             }}
           >
             {isCompleting ? (
-              <Star className="w-5 h-5 animate-spin" />
+              <>
+                <Star className="w-5 h-5 animate-spin" style={{ zIndex: 2 }} />
+                {/* SVG border draw: two green paths from top-center */}
+                <svg className="absolute inset-0 w-full h-full pointer-events-none" viewBox="0 0 48 48" fill="none" style={{ zIndex: 3 }}>
+                  {/* CW path: top-center → right → bottom-center */}
+                  <motion.path
+                    d="M 24,2 L 32,2 A 14,14 0 0 1 46,16 L 46,32 A 14,14 0 0 1 32,46 L 24,46"
+                    stroke="#4ade80"
+                    strokeWidth="2.5"
+                    strokeLinecap="round"
+                    initial={{ pathLength: 0, opacity: 0 }}
+                    animate={{ pathLength: 1, opacity: 1 }}
+                    transition={{ pathLength: { delay: 0.5, duration: 0.55, ease: "easeInOut" }, opacity: { delay: 0.45, duration: 0.05 } }}
+                  />
+                  {/* CCW path: top-center → left → bottom-center */}
+                  <motion.path
+                    d="M 24,2 L 16,2 A 14,14 0 0 0 2,16 L 2,32 A 14,14 0 0 0 16,46 L 24,46"
+                    stroke="#4ade80"
+                    strokeWidth="2.5"
+                    strokeLinecap="round"
+                    initial={{ pathLength: 0, opacity: 0 }}
+                    animate={{ pathLength: 1, opacity: 1 }}
+                    transition={{ pathLength: { delay: 0.5, duration: 0.55, ease: "easeInOut" }, opacity: { delay: 0.45, duration: 0.05 } }}
+                  />
+                </svg>
+                {/* Green pulse when paths meet */}
+                <motion.div
+                  className="absolute inset-[-3px] rounded-2xl pointer-events-none"
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: [0, 0, 0.7, 0] }}
+                  transition={{ duration: 1.4, times: [0, 0.73, 0.8, 1], ease: "easeOut" }}
+                  style={{ boxShadow: '0 0 18px rgba(74, 222, 128, 0.7), inset 0 0 14px rgba(74, 222, 128, 0.4)', border: '2px solid rgba(74, 222, 128, 0.5)' }}
+                />
+                {/* Inner green illumination */}
+                <motion.div
+                  className="absolute inset-0 rounded-2xl pointer-events-none"
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: [0, 0, 0.5, 0.2] }}
+                  transition={{ duration: 1.4, times: [0, 0.73, 0.82, 1], ease: "easeOut" }}
+                  style={{ background: 'radial-gradient(circle, rgba(74, 222, 128, 0.35) 0%, rgba(74, 222, 128, 0.08) 70%, transparent 100%)' }}
+                />
+              </>
             ) : isDone ? (
               <Check className="w-5 h-5" strokeWidth={2.5} />
             ) : isPending ? (
