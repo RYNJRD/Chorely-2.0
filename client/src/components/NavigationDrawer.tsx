@@ -1,5 +1,6 @@
 import { motion, AnimatePresence } from "framer-motion";
 import { useLocation } from "wouter";
+import { useQuery } from "@tanstack/react-query";
 import { 
   X, Settings, Home, Trophy, Star, MessageCircle, 
   LogOut, Shield, Moon, Sun, User, LayoutDashboard
@@ -9,6 +10,8 @@ import { auth } from "../lib/firebase";
 import { useSettings } from "../hooks/use-settings";
 import { cn } from "../lib/utils";
 import { UserAvatar } from "./UserAvatar";
+import { api, buildUrl } from "../../../shared/routes";
+import type { Message } from "../../../shared/schema";
 
 interface NavigationDrawerProps {
   isOpen: boolean;
@@ -17,16 +20,31 @@ interface NavigationDrawerProps {
 
 export function NavigationDrawer({ isOpen, onClose }: NavigationDrawerProps) {
   const [, setLocation] = useLocation();
-  const { currentUser, family, logout } = useStore();
+  const { currentUser, family, logout, lastChatVisit } = useStore();
   const { settings, updateSetting } = useSettings();
   const firebaseUser = auth.currentUser;
   const isDark = settings.darkMode;
+
+  const { data: messages = [] } = useQuery<Message[]>({
+    queryKey: [buildUrl(api.messages.list.path, { id: family?.id || 0 })],
+    enabled: !!family && isOpen,
+  });
+
+  const hasUnread = messages.some(msg => 
+    msg.userId !== currentUser?.id && 
+    new Date(msg.createdAt).getTime() > lastChatVisit
+  );
 
   const navItems = [
     { label: "Dashboard", icon: LayoutDashboard, path: `/family/${family?.id}/dashboard` },
     { label: "Leaderboard", icon: Trophy, path: `/family/${family?.id}/leaderboard` },
     { label: "Rewards", icon: Star, path: `/family/${family?.id}/rewards` },
-    { label: "Chat", icon: MessageCircle, path: `/family/${family?.id}/chat` },
+    { 
+      label: "Chat", 
+      icon: MessageCircle, 
+      path: `/family/${family?.id}/chat`,
+      hasBadge: hasUnread 
+    },
     ...(currentUser?.role === "admin" ? [
       { label: "Admin Panel", icon: Shield, path: `/family/${family?.id}/admin` }
     ] : []),
@@ -136,7 +154,7 @@ export function NavigationDrawer({ isOpen, onClose }: NavigationDrawerProps) {
                     isDark ? "hover:bg-white/5" : "hover:bg-slate-100/60"
                   )}
                 >
-                  <div className="w-10 h-10 flex items-center justify-center rounded-xl transition-all duration-300"
+                  <div className="w-10 h-10 flex items-center justify-center rounded-xl transition-all duration-300 relative"
                     style={{
                       background: isDark ? 'rgba(255, 255, 255, 0.05)' : 'rgba(120, 100, 180, 0.06)',
                       border: isDark ? '1px solid rgba(255, 255, 255, 0.06)' : '1px solid rgba(120, 100, 180, 0.1)',
@@ -146,6 +164,9 @@ export function NavigationDrawer({ isOpen, onClose }: NavigationDrawerProps) {
                       "w-5 h-5 group-hover:text-primary transition-colors duration-300",
                       isDark ? "text-white/50" : "text-slate-400"
                     )} />
+                    {item.hasBadge && (
+                      <span className="absolute top-2 right-2 w-2.5 h-2.5 bg-rose-500 rounded-full border-2 border-white dark:border-[#121220] animate-pulse shadow-[0_0_8px_rgba(244,63,94,0.6)]" />
+                    )}
                   </div>
                   <span className={cn(
                     "font-bold text-sm transition-colors duration-300",

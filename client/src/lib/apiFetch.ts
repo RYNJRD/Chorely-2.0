@@ -32,11 +32,6 @@ export async function apiFetch(input: RequestInfo | URL, init: RequestInit = {})
     } catch (err) {
       console.warn("[apiFetch] Failed to get ID token:", err);
     }
-  } else {
-    const { currentUser } = useStore.getState();
-    if (currentUser?.id && !currentUser.firebaseUid) {
-      headers.set("X-Demo-User-Id", String(currentUser.id));
-    }
   }
 
   const resolvedUrl = typeof input === "string" && input.startsWith("/") 

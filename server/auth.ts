@@ -11,7 +11,6 @@ const IS_DEV = process.env.NODE_ENV !== "production";
 type AuthRequest = Request & {
   auth?: {
     uid: string;
-    demoUserId?: number;
   };
   currentUser?: User;
 };
@@ -147,14 +146,6 @@ export async function verifyBearerToken(token: string) {
 
 // ── Middleware ────────────────────────────────────────────────────────────────
 export async function requireAuth(req: AuthRequest, res: Response, next: NextFunction) {
-  // Demo user shortcut (dev only)
-  if (IS_DEV) {
-    const demoUserId = Number(req.headers["x-demo-user-id"]);
-    if (Number.isFinite(demoUserId) && demoUserId > 0) {
-      req.auth = { uid: `demo:${demoUserId}`, demoUserId };
-      return next();
-    }
-  }
 
   const authHeader = req.headers.authorization;
   if (!authHeader?.startsWith("Bearer ")) {
@@ -193,15 +184,6 @@ export async function requireAuth(req: AuthRequest, res: Response, next: NextFun
 export async function attachCurrentUser(req: AuthRequest, res: Response, next: NextFunction) {
   if (!req.auth?.uid) {
     return res.status(401).json({ message: "Unauthorized" });
-  }
-
-  if (req.auth.demoUserId) {
-    const demoUser = await storage.getUser(req.auth.demoUserId);
-    if (!demoUser) {
-      return res.status(404).json({ message: "Demo user no longer exists" });
-    }
-    req.currentUser = demoUser;
-    return next();
   }
 
   const user = await storage.getUserByFirebaseUid(req.auth.uid);

@@ -56,13 +56,22 @@ export async function ensureOtpTable() {
         id SERIAL PRIMARY KEY,
         email VARCHAR(255) NOT NULL,
         firebase_uid VARCHAR(255) NOT NULL,
-        code VARCHAR(6) NOT NULL,
+        code VARCHAR(255) NOT NULL,
         expires_at TIMESTAMPTZ NOT NULL,
+
         attempts INTEGER NOT NULL DEFAULT 0,
         last_sent_at TIMESTAMPTZ NOT NULL,
         created_at TIMESTAMPTZ DEFAULT NOW()
       )
     `);
+    
+    // Ensure existing tables are updated to use the longer code column for hashes
+    try {
+      await p.query("ALTER TABLE email_verification_codes ALTER COLUMN code TYPE VARCHAR(255);");
+    } catch (alterErr) {
+      // Ignore if it fails (e.g., column doesn't exist yet, though the above query should create it)
+    }
+    
     return true;
   } catch (err) {
     console.error("[DB] OTP table init failed:", err);

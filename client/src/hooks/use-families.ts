@@ -60,17 +60,6 @@ export function useFamilyLeaderboard(id: number | undefined) {
   });
 }
 
-export function useDemoSetup() {
-  return useMutation({
-    mutationFn: async () => {
-      const res = await apiFetch(api.demo.setup.path, {
-        method: api.demo.setup.method,
-      });
-      if (!res.ok) throw new Error("Failed to setup demo");
-      return api.demo.setup.responses[201].parse(await res.json());
-    },
-  });
-}
 
 export function useFamilyActivity(id: number | undefined) {
   return useQuery({

@@ -39,11 +39,7 @@ function RouteFallback() {
 import { Router as WouterRouter } from "wouter";
 
 function Router() {
-  // Use Vite's BASE_URL (which we set to /Taskling/)
-  const base = import.meta.env.BASE_URL || "/";
-  
   return (
-    <WouterRouter base={base === '/' ? undefined : base}>
     <Suspense fallback={<RouteFallback />}>
       <Switch>
         <Route path="/" component={Splash} />
@@ -64,17 +60,22 @@ function Router() {
         <Route component={NotFound} />
       </Switch>
     </Suspense>
-    </WouterRouter>
   );
 }
 
 function App() {
+  // Use Vite's BASE_URL (which we set to /Taskling/)
+  const rawBase = import.meta.env.BASE_URL || "/";
+  const base = rawBase === '/' ? undefined : rawBase.replace(/\/$/, "");
+
   return (
     <QueryClientProvider client={queryClient}>
       <TooltipProvider>
-        <Layout>
-          <Router />
-        </Layout>
+        <WouterRouter base={base}>
+          <Layout>
+            <Router />
+          </Layout>
+        </WouterRouter>
         <Toaster />
       </TooltipProvider>
     </QueryClientProvider>

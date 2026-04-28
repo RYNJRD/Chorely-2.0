@@ -205,6 +205,17 @@ export async function registerRoutes(httpServer: Server, app: Express): Promise<
     return res.json({ checklist: await getFamilyOnboardingChecklist(familyId) });
   });
 
+  app.get("/api/families/:id/weekly-showcase", requireAuth, attachCurrentUser, async (req, res) => {
+    const currentUser = getCurrentUser(req);
+    const familyId = parseId(req.params.id);
+    if (!familyId) return res.status(400).json({ message: "Invalid family id" });
+    if (!sameFamilyOrReject(res, currentUser.familyId, familyId)) return;
+    
+    const { generateWeeklyReport } = await import("./services/weekly-report-service.js");
+    const report = await generateWeeklyReport(familyId);
+    return res.json(report);
+  });
+
   app.post(api.users.create.path, requireAuth, async (req, res) => {
     try {
       const input = api.users.create.input.parse(req.body);
@@ -505,9 +516,7 @@ export async function registerRoutes(httpServer: Server, app: Express): Promise<
 
     try {
       let currentUser = null;
-      if (parsed.data.demoUserId && process.env.NODE_ENV !== "production") {
-        currentUser = await storage.getUser(parsed.data.demoUserId);
-      } else if (parsed.data.token) {
+      if (parsed.data.token) {
         const decoded = await verifyBearerToken(parsed.data.token);
         currentUser = await storage.getUserByFirebaseUid(decoded.uid);
       }
@@ -536,14 +545,7 @@ export async function registerRoutes(httpServer: Server, app: Express): Promise<
     }
   });
 
-  app.post(api.demo.setup.path, async (_req, res) => {
-    if (process.env.NODE_ENV === "production") {
-      return res.status(403).json({ message: "Demo setup is disabled in production" });
-    }
-    const family = await storage.getOrCreateCurrentDemo();
-    const users = await storage.getFamilyUsers(family.id);
-    return res.status(201).json({ family, users });
-  });
+
 
   // ── DB-backed OTP helpers ─────────────────────────────────────────────────────
   async function checkOtpStorage() {
@@ -598,8 +600,11 @@ export async function registerRoutes(httpServer: Server, app: Express): Promise<
       }
 
       // 3. Generate Code
-      const code = String(Math.floor(100000 + Math.random() * 900000));
-      const expiresAt = new Date(Date.now() + 10 * 60_000);
+      const crypto = await import("crypto");
+      const rawCode = String(Math.floor(100000 + Math.random() * 900000));
+      const codeHash = crypto.createHash("sha256").update(rawCode).digest("hex");
+      const DEV_MODE = process.env.NODE_ENV !== "production";
+      const expiresAt = new Date(Date.now() + (DEV_MODE ? 30_000 : 10 * 60_000));
       const now = new Date();
       console.log("[OTP] code generated");
 
@@ -608,7 +613,7 @@ export async function registerRoutes(httpServer: Server, app: Express): Promise<
         await pool.query("DELETE FROM email_verification_codes WHERE email = $1", [email]);
         await pool.query(
           "INSERT INTO email_verification_codes (email, firebase_uid, code, expires_at, attempts, last_sent_at) VALUES ($1, $2, $3, $4, 0, $5)",
-          [email, firebaseUid, code, expiresAt, now]
+          [email, firebaseUid, codeHash, expiresAt, now]
         );
         console.log("[OTP] saved to db");
       } catch (saveErr: any) {
@@ -616,16 +621,25 @@ export async function registerRoutes(httpServer: Server, app: Express): Promise<
         throw new Error(`Failed to save code to database: ${saveErr.message}`);
       }
 
-      // 5. Email Sending
+      // 5. Email Sending via Notification Service
       try {
-        const { sendOtpEmail } = await import("./services/email-service.js");
-        console.log("[OTP] resend called");
-        const emailResult = await sendOtpEmail(email, code);
-        if (!emailResult) {
-          console.error("[OTP] Resend call returned null/false");
-          throw new Error("Resend service returned an empty response. Check your domain verification.");
-        }
-        console.log("[OTP] resend success");
+        const { notifyUser } = await import("./services/notification-service.js");
+        const { getAuth } = await import("firebase-admin/auth");
+        
+        // Note: taskling.co, www.taskling.co, and localhost must be authorized domains in Firebase Auth settings.
+        const actionCodeSettings = {
+          url: "https://taskling.co/auth", // Route to return to for verification/auth
+          handleCodeInApp: true,
+        };
+        const actionLink = await getAuth().generateEmailVerificationLink(email, actionCodeSettings);
+        
+        await notifyUser({
+          email,
+          type: "EMAIL_VERIFICATION",
+          channels: ["email"],
+          payload: { code: rawCode, actionLink }
+        });
+        console.log("[OTP] email notification triggered");
       } catch (emailErr: any) {
         console.error("[OTP] Email transmission failed. Full error:", emailErr);
         throw new Error(`Failed to deliver email: ${emailErr.message}`);
@@ -668,7 +682,10 @@ export async function registerRoutes(httpServer: Server, app: Express): Promise<
       }
       await pool.query("UPDATE email_verification_codes SET attempts = $1 WHERE email = $2", [newAttempts, email]);
 
-      if (record.code !== code.trim()) {
+      const crypto = await import("crypto");
+      const incomingHash = crypto.createHash("sha256").update(code.trim()).digest("hex");
+
+      if (record.code !== incomingHash && record.code !== code.trim()) { // Fallback for old unhashed codes
         const remaining = 5 - newAttempts;
         return res.status(400).json({ message: `Incorrect code. ${remaining} attempt${remaining !== 1 ? "s" : ""} remaining.` });
       }
@@ -698,11 +715,47 @@ export async function registerRoutes(httpServer: Server, app: Express): Promise<
   app.post("/api/auth/reset-password", async (req, res) => {
     try {
       const { getAuth } = await import("firebase-admin/auth");
-      const { sendPasswordResetEmail } = await import("./services/email-service.js");
       const { email } = req.body;
       if (!email) return res.status(400).json({ message: "Email required" });
-      const link = await getAuth().generatePasswordResetLink(email);
-      await sendPasswordResetEmail(email, link);
+      
+      // Note: taskling.co, www.taskling.co, and localhost must be authorized domains in Firebase Auth settings.
+      const actionCodeSettings = {
+        url: "https://taskling.co/auth", 
+        handleCodeInApp: true,
+      };
+      const link = await getAuth().generatePasswordResetLink(email, actionCodeSettings);
+      
+      // Dual-method: Generate OTP
+      const crypto = await import("crypto");
+      const rawCode = String(Math.floor(100000 + Math.random() * 900000));
+      const codeHash = crypto.createHash("sha256").update(rawCode).digest("hex");
+      const DEV_MODE = process.env.NODE_ENV !== "production";
+      const expiresAt = new Date(Date.now() + (DEV_MODE ? 30_000 : 10 * 60_000));
+      const now = new Date();
+
+      try {
+        const pool = await checkOtpStorage();
+        // Since we don't know firebase_uid easily here without fetching, we might just store email
+        // Or we can fetch user by email first
+        const userRecord = await getAuth().getUserByEmail(email);
+        
+        await pool.query("DELETE FROM email_verification_codes WHERE email = $1", [email]);
+        await pool.query(
+          "INSERT INTO email_verification_codes (email, firebase_uid, code, expires_at, attempts, last_sent_at) VALUES ($1, $2, $3, $4, 0, $5)",
+          [email, userRecord.uid, codeHash, expiresAt, now]
+        );
+      } catch (dbErr) {
+        console.warn("[Auth] OTP generation for reset failed, proceeding with just link", dbErr);
+      }
+
+      const { notifyUser } = await import("./services/notification-service.js");
+      await notifyUser({
+        email,
+        type: "PASSWORD_RESET",
+        channels: ["email"],
+        payload: { code: rawCode, actionLink: link }
+      });
+
       return res.json({ success: true });
     } catch (e: any) {
       console.error("[Auth] reset password email error", e);

@@ -1,4 +1,4 @@
-﻿import { useEffect } from "react";
+import { useEffect } from "react";
 import { auth } from "../lib/firebase";
 import { queryClient } from "../lib/queryClient";
 import { api, buildUrl } from "../../../shared/routes";
@@ -23,12 +23,10 @@ export function useFamilyLive(familyId: number | undefined) {
 
     const connect = async () => {
       const token = await auth.currentUser?.getIdToken();
-      const demoUserId = useStore.getState().currentUser?.firebaseUid ? undefined : useStore.getState().currentUser?.id;
-      if ((!token && !demoUserId) || cancelled) return;
+      if (!token || cancelled) return;
 
       const params = new URLSearchParams({ familyId: String(familyId) });
       if (token) params.set("token", token);
-      if (demoUserId) params.set("demoUserId", String(demoUserId));
       const url = `${api.events.stream.path}?${params.toString()}`;
       source = new EventSource(url);
 

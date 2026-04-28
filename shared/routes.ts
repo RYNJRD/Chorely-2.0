@@ -251,16 +251,8 @@ export const api = {
       path: "/api/events/stream" as const,
       input: z.object({
         token: z.string().min(1).optional(),
-        demoUserId: z.coerce.number().optional(),
         familyId: z.coerce.number(),
       }),
-    },
-  },
-  demo: {
-    setup: {
-      method: "POST" as const,
-      path: "/api/demo/setup" as const,
-      responses: { 201: z.object({ family: z.custom<typeof families.$inferSelect>(), users: z.array(z.custom<typeof users.$inferSelect>()) }) },
     },
   },
 };

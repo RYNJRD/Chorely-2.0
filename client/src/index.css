@@ -544,6 +544,10 @@
     background: linear-gradient(180deg, hsl(262 30% 14%) 0%, transparent 100%);
   }
 
+  .light .bg-tab-home {
+    background: linear-gradient(180deg, #f5f2ff 0%, #ffffff 100%);
+  }
+
   .bg-tab-leaderboard {
     background: linear-gradient(180deg, hsl(43 40% 12%) 0%, transparent 100%);
   }

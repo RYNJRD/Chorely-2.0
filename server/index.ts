@@ -4,7 +4,6 @@ import cors from "cors";
 import helmet from "helmet";
 import { rateLimit } from "express-rate-limit";
 import { registerRoutes } from "./routes.js";
-import { setupDemoMode } from "./mock.js";
 import { serveStatic } from "./static.js";
 import { createServer } from "http";
 import { getEnv } from "./env.js";
@@ -66,7 +65,7 @@ export function log(message: string, source = "express") {
     hour12: true,
   });
 
-  console.log(`\${formattedTime} [\${source}] \${message}`);
+  console.log(`${formattedTime} [${source}] ${message}`);
 }
 
 app.use((req, res, next) => {
@@ -83,9 +82,9 @@ app.use((req, res, next) => {
   res.on("finish", () => {
     const duration = Date.now() - start;
     if (path.startsWith("/api")) {
-      let logLine = `\${req.method} \${path} \${res.statusCode} in \${duration}ms`;
+      let logLine = `${req.method} ${path} ${res.statusCode} in ${duration}ms`;
       if (capturedJsonResponse) {
-        logLine += ` :: \${JSON.stringify(capturedJsonResponse)}`;
+        logLine += ` :: ${JSON.stringify(capturedJsonResponse)}`;
       }
 
       log(logLine);
@@ -96,8 +95,12 @@ app.use((req, res, next) => {
 });
 
 export const setupApp = async () => {
-  setupDemoMode(app);
   await registerRoutes(httpServer, app);
+  
+  if (process.env.NODE_ENV !== "production") {
+    const { registerDevRoutes } = await import("./dev-routes.js");
+    registerDevRoutes(app);
+  }
 
   app.use((err: any, _req: Request, res: Response, next: NextFunction) => {
     const status = err.status || err.statusCode || 500;
@@ -138,7 +141,7 @@ if (!process.env.VERCEL) {
         : { port: Number(port), host: "0.0.0.0", reusePort: true };
 
     httpServer.listen(listenOptions, () => {
-      log(`serving on port \${port}`);
+      log(`serving on port ${port}`);
     });
   }).catch(console.error);
 }

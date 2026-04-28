@@ -116,6 +116,14 @@ export default function Chat() {
     enabled: !!family,
   });
 
+  const { setLastChatVisit } = useStore();
+
+  useEffect(() => {
+    if (messages.length > 0) {
+      setLastChatVisit(Date.now());
+    }
+  }, [messages, setLastChatVisit]);
+
   const sendMessage = useMutation({
     mutationFn: async (msg: { familyId: number; userId: number; senderName: string; content: string }) => {
       const res = await apiFetch(api.messages.create.path, {

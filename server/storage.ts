@@ -59,13 +59,10 @@ export interface IStorage {
   getMonthlyWinners(familyId: number): Promise<MonthlyWinner[]>;
   getPendingChoreSubmissions(familyId: number): Promise<ChoreSubmission[]>;
   getPendingRewardClaims(familyId: number): Promise<RewardClaim[]>;
-  getOrCreateCurrentDemo(): Promise<Family>;
+
   updateFamilyInviteCode(familyId: number, code: string): Promise<Family>;
 }
 
-let currentDemoFamily: Family | null = null;
-let lastDemoRotation = 0;
-const ROTATION_INTERVAL = 5 * 60 * 1000;
 
 export class DatabaseStorage implements IStorage {
   async createFamily(family: InsertFamily): Promise<Family> {
@@ -230,16 +227,7 @@ export class DatabaseStorage implements IStorage {
       .orderBy(desc(rewardClaims.createdAt));
   }
 
-  async getOrCreateCurrentDemo(): Promise<Family> {
-    const now = Date.now();
-    if (currentDemoFamily && now - lastDemoRotation < ROTATION_INTERVAL) {
-      return currentDemoFamily;
-    }
-    
-    currentDemoFamily = await setupDemoFamily(this);
-    lastDemoRotation = now;
-    return currentDemoFamily;
-  }
+
 
   async updateFamilyInviteCode(familyId: number, code: string): Promise<Family> {
     const [updated] = await db.update(families).set({ inviteCode: code }).where(eq(families.id, familyId)).returning();
@@ -248,118 +236,6 @@ export class DatabaseStorage implements IStorage {
   }
 }
 
-async function setupDemoFamily(storage: DatabaseStorage): Promise<Family> {
-  const family = await storage.createFamily({
-    name: "The Demo Family",
-    inviteCode: generateInviteCode("DEMO"),
-    timeZone: "Europe/London",
-    themeColor: "violet",
-  });
 
-  const parent = await storage.createUser({
-    familyId: family.id,
-    username: "Jordan",
-    role: "admin",
-    gender: "other",
-    age: 38,
-    avatarConfig: JSON.stringify({}),
-  });
-
-  const alex = await storage.createUser({
-    familyId: family.id,
-    username: "Alex",
-    role: "member",
-    gender: "other",
-    age: 13,
-    avatarConfig: JSON.stringify({}),
-  });
-
-  const mia = await storage.createUser({
-    familyId: family.id,
-    username: "Mia",
-    role: "member",
-    gender: "other",
-    age: 10,
-    avatarConfig: JSON.stringify({}),
-  });
-
-  await storage.createChore({
-    familyId: family.id,
-    title: "Empty dishwasher",
-    description: "Put everything away before dinner.",
-    points: 20,
-    type: "daily",
-    assigneeId: alex.id,
-    requiresApproval: false,
-    createdBy: parent.id,
-    emoji: "🍽️",
-  });
-
-  await storage.createChore({
-    familyId: family.id,
-    title: "Tidy bedroom",
-    description: "Quick five-minute reset.",
-    points: 15,
-    type: "daily",
-    assigneeId: mia.id,
-    requiresApproval: false,
-    createdBy: parent.id,
-    emoji: "🧸",
-  });
-
-  await storage.createChore({
-    familyId: family.id,
-    title: "Take out recycling",
-    description: "Snap a quick photo if the bin is already full.",
-    points: 30,
-    type: "weekly",
-    assigneeId: alex.id,
-    requiresApproval: true,
-    createdBy: parent.id,
-    emoji: "♻️",
-  });
-
-  await storage.createChore({
-    familyId: family.id,
-    title: "Dog walk backup",
-    description: "Anyone can jump in and help.",
-    points: 25,
-    type: "box",
-    assigneeId: null,
-    requiresApproval: false,
-    createdBy: parent.id,
-    emoji: "🐶",
-  });
-
-  await storage.createReward({
-    familyId: family.id,
-    title: "Choose Friday movie",
-    description: "Winner picks the family movie night pick.",
-    costPoints: 120,
-    emoji: "🎬",
-    requiresApproval: false,
-    createdBy: parent.id,
-  });
-
-  await storage.createReward({
-    familyId: family.id,
-    title: "Later bedtime pass",
-    description: "Worth one extra hour on Saturday.",
-    costPoints: 220,
-    emoji: "🌙",
-    requiresApproval: true,
-    createdBy: parent.id,
-  });
-
-  await storage.createMessage({
-    familyId: family.id,
-    userId: parent.id,
-    senderName: "Taskling",
-    content: "Welcome to the demo family. Try completing a chore, claiming a reward, and reviewing an approval.",
-    isSystem: true,
-  });
-
-  return family;
-}
 
 export const storage = new DatabaseStorage();

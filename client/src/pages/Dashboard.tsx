@@ -228,17 +228,16 @@ export default function Dashboard() {
   };
 
   return (
-    <div className="pt-6 px-5 pb-20 min-h-screen bg-tab-home">
+    <div className="pt-[max(1.5rem,env(safe-area-inset-top))] px-5 pb-32 min-h-screen bg-tab-home">
 
       {/* ── Hero Card ── */}
       <motion.div
         initial={{ opacity: 0, y: -12 }}
         animate={{ opacity: 1, y: 0 }}
-        className="mb-5 rounded-[2rem] overflow-hidden relative glow-primary"
+        className="mb-5 rounded-[2rem] overflow-hidden relative"
       >
-        {/* Gradient background */}
-        <div className="absolute inset-0" style={{ background: 'linear-gradient(135deg, rgba(139, 92, 246, 0.3), rgba(99, 102, 241, 0.2), rgba(79, 70, 229, 0.25))' }} />
-        <div className="absolute inset-0" style={{ backdropFilter: 'blur(20px)', WebkitBackdropFilter: 'blur(20px)', background: 'rgba(15, 15, 25, 0.4)', border: '1px solid rgba(139, 92, 246, 0.2)' }} />
+        {/* Nice faded lilac/purple glass background to match adults' premium feel */}
+        <div className="absolute inset-0 bg-gradient-to-br from-violet-500/10 via-purple-500/5 to-transparent backdrop-blur-xl border border-white/20" />
 
         <div className="relative px-4 pt-3 pb-2">
           {/* Top row: avatar + greeting + menu */}

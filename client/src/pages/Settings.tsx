@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useLocation } from "wouter";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { motion, AnimatePresence } from "framer-motion";
@@ -6,8 +6,7 @@ import {
   ArrowLeft, Bell, Check, ChevronRight, Download, FileText,
   Flame, Gift, Info, Link2, LogOut, MessageCircle, Moon,
   Pencil, RefreshCw, Shield, ShieldCheck, Smartphone,
-  Sun, Trash2, Users, X, AlertTriangle, UserX, TrendingUp
-} from "lucide-react";
+  Sun, Trash2, Users, X, AlertTriangle, UserX, TrendingUp, Crown, CreditCard} from "lucide-react";
 import { auth } from "../lib/firebase";
 import { useStore } from "../store/useStore";
 import { useSettings, type PointsResetCycle } from "../hooks/use-settings";
@@ -191,6 +190,26 @@ export default function Settings() {
   const [cycleOpen, setCycleOpen] = useState(false);
   const [activeScreen, setActiveScreen] = useState<LegalScreenId | null>(null);
 
+  // Mock Subscription State for UI demonstration
+  const [isPremium, setIsPremium] = useState(true);
+  const [daysRemaining, setDaysRemaining] = useState(5); // Orange state
+
+  // Dev overrides
+  useEffect(() => {
+    if (import.meta.env.DEV) {
+      apiFetch("/api/dev/set-premium", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ isPremium: true, daysLeft: 5 }) })
+        .then(r => r.json())
+        .then(data => {
+          if (data.devState) {
+            setIsPremium(data.devState.isPremium);
+            const msLeft = new Date(data.devState.trialExpiresAt).getTime() - Date.now();
+            setDaysRemaining(Math.max(0, Math.ceil(msLeft / (1000 * 60 * 60 * 24))));
+          }
+        }).catch(() => {});
+    }
+  }, []);
+
+
   const familyId = family?.id ?? 0;
   const role: UserRole = currentUser?.role === "admin" ? "admin" : "member";
   const parent = isParent(role);
@@ -301,7 +320,10 @@ export default function Settings() {
             </div>
           </button>
           <div className="text-center flex-1">
-            <h1 className="text-xl font-bold tracking-tight">Settings</h1>
+            <div className="flex items-center justify-center gap-2">
+              <h1 className="text-xl font-bold tracking-tight">Settings</h1>
+              {isPremium && <Crown size={16} className="text-yellow-500 drop-shadow-[0_0_8px_rgba(234,179,8,0.5)]" />}
+            </div>
             {parent && (
                <div className="inline-flex items-center gap-1.5 px-2 py-0.5 mt-1 rounded-full bg-primary/10 border border-primary/20">
                  <Shield size={10} className="text-primary" />
@@ -361,6 +383,52 @@ export default function Settings() {
               icon={Smartphone} 
               onClick={() => setLocation(`/family/${familyId}/profile`)} 
             />
+          </SettingsGroup>
+
+          <SectionHeader title="Subscription" />
+          <SettingsGroup>
+            <div className="px-4 py-4">
+              <div className="flex items-center justify-between mb-4">
+                <div className="flex items-center gap-3">
+                  <div className="flex items-center justify-center w-10 h-10 rounded-xl bg-gradient-to-br from-yellow-400 to-amber-600 shadow-lg shadow-amber-500/20 text-white">
+                    <Crown size={20} />
+                  </div>
+                  <div>
+                    <h4 className="text-[15px] font-bold leading-tight">
+                      {isPremium ? "Taskling Premium" : "Free Plan"}
+                    </h4>
+                    {isPremium && (
+                      <p className={cn(
+                        "text-[12px] font-bold mt-0.5",
+                        daysRemaining > 7 ? "text-emerald-500" : daysRemaining >= 3 ? "text-orange-500" : "text-red-500"
+                      )}>
+                        {daysRemaining} days remaining
+                      </p>
+                    )}
+                  </div>
+                </div>
+                <div className="px-3 py-1 rounded-full bg-muted/50 border border-border/50 text-xs font-bold">
+                  {isPremium ? "Active" : "Free"}
+                </div>
+              </div>
+              <div className="grid grid-cols-2 gap-3">
+                {!isPremium && (
+                  <button className="col-span-2 py-3 rounded-xl font-bold text-sm bg-gradient-to-r from-yellow-400 to-amber-500 text-white shadow-lg active:scale-95 transition-transform flex items-center justify-center gap-2">
+                    <Crown size={16} /> Upgrade to Premium
+                  </button>
+                )}
+                {isPremium && (
+                  <>
+                    <button className="py-2.5 rounded-xl font-bold text-xs bg-muted/50 text-foreground hover:bg-muted active:scale-95 transition-transform border border-border/50 flex items-center justify-center gap-1.5">
+                      <CreditCard size={14} /> Manage
+                    </button>
+                    <button className="py-2.5 rounded-xl font-bold text-xs bg-gradient-to-r from-yellow-400 to-amber-500 text-white shadow-md active:scale-95 transition-transform flex items-center justify-center gap-1.5">
+                      Renew Plan
+                    </button>
+                  </>
+                )}
+              </div>
+            </div>
           </SettingsGroup>
 
           <SectionHeader title="Family Group" />

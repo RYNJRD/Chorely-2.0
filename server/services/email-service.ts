@@ -76,7 +76,7 @@ export async function sendWelcomeEmail(to: string, parentName: string) {
 }
 
 
-export async function sendOtpEmail(to: string, code: string) {
+export async function sendOtpEmail(to: string, code: string, actionLink?: string) {
   const subject = `Your Taskling code is ${code}`;
 
   // Penguin SVG inline (waving pose, small, for email)
@@ -103,6 +103,16 @@ export async function sendOtpEmail(to: string, code: string) {
     <text x="62" y="89" font-size="8" text-anchor="middle" fill="#FFD700">★</text>
   </svg>`;
 
+  // Format code with spaces for better readability
+  const formattedCode = code.split('').join(' ');
+
+  const linkHtml = actionLink ? `
+    <div style="margin: 30px 0;">
+      <p style="font-size: 14px; color: #64748b; font-weight: 600; text-transform: uppercase; letter-spacing: 1px;">&mdash; OR &mdash;</p>
+      <a href="${actionLink}" style="background: linear-gradient(135deg, #a855f7 0%, #d946ef 100%); color: white; padding: 16px 36px; border-radius: 99px; text-decoration: none; font-weight: bold; font-size: 16px; display: inline-block; box-shadow: 0 4px 14px rgba(168, 85, 247, 0.4);">Click here to verify</a>
+    </div>
+  ` : "";
+
   const html = getBaseTemplate(subject, `
     <div style="text-align: center; margin-bottom: 24px;">
       ${penguinSvg}
@@ -116,18 +126,18 @@ export async function sendOtpEmail(to: string, code: string) {
     <div style="background: linear-gradient(135deg, #f3e8ff 0%, #ede9fe 100%); border-radius: 20px; padding: 32px 20px; margin: 28px 0; text-align: center; border: 3px solid #7C3AED;">
       <p style="margin: 0 0 8px 0; font-size: 13px; font-weight: 700; color: #7C3AED; letter-spacing: 3px; text-transform: uppercase;">Your verification code</p>
       <div style="display: block; margin-bottom: 20px;">
-        <span style="font-size: 42px; font-weight: 900; color: #1a1a2e; letter-spacing: 4px; background: white; padding: 10px 24px; border-radius: 12px; border: 2px solid #c4b5fd; display: inline-block;">${escapeHtml(code)}</span>
+        <span style="font-size: 38px; font-weight: 900; color: #1a1a2e; letter-spacing: 8px; background: white; padding: 16px 32px; border-radius: 16px; border: 2px solid #c4b5fd; display: inline-block; box-shadow: inset 0 2px 4px rgba(0,0,0,0.05);">${escapeHtml(formattedCode)}</span>
       </div>
       <p style="margin: 0; font-size: 14px; color: #6d28d9; font-weight: 600;">Tap and hold to copy the code</p>
-      <p style="margin: 16px 0 0 0; font-size: 13px; color: #94a3b8;">Didn't request this? You can safely ignore this email.</p>
+      ${linkHtml}
     </div>
 
-    <p style="font-size: 14px; text-align: center; color: #64748b;">
-      Once verified you'll be taken straight into your family's Taskling space. ⭐
+    <p style="font-size: 14px; text-align: center; color: #94a3b8;">
+      Didn't request this? You can safely ignore this email.
     </p>
   `);
 
-  const text = `Your Taskling verification code is: ${code}\n\nIt expires in 10 minutes. If you didn't request this, ignore this email.`;
+  const text = `Your Taskling verification code is: ${code}\n\nIt expires in 10 minutes.\n${actionLink ? `Or verify via link: ${actionLink}\n` : ""}If you didn't request this, ignore this email.`;
 
   try {
     const data = await resend.emails.send({ from: FROM_EMAIL, to, subject, html, text });
@@ -141,18 +151,39 @@ export async function sendOtpEmail(to: string, code: string) {
 
 
 
-export async function sendPasswordResetEmail(to: string, link: string) {
+export async function sendPasswordResetEmail(to: string, code: string, actionLink?: string) {
   const subject = "Reset your Taskling password 🔒";
-  const html = getBaseTemplate(subject, `
-    <h2 style="color: #a855f7; font-size: 24px; margin-top: 0;">Forgot your password? 🤔</h2>
-    <p style="font-size: 16px; line-height: 1.6;">No worries! It happens to the best of us. Click the button below to choose a new password.</p>
-    <div style="text-align: center; margin: 30px 0;">
-      <a href="${link}" style="background-color: #f43f5e; color: white; padding: 14px 32px; border-radius: 99px; text-decoration: none; font-weight: bold; font-size: 18px; display: inline-block; box-shadow: 0 4px 14px rgba(244, 63, 94, 0.4);">Reset Password 🔑</a>
+  const formattedCode = code.split('').join(' ');
+
+  const linkHtml = actionLink ? `
+    <div style="margin: 30px 0;">
+      <p style="font-size: 14px; color: #64748b; font-weight: 600; text-transform: uppercase; letter-spacing: 1px;">&mdash; OR &mdash;</p>
+      <a href="${actionLink}" style="background-color: #f43f5e; color: white; padding: 16px 36px; border-radius: 99px; text-decoration: none; font-weight: bold; font-size: 16px; display: inline-block; box-shadow: 0 4px 14px rgba(244, 63, 94, 0.4);">Click here to reset</a>
     </div>
-    <p style="font-size: 14px; color: #94a3b8; text-align: center;">If you didn't request this, you can safely ignore this email.</p>
+  ` : "";
+
+  const html = getBaseTemplate(subject, `
+    <h2 style="color: #f43f5e; font-size: 26px; margin-top: 0; text-align: center; font-weight: 800;">Forgot your password? 🤔</h2>
+    <p style="font-size: 16px; line-height: 1.6; text-align: center; color: #475569;">
+      No worries! Use the code below or click the link to choose a new password.<br/>
+      <strong>It expires in 10 minutes.</strong>
+    </p>
+
+    <div style="background: linear-gradient(135deg, #ffe4e6 0%, #fecdd3 100%); border-radius: 20px; padding: 32px 20px; margin: 28px 0; text-align: center; border: 3px solid #fb7185;">
+      <p style="margin: 0 0 8px 0; font-size: 13px; font-weight: 700; color: #e11d48; letter-spacing: 3px; text-transform: uppercase;">Your reset code</p>
+      <div style="display: block; margin-bottom: 20px;">
+        <span style="font-size: 38px; font-weight: 900; color: #881337; letter-spacing: 8px; background: white; padding: 16px 32px; border-radius: 16px; border: 2px solid #fda4af; display: inline-block; box-shadow: inset 0 2px 4px rgba(0,0,0,0.05);">${escapeHtml(formattedCode)}</span>
+      </div>
+      <p style="margin: 0; font-size: 14px; color: #be123c; font-weight: 600;">Tap and hold to copy the code</p>
+      ${linkHtml}
+    </div>
+
+    <p style="font-size: 14px; text-align: center; color: #94a3b8;">
+      If you didn't request this, you can safely ignore this email.
+    </p>
   `);
   
-  const text = `Reset your Taskling password by visiting this link: ${link} \nIf you didn't request this, ignore this email.`;
+  const text = `Your Taskling password reset code is: ${code}\n\nIt expires in 10 minutes.\n${actionLink ? `Or reset via link: ${actionLink}\n` : ""}If you didn't request this, ignore this email.`;
 
   try {
     const data = await resend.emails.send({ from: FROM_EMAIL, to, subject, html, text });

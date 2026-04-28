@@ -1,4 +1,4 @@
-﻿import { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { ArrowRight, ChevronLeft, Loader2, Users, Link as LinkIcon, Check, User } from "lucide-react";
 import { useLocation, useParams } from "wouter";
@@ -18,8 +18,7 @@ export default function JoinFamily() {
   const { code: urlCode } = useParams();
   const { setFamily, setCurrentUser, firebaseUid } = useStore();
   const { toast } = useToast();
-  const isDemoMode = import.meta.env.VITE_DEMO_MODE === "true";
-  const effectiveFirebaseUid = firebaseUid ?? (isDemoMode ? "demo-local-user" : null);
+  const effectiveFirebaseUid = firebaseUid;
   const [code, setCode] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
