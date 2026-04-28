@@ -17,9 +17,8 @@ export function Layout({ children }: { children: React.ReactNode }) {
   useFamilyLive(family?.id);
 
   const showNav = !isOnboarding && !isNavHidden;
-  const isDev = import.meta.env.DEV;
   const [showShowcase, setShowShowcase] = useState(false);
-  const [bannerVisible, setBannerVisible] = useState(isDev);
+  const [bannerVisible, setBannerVisible] = useState(true);
 
   return (
     <div className="flex items-center justify-center min-h-screen bg-zinc-950 font-sans text-foreground selection:bg-primary/20">

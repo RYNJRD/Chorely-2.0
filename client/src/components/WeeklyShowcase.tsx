@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { X, ChevronRight, ChevronLeft, Trophy, Star, Zap, Flame, Award } from "lucide-react";
+import { X, ChevronRight, ChevronLeft, Trophy, Star, Zap, Flame, Crown } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
 import { apiFetch } from "../lib/apiFetch";
 import { useStore } from "../store/useStore";
@@ -90,7 +90,13 @@ export function WeeklyShowcase({ open, onClose }: WeeklyShowcaseProps) {
         transition={{ duration: 10, repeat: Infinity, ease: "linear" }}
         className="absolute inset-0 opacity-20 bg-[radial-gradient(circle_at_center,white_0%,transparent_50%)]"
       />
-      <Award className="w-20 h-20 text-yellow-300 mb-6 drop-shadow-lg" fill="currentColor" />
+      <motion.div 
+        animate={{ rotate: 360 }} 
+        transition={{ duration: 3, repeat: Infinity, ease: "linear" }}
+        className="mb-6 drop-shadow-[0_0_15px_rgba(253,224,71,0.8)]"
+      >
+        <Crown className="w-20 h-20 text-yellow-300" fill="currentColor" />
+      </motion.div>
       <h3 className="text-2xl font-bold text-white/90 mb-2 uppercase tracking-widest">Star Champion</h3>
       <motion.div initial={{ scale: 0 }} animate={{ scale: 1 }} transition={{ type: "spring" }} className="text-7xl font-black text-white mb-6 drop-shadow-2xl">
         {report.starChampion}

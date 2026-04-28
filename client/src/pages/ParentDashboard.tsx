@@ -50,9 +50,9 @@ export default function ParentDashboard() {
   const adminPath = family?.id ? `/family/${family.id}/admin` : "/";
 
   const quickActions = [
-    { icon: ClipboardList, label: "Assign Chore", color: "bg-primary/10 text-primary border-primary/20", action: () => setActiveModal('chore') },
-    { icon: Gift, label: "Create Reward", color: "bg-amber-100 text-amber-700 border-amber-200", action: () => setActiveModal('reward') },
-    { icon: Users, label: "Manage Family", color: "bg-green-100 text-green-700 border-green-200", action: () => setLocation(`${adminPath}#members`) },
+    { icon: ClipboardList, label: "Assign Chore", color: "bg-blue-500/15 text-blue-500 border-blue-500/40 dark:text-blue-400 dark:border-blue-400/30", action: () => setActiveModal('chore') },
+    { icon: Gift, label: "Create Reward", color: "bg-amber-500/15 text-amber-600 border-amber-500/40 dark:text-amber-400 dark:border-amber-400/30", action: () => setActiveModal('reward') },
+    { icon: Users, label: "Manage Family", color: "bg-emerald-500/15 text-emerald-600 border-emerald-500/40 dark:text-emerald-400 dark:border-emerald-400/30", action: () => setLocation(`${adminPath}#members`) },
   ];
 
   if (!currentUser) return null;
@@ -112,16 +112,15 @@ export default function ParentDashboard() {
               whileTap={{ scale: 0.94 }}
               onClick={action}
               className={cn(
-                "flex flex-col items-center gap-2 rounded-2xl p-3.5 transition-all duration-300 active:scale-95",
+                "flex flex-col items-center gap-2 rounded-2xl p-3.5 border-[3px] transition-all duration-300 active:scale-95",
+                color
               )}
               style={{
-                background: 'rgba(255, 255, 255, 0.04)',
-                border: '1px solid rgba(255, 255, 255, 0.08)',
                 backdropFilter: 'blur(12px)',
               }}
             >
-              <Icon className="w-5 h-5" strokeWidth={2} />
-              <span className="text-[11px] font-bold text-center leading-tight">{label}</span>
+              <Icon className="w-6 h-6" strokeWidth={2.5} />
+              <span className="text-[12px] font-bold text-center leading-tight">{label}</span>
             </motion.button>
           ))}
         </div>

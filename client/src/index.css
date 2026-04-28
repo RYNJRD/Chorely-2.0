@@ -541,11 +541,28 @@
 
   /* ── Per-tab background gradients (dark, immersive) ── */
   .bg-tab-home {
-    background: linear-gradient(180deg, hsl(262 30% 14%) 0%, transparent 100%);
+    background: linear-gradient(to bottom, #0284c7 0%, #000000 100%);
+    position: relative;
+  }
+  
+  .bg-tab-home::after {
+    content: '';
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 150px;
+    background: linear-gradient(to top, #000000 10%, transparent 100%);
+    pointer-events: none;
+    z-index: 10;
   }
 
   .light .bg-tab-home {
-    background: linear-gradient(180deg, #f5f2ff 0%, #ffffff 100%);
+    background: linear-gradient(to bottom, #dcfce7 0%, #ffffff 100%);
+  }
+
+  .light .bg-tab-home::after {
+    background: linear-gradient(to top, #ffffff 10%, transparent 100%);
   }
 
   .bg-tab-leaderboard {
