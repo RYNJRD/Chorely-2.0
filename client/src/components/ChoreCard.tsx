@@ -35,7 +35,9 @@ export const ChoreCard = forwardRef<HTMLDivElement, ChoreCardProps>(
     const isRejected = status === "rejected";
 
     /* Accent glow based on state */
-    const accentBorder = isRejected
+    const accentBorder = isCompleting
+      ? 'rgba(74, 222, 128, 0.4)'
+      : isRejected
       ? 'rgba(249, 115, 22, 0.3)'
       : isOverdue
         ? 'rgba(244, 63, 94, 0.3)'
@@ -50,19 +52,20 @@ export const ChoreCard = forwardRef<HTMLDivElement, ChoreCardProps>(
         ref={ref}
         layout
         initial={{ opacity: 0, y: 16 }}
-        animate={{ opacity: 1, y: 0 }}
-        exit={{ opacity: 0, scale: 0.97 }}
-        whileHover={!isDone ? { y: -2 } : undefined}
+        animate={isCompleting ? { opacity: 1, y: 0, scale: 1, boxShadow: '0 0 28px rgba(74, 222, 128, 0.5)' } : { opacity: 1, y: 0 }}
+        exit={{ opacity: 0, scale: 1.02, filter: 'brightness(1.5)' }}
+        transition={isCompleting ? { boxShadow: { delay: 0.9, duration: 0.3 } } : undefined}
+        whileHover={!isDone && !isCompleting ? { y: -2 } : undefined}
         className={cn(
           "rounded-[1.75rem] p-4 transition-all duration-300 relative overflow-visible",
           isDone || isPending ? "opacity-70" : "",
         )}
         style={{
-          background: isRejected ? 'rgba(249, 115, 22, 0.05)' : 'rgba(255, 255, 255, 0.04)',
+          background: isCompleting ? 'rgba(74, 222, 128, 0.06)' : isRejected ? 'rgba(249, 115, 22, 0.05)' : 'rgba(255, 255, 255, 0.04)',
           backdropFilter: 'blur(16px)',
           border: `1px solid ${accentBorder}`,
           borderLeft: `3px solid ${accentBorder}`,
-          boxShadow: !isDone && !isPending ? `0 0 12px ${accentBorder}` : 'none',
+          boxShadow: isCompleting ? `0 0 16px rgba(74, 222, 128, 0.3)` : (!isDone && !isPending ? `0 0 12px ${accentBorder}` : 'none'),
           cursor: !isDone && !isCompleting && !isPending ? 'pointer' : 'default',
         }}
         onClick={() => {
@@ -87,13 +90,13 @@ export const ChoreCard = forwardRef<HTMLDivElement, ChoreCardProps>(
                 transition={{ strokeDashoffset: { delay: 0.5, duration: 0.55, ease: "easeInOut" }, opacity: { delay: 0.45, duration: 0.05 } }}
               />
             </svg>
-            {/* Outer green pulse */}
+            {/* Green bloom pulse — peaks bright green at end, no red remnants */}
             <motion.div
-              className="absolute inset-[-2px] rounded-[1.75rem] pointer-events-none z-10"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: [0, 0, 0.6, 0] }}
-              transition={{ duration: 1.4, times: [0, 0.73, 0.8, 1], ease: "easeOut" }}
-              style={{ boxShadow: '0 0 24px rgba(74, 222, 128, 0.5), inset 0 0 20px rgba(74, 222, 128, 0.15)' }}
+              className="absolute inset-[-3px] rounded-[1.85rem] pointer-events-none z-10"
+              initial={{ opacity: 0, scale: 0.98 }}
+              animate={{ opacity: [0, 0, 0.8, 0.9, 0], scale: [0.98, 0.98, 1, 1.01, 1.02] }}
+              transition={{ duration: 1.2, times: [0, 0.6, 0.75, 0.88, 1], ease: "easeOut" }}
+              style={{ boxShadow: '0 0 32px rgba(74, 222, 128, 0.7), inset 0 0 24px rgba(74, 222, 128, 0.2)', border: '2px solid rgba(74, 222, 128, 0.6)' }}
             />
           </>
         )}
@@ -111,7 +114,7 @@ export const ChoreCard = forwardRef<HTMLDivElement, ChoreCardProps>(
               "h-12 w-12 shrink-0 rounded-2xl flex items-center justify-center transition-all duration-300 relative overflow-visible",
             )}
             style={{
-              background: isDone
+              background: isCompleting || isDone
                 ? 'rgba(74, 222, 128, 0.1)' 
                 : isPending
                   ? 'rgba(245, 158, 11, 0.1)'
@@ -123,7 +126,7 @@ export const ChoreCard = forwardRef<HTMLDivElement, ChoreCardProps>(
                         ? 'rgba(249, 115, 22, 0.1)'
                         : 'rgba(var(--glow-primary), 0.08)',
               border: `1px solid ${
-                isDone ? 'rgba(74, 222, 128, 0.3)' :
+                isCompleting || isDone ? 'rgba(74, 222, 128, 0.3)' :
                 isPending ? 'rgba(245, 158, 11, 0.2)' :
                 confirming ? 'rgba(var(--glow-primary), 0.5)' :
                 isOverdue ? 'rgba(244, 63, 94, 0.2)' :
@@ -131,7 +134,7 @@ export const ChoreCard = forwardRef<HTMLDivElement, ChoreCardProps>(
                 'rgba(var(--glow-primary), 0.15)'
               }`,
               boxShadow: confirming ? '0 0 16px rgba(var(--glow-primary), 0.4)' : 'none',
-              color: isDone ? 'rgb(74, 222, 128)' :
+              color: isCompleting || isDone ? 'rgb(74, 222, 128)' :
                      isPending ? 'rgb(245, 158, 11)' :
                      confirming ? 'white' :
                      isOverdue ? 'rgb(244, 63, 94)' :

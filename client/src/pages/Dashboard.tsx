@@ -1,7 +1,7 @@
 import { useMemo, useRef, useEffect, useState as useStateReact } from "react";
 import { addDays, format, isSameDay, startOfToday } from "date-fns";
 import confetti from "canvas-confetti";
-import { motion, useInView } from "framer-motion";
+import { motion, useInView, AnimatePresence } from "framer-motion";
 import { useParams } from "wouter";
 import { Flame, Sparkles, Star, Trophy, Zap, CheckCircle2, TrendingUp, Menu, Shield } from "lucide-react";
 import { useLocation as useWouterLocation } from "wouter";
@@ -168,6 +168,7 @@ export default function Dashboard() {
   const { data: onboarding } = useFamilyOnboarding(id);
   const completeMutation = useCompleteChore();
   const [, navigate] = useWouterLocation();
+  const [completingId, setCompletingId] = useStateReact<number | null>(null);
 
   const today = new Date();
 
@@ -202,29 +203,36 @@ export default function Dashboard() {
   const latestWinner = winners[0];
 
   const handleComplete = async (chore: Chore) => {
-    try {
-      const result = await completeMutation.mutateAsync({ id: chore.id, userId: currentUser.id, familyId: id });
-      if (result.user) setCurrentUser(result.user);
+    setCompletingId(chore.id);
 
-      if (result.submission?.status === "submitted") {
-        toast({ title: "Submitted for review ✓", description: `${chore.title} is waiting for approval.` });
-      } else {
-        toast({ title: `+${result.awardedPoints} stars ⭐`, description: `Great job on ${chore.title}!` });
+    // Wait for the green bloom animation (1.2s) before removing from screen
+    setTimeout(async () => {
+      try {
+        const result = await completeMutation.mutateAsync({ id: chore.id, userId: currentUser.id, familyId: id });
+        if (result.user) setCurrentUser(result.user);
+
+        if (result.submission?.status === "submitted") {
+          toast({ title: "Submitted for review ✓", description: `${chore.title} is waiting for approval.` });
+        } else {
+          toast({ title: `+${result.awardedPoints} stars ⭐`, description: `Great job on ${chore.title}!` });
+        }
+
+        confetti({
+          particleCount: result.submission?.status === "submitted" ? 55 : 120,
+          spread: 80,
+          origin: { y: 0.75 },
+          colors: ["#8b5cf6", "#facc15", "#22c55e", "#f97316"],
+        });
+      } catch (error) {
+        toast({
+          title: "Could not complete chore",
+          description: error instanceof Error ? error.message : "Please try again.",
+          variant: "destructive",
+        });
+      } finally {
+        setCompletingId(null);
       }
-
-      confetti({
-        particleCount: result.submission?.status === "submitted" ? 55 : 120,
-        spread: 80,
-        origin: { y: 0.75 },
-        colors: ["#8b5cf6", "#facc15", "#22c55e", "#f97316"],
-      });
-    } catch (error) {
-      toast({
-        title: "Could not complete chore",
-        description: error instanceof Error ? error.message : "Please try again.",
-        variant: "destructive",
-      });
-    }
+    }, 1200);
   };
 
   return (
@@ -374,6 +382,7 @@ export default function Dashboard() {
                 actionLabel="In Review"
                 onComplete={() => {}}
                 isCompleting={false}
+                completed={false}
               />
             ))}
           </div>
@@ -400,19 +409,23 @@ export default function Dashboard() {
         </div>
 
         <div className="space-y-3">
+        <AnimatePresence mode="popLayout">
           {[...bucketed.overdue, ...bucketed.today].map((chore, i) => (
             <motion.div
               key={chore.id}
               initial={{ opacity: 0, y: 12 }}
               animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 1.02, filter: 'brightness(1.3)', transition: { duration: 0.4, ease: 'easeOut' } }}
               transition={{ delay: 0.3 + i * 0.06 }}
+              layout
             >
               <ChoreCard
                 chore={chore}
                 status={chore.latestSubmissionStatus}
                 rejectionReason={chore.rejectionReason}
+                completed={false}
                 onComplete={() => handleComplete(chore)}
-                isCompleting={completeMutation.isPending && completeMutation.variables?.id === chore.id}
+                isCompleting={completingId === chore.id || (completeMutation.isPending && completeMutation.variables?.id === chore.id)}
                 displayPoints={chore.type === "daily" && chore.assigneeId === currentUser.id ? Math.ceil(chore.points * multiplier) : chore.points}
                 streakBonusPercent={chore.type === "daily" && chore.assigneeId === currentUser.id ? bonusPercent : 0}
                 stateLabel={getChoreBucket(chore) === "overdue" ? "Overdue" : undefined}
@@ -421,6 +434,7 @@ export default function Dashboard() {
               />
             </motion.div>
           ))}
+        </AnimatePresence>
 
           {totalActionable === 0 && (
             <motion.div
