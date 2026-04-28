@@ -1,7 +1,7 @@
 import { useFamilyLive } from "../hooks/use-family-live";
 import { NavigationDrawer } from "./NavigationDrawer";
 import { Menu, X } from "lucide-react";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useLocation } from "wouter";
 import { useStore } from "../store/useStore";
 import { BottomNav } from "./BottomNav";
