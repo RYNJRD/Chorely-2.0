@@ -545,13 +545,8 @@
 
   /* ── Per-tab background gradients (dark, immersive) ── */
 
-  /* ─ HOME V2.0 ─ Layered radial gradients: soft, playful, advanced ─ */
   .bg-tab-home {
-    background:
-      radial-gradient(ellipse 120% 60% at 50% -5%, hsl(270 25% 20%) 0%, transparent 65%),
-      radial-gradient(ellipse 80% 50% at 80% 30%, hsl(300 15% 16% / 0.5) 0%, transparent 55%),
-      radial-gradient(ellipse 90% 45% at 15% 60%, hsl(250 20% 15% / 0.35) 0%, transparent 50%),
-      radial-gradient(circle at 50% 100%, hsl(260 10% 12% / 0.4) 0%, transparent 40%);
+    background: linear-gradient(180deg, hsl(265 20% 16%) 0%, transparent 100%);
     position: relative;
     min-height: 100%;
   }
@@ -569,75 +564,31 @@
   }
 
   .light .bg-tab-home {
-    background:
-      radial-gradient(ellipse 120% 55% at 50% -5%, hsl(265 40% 93%) 0%, transparent 60%),
-      radial-gradient(ellipse 70% 45% at 85% 25%, hsl(290 30% 92% / 0.6) 0%, transparent 50%),
-      radial-gradient(ellipse 80% 40% at 10% 55%, hsl(245 30% 94% / 0.4) 0%, transparent 45%),
-      radial-gradient(circle at 50% 100%, hsl(260 15% 96% / 0.5) 0%, transparent 35%);
+    background: linear-gradient(180deg, hsl(265 30% 92%) 0%, transparent 100%);
   }
 
   .light .bg-tab-home::after {
     background: linear-gradient(to top, var(--background) 15%, transparent 100%);
   }
 
-  /* ─ LEADERBOARD V2.0 ─ Amber/Gold ─ */
   .bg-tab-leaderboard {
-    background:
-      radial-gradient(ellipse 120% 60% at 50% -5%, hsl(35 30% 18%) 0%, transparent 65%),
-      radial-gradient(ellipse 80% 50% at 85% 30%, hsl(45 20% 14% / 0.5) 0%, transparent 55%),
-      radial-gradient(ellipse 90% 45% at 15% 60%, hsl(30 25% 12% / 0.35) 0%, transparent 50%),
-      radial-gradient(circle at 50% 100%, hsl(40 15% 10% / 0.4) 0%, transparent 40%);
+    background: linear-gradient(180deg, hsl(43 40% 12%) 0%, transparent 100%);
   }
 
-  .light .bg-tab-leaderboard {
-    background:
-      radial-gradient(ellipse 120% 55% at 50% -5%, hsl(35 50% 94%) 0%, transparent 60%),
-      radial-gradient(ellipse 70% 45% at 85% 25%, hsl(45 40% 93% / 0.6) 0%, transparent 50%);
-  }
-
-  /* ─ REWARDS V2.0 ─ Teal/Emerald ─ */
   .bg-tab-rewards {
-    background:
-      radial-gradient(ellipse 120% 60% at 50% -5%, hsl(175 25% 18%) 0%, transparent 65%),
-      radial-gradient(ellipse 80% 50% at 85% 30%, hsl(160 20% 14% / 0.5) 0%, transparent 55%),
-      radial-gradient(ellipse 90% 45% at 15% 60%, hsl(185 20% 12% / 0.35) 0%, transparent 50%),
-      radial-gradient(circle at 50% 100%, hsl(170 15% 10% / 0.4) 0%, transparent 40%);
+    background: linear-gradient(180deg, hsl(189 30% 12%) 0%, transparent 100%);
   }
 
-  .light .bg-tab-rewards {
-    background:
-      radial-gradient(ellipse 120% 55% at 50% -5%, hsl(175 40% 93%) 0%, transparent 60%),
-      radial-gradient(ellipse 70% 45% at 85% 25%, hsl(165 35% 92% / 0.6) 0%, transparent 50%);
-  }
-
-  /* ─ CHAT V2.0 ─ Indigo/Blue ─ */
   .bg-tab-chat {
-    background:
-      radial-gradient(ellipse 120% 60% at 50% -5%, hsl(225 25% 18%) 0%, transparent 65%),
-      radial-gradient(ellipse 80% 50% at 85% 30%, hsl(240 20% 15% / 0.5) 0%, transparent 55%),
-      radial-gradient(circle at 50% 100%, hsl(230 15% 12% / 0.4) 0%, transparent 40%);
+    background: linear-gradient(180deg, hsl(230 30% 13%) 0%, transparent 100%);
   }
 
-  /* ─ PROFILE V2.0 ─ Deep Violet ─ */
   .bg-tab-profile {
-    background:
-      radial-gradient(ellipse 120% 60% at 50% -5%, hsl(265 25% 18%) 0%, transparent 65%),
-      radial-gradient(ellipse 80% 50% at 85% 30%, hsl(280 20% 15% / 0.5) 0%, transparent 55%),
-      radial-gradient(circle at 50% 100%, hsl(265 15% 12% / 0.4) 0%, transparent 40%);
+    background: linear-gradient(180deg, hsl(262 25% 14%) 0%, transparent 100%);
   }
 
-  .light .bg-tab-profile {
-    background:
-      radial-gradient(ellipse 120% 55% at 50% -5%, hsl(265 40% 94%) 0%, transparent 60%),
-      radial-gradient(ellipse 70% 45% at 85% 25%, hsl(275 30% 93% / 0.6) 0%, transparent 50%);
-  }
-
-  /* ─ ADMIN V2.0 ─ Slate ─ */
   .bg-tab-admin {
-    background:
-      radial-gradient(ellipse 120% 60% at 50% -5%, hsl(215 20% 16%) 0%, transparent 65%),
-      radial-gradient(ellipse 80% 50% at 85% 30%, hsl(225 15% 14% / 0.5) 0%, transparent 55%),
-      radial-gradient(circle at 50% 100%, hsl(215 10% 12% / 0.4) 0%, transparent 40%);
+    background: linear-gradient(180deg, hsl(230 25% 13%) 0%, transparent 100%);
   }
 
   /* Global card refinement for V2.0 aesthetic */

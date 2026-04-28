@@ -32,23 +32,10 @@ export function Layout({ children }: { children: React.ReactNode }) {
 
   const showNav = !isOnboarding && !isNavHidden; // Show nav for everyone now
 
-  // Dynamic Backgrounds based on route
-  const getBackgroundClass = () => {
-    if (isOnboarding) return "bg-animated";
-    if (location.includes("/dashboard")) return "bg-tab-home";
-    if (location.includes("/leaderboard")) return "bg-tab-leaderboard";
-    if (location.includes("/rewards")) return "bg-tab-rewards";
-    if (location.includes("/subscription")) return "bg-tab-home"; // Use home V2 background for sub too
-    return "bg-zinc-950";
-  };
-
   return (
     <div className="flex items-center justify-center min-h-screen bg-zinc-950 font-sans text-foreground selection:bg-primary/20">
       <div 
-        className={cn(
-          "w-full h-[100dvh] sm:w-[390px] sm:h-[844px] overflow-hidden relative sm:rounded-[2.5rem] sm:border sm:border-white/10 shadow-2xl shadow-purple-900/30 flex flex-col isolate transform-gpu transition-colors duration-700",
-          getBackgroundClass()
-        )}
+        className="w-full h-[100dvh] sm:w-[390px] sm:h-[844px] overflow-hidden relative bg-animated sm:rounded-[2.5rem] sm:border sm:border-white/10 shadow-2xl shadow-purple-900/30 flex flex-col isolate transform-gpu"
         style={{ WebkitMaskImage: '-webkit-radial-gradient(white, black)' }} // Forces hardware-accelerated clipping on rounded borders
       >
         <NavigationDrawer isOpen={isDrawerOpen} onClose={() => setIsDrawerOpen(false)} />
