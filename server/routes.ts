@@ -628,10 +628,23 @@ export async function registerRoutes(httpServer: Server, app: Express): Promise<
         
         // Note: taskling.co, www.taskling.co, and localhost must be authorized domains in Firebase Auth settings.
         const actionCodeSettings = {
-          url: "https://taskling.co/auth", // Route to return to for verification/auth
+          url: "https://taskling.co/auth/verify", // Route to return to for verification/auth
           handleCodeInApp: true,
+          iOS: {
+            bundleId: "co.taskling.app" // Placeholder for future iOS deep linking
+          },
+          android: {
+            packageName: "co.taskling.app",
+            installApp: false,
+            minimumVersion: "1"
+          }
         };
-        const actionLink = await getAuth().generateEmailVerificationLink(email, actionCodeSettings);
+        const rawLink = await getAuth().generateEmailVerificationLink(email, actionCodeSettings);
+        
+        // Rewrite the domain to use our production domain instead of firebaseapp.com
+        const urlObj = new URL(rawLink);
+        urlObj.host = "taskling.co";
+        const actionLink = urlObj.toString();
         
         await notifyUser({
           email,
@@ -720,10 +733,23 @@ export async function registerRoutes(httpServer: Server, app: Express): Promise<
       
       // Note: taskling.co, www.taskling.co, and localhost must be authorized domains in Firebase Auth settings.
       const actionCodeSettings = {
-        url: "https://taskling.co/auth", 
+        url: "https://taskling.co/auth/verify", 
         handleCodeInApp: true,
+        iOS: {
+          bundleId: "co.taskling.app" // Placeholder for future iOS deep linking
+        },
+        android: {
+          packageName: "co.taskling.app",
+          installApp: false,
+          minimumVersion: "1"
+        }
       };
-      const link = await getAuth().generatePasswordResetLink(email, actionCodeSettings);
+      const rawLink = await getAuth().generatePasswordResetLink(email, actionCodeSettings);
+      
+      // Rewrite the domain to use our production domain instead of firebaseapp.com
+      const urlObj = new URL(rawLink);
+      urlObj.host = "taskling.co";
+      const link = urlObj.toString();
       
       // Dual-method: Generate OTP
       const crypto = await import("crypto");
