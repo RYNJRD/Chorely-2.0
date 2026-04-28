@@ -22,13 +22,15 @@ export function Layout({ children }: { children: React.ReactNode }) {
   const isInactive = family && !isPremium;
 
   useEffect(() => {
-    // Redirect if inactive and not on allowed paths
+    // Subscription Gate Disabled for now as per user request
+    /*
     if (isInactive && !isSubscriptionPage && !isOnboarding) {
       setLocation(`/family/${family.id}/subscription`);
     }
+    */
   }, [isInactive, isSubscriptionPage, isOnboarding, family?.id, setLocation]);
 
-  const showNav = !isOnboarding && !isNavHidden && isPremium;
+  const showNav = !isOnboarding && !isNavHidden; // Show nav for everyone now
 
   // Dynamic Backgrounds based on route
   const getBackgroundClass = () => {
