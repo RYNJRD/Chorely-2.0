@@ -179,7 +179,7 @@
     background: var(--glass-bg);
     backdrop-filter: var(--glass-blur);
     -webkit-backdrop-filter: var(--glass-blur);
-    border: 1px solid var(--glass-border);
+    border: 2px solid #000000;
     transition: background 0.5s ease, border-color 0.5s ease;
   }
 
@@ -187,7 +187,7 @@
     background: var(--glass-bg);
     backdrop-filter: var(--glass-blur);
     -webkit-backdrop-filter: var(--glass-blur);
-    border: 1px solid var(--glass-border);
+    border: 2px solid #000000;
     box-shadow: var(--glass-shadow);
     transition: background 0.5s ease, border-color 0.5s ease, box-shadow 0.5s ease;
   }
@@ -196,7 +196,7 @@
     background: var(--glass-bg);
     backdrop-filter: var(--glass-blur);
     -webkit-backdrop-filter: var(--glass-blur);
-    border: 1px solid var(--glass-border);
+    border: 2px solid #000000;
     box-shadow: var(--glass-inset);
     transition: all 0.3s ease;
   }
@@ -221,7 +221,7 @@
     background: rgba(10, 10, 20, 0.35);
     backdrop-filter: blur(40px) saturate(1.6);
     -webkit-backdrop-filter: blur(40px) saturate(1.6);
-    border: 1px solid rgba(255, 255, 255, 0.12);
+    border: 2px solid #000000;
     box-shadow: 
       0 12px 48px rgba(0, 0, 0, 0.55),
       0 2px 12px rgba(0, 0, 0, 0.3),
@@ -232,7 +232,7 @@
   
   .light .dock-glass {
     background: rgba(255, 255, 255, 0.42);
-    border: 1px solid rgba(255, 255, 255, 0.55);
+    border: 2px solid #000000;
     box-shadow: 
       0 12px 48px rgba(100, 80, 160, 0.12),
       0 2px 8px rgba(100, 80, 160, 0.06),
@@ -348,7 +348,7 @@
     background: var(--glass-bg);
     backdrop-filter: var(--glass-blur);
     -webkit-backdrop-filter: var(--glass-blur);
-    border: 1px solid transparent; /* No hard borders on edges */
+    border: 2px solid #000000;
     transition: all 0.3s ease;
     color: hsl(var(--foreground));
   }
@@ -364,6 +364,7 @@
 
   .btn-neon-primary {
     background: linear-gradient(135deg, hsl(262 83% 58%) 0%, hsl(280 75% 60%) 100%);
+    border: 2px solid #000000;
     box-shadow: 0 0 20px rgba(var(--glow-primary), 0.4),
                 0 8px 24px rgba(0, 0, 0, 0.3);
     transition: all 0.3s ease;
@@ -382,6 +383,7 @@
 
   .btn-neon-accent {
     background: linear-gradient(135deg, hsl(43 96% 50%) 0%, hsl(30 100% 55%) 100%);
+    border: 2px solid #000000;
     box-shadow: 0 0 20px rgba(var(--glow-accent), 0.4),
                 0 8px 24px rgba(0, 0, 0, 0.3);
     transition: all 0.3s ease;
@@ -595,14 +597,14 @@
   .glass-card {
     background: rgba(255, 255, 255, 0.04);
     backdrop-filter: blur(20px);
-    border: 1px solid rgba(255, 255, 255, 0.08);
+    border: 2px solid #000000;
     box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
     border-radius: 1.5rem;
   }
 
   .light .glass-card {
     background: rgba(255, 255, 255, 0.65);
-    border: 1px solid rgba(0, 0, 0, 0.06);
+    border: 2px solid #000000;
     box-shadow: 0 4px 20px rgba(0, 0, 0, 0.04);
   }
 }

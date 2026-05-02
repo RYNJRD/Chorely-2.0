@@ -63,8 +63,7 @@ export const ChoreCard = forwardRef<HTMLDivElement, ChoreCardProps>(
         style={{
           background: isCompleting ? 'rgba(74, 222, 128, 0.06)' : isRejected ? 'rgba(249, 115, 22, 0.05)' : 'rgba(255, 255, 255, 0.04)',
           backdropFilter: 'blur(16px)',
-          border: `1px solid ${accentBorder}`,
-          borderLeft: `3px solid ${accentBorder}`,
+          border: '2px solid #000000',
           boxShadow: isCompleting ? `0 0 16px rgba(74, 222, 128, 0.3)` : (!isDone && !isPending ? `0 0 12px ${accentBorder}` : 'none'),
           cursor: !isDone && !isCompleting && !isPending ? 'pointer' : 'default',
         }}
@@ -125,14 +124,7 @@ export const ChoreCard = forwardRef<HTMLDivElement, ChoreCardProps>(
                       : isRejected
                         ? 'rgba(249, 115, 22, 0.1)'
                         : 'rgba(var(--glow-primary), 0.08)',
-              border: `1px solid ${
-                isCompleting || isDone ? 'rgba(74, 222, 128, 0.3)' :
-                isPending ? 'rgba(245, 158, 11, 0.2)' :
-                confirming ? 'rgba(var(--glow-primary), 0.5)' :
-                isOverdue ? 'rgba(244, 63, 94, 0.2)' :
-                isRejected ? 'rgba(249, 115, 22, 0.3)' :
-                'rgba(var(--glow-primary), 0.15)'
-              }`,
+              border: '2px solid #000000',
               boxShadow: confirming ? '0 0 16px rgba(var(--glow-primary), 0.4)' : 'none',
               color: isCompleting || isDone ? 'rgb(74, 222, 128)' :
                      isPending ? 'rgb(245, 158, 11)' :
@@ -219,7 +211,7 @@ export const ChoreCard = forwardRef<HTMLDivElement, ChoreCardProps>(
               )} style={{
                 background: streakBonusPercent ? 'rgba(249, 115, 22, 0.1)' : 'rgba(var(--glow-accent), 0.08)',
                 color: streakBonusPercent ? 'rgb(251, 146, 60)' : 'rgb(250, 204, 21)',
-                border: `1px solid ${streakBonusPercent ? 'rgba(249, 115, 22, 0.2)' : 'rgba(var(--glow-accent), 0.15)'}`,
+                border: '2px solid #000000',
               }}>
                 <Star className={cn("w-3.5 h-3.5", streakBonusPercent ? "fill-orange-400" : "fill-amber-400")} />
                 {displayPoints ?? chore.points}
