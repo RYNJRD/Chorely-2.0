@@ -395,9 +395,9 @@ export default function Settings() {
                 <div className="relative">
                   <div className="absolute inset-0 bg-purple-400 blur-xl opacity-20 rounded-full translate-y-2"></div>
                   <img 
-                    src="/assets/premium-penguin-icon.png" 
+                    src="/assets/premium-penguin.png" 
                     alt="Taskling Premium" 
-                    className="w-14 h-14 relative z-10 drop-shadow-md"
+                    className="w-16 h-16 relative z-10 drop-shadow-lg rounded-xl object-contain"
                   />
                 </div>
                 <div>

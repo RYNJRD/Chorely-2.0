@@ -123,9 +123,9 @@ export default function Subscription() {
               <div className="flex items-center gap-3.5">
                 <div className="relative">
                   <img
-                    src="/assets/premium-penguin-icon.png"
+                    src="/assets/premium-penguin.png"
                     alt="Taskling Premium"
-                    className="w-16 h-16 relative z-10 drop-shadow-lg"
+                    className="w-20 h-20 relative z-10 drop-shadow-2xl rounded-2xl object-contain"
                   />
                   <div className="absolute inset-0 bg-purple-500 blur-xl opacity-20 rounded-full translate-y-2" />
                 </div>
