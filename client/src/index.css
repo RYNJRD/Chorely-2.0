@@ -546,9 +546,21 @@
   /* ── Per-tab background gradients (dark, immersive) ── */
 
   .bg-tab-home {
-    background: linear-gradient(180deg, hsl(265 20% 16%) 0%, transparent 100%);
+    background: 
+      radial-gradient(circle at 50% -20%, hsl(225 100% 45%) 0%, transparent 60%),
+      linear-gradient(180deg, hsl(225 80% 12%) 0%, hsl(225 80% 8%) 50%, hsl(225 80% 5%) 100%);
     position: relative;
     min-height: 100%;
+    overflow: hidden;
+  }
+
+  .bg-tab-home::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background: radial-gradient(circle at center, transparent 20%, rgba(0, 0, 0, 0.35) 100%);
+    pointer-events: none;
+    z-index: 0;
   }
 
   .bg-tab-home::after {
@@ -558,17 +570,19 @@
     left: 0;
     right: 0;
     height: 140px;
-    background: linear-gradient(to top, var(--background) 15%, transparent 100%);
+    background: linear-gradient(to top, rgba(0,0,0,0.4) 0%, transparent 100%);
     pointer-events: none;
     z-index: 10;
   }
 
   .light .bg-tab-home {
-    background: linear-gradient(180deg, hsl(265 30% 92%) 0%, transparent 100%);
+    background: 
+      radial-gradient(circle at 50% -20%, hsl(225 100% 75%) 0%, transparent 60%),
+      linear-gradient(180deg, hsl(225 50% 92%) 0%, hsl(225 40% 88%) 50%, hsl(225 30% 85%) 100%);
   }
 
   .light .bg-tab-home::after {
-    background: linear-gradient(to top, var(--background) 15%, transparent 100%);
+    background: linear-gradient(to top, rgba(255,255,255,0.4) 0%, transparent 100%);
   }
 
   .bg-tab-leaderboard {
