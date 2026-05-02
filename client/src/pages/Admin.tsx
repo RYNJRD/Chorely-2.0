@@ -234,7 +234,7 @@ export default function Admin() {
       </div>
 
       <div className="space-y-8">
-        <section className="rounded-[1.75rem] p-5 glass-card" style={{ border: '1px solid rgba(var(--glow-primary), 0.15)' }}>
+        <section className="rounded-[1.75rem] p-5 glass-card border-2 border-black">
           <div className="flex items-center justify-between mb-3">
             <h2 className="font-display text-lg font-bold flex items-center gap-2 text-foreground">
               <UsersIcon className="w-5 h-5 text-primary" style={{ filter: 'drop-shadow(0 0 4px rgba(var(--glow-primary), 0.4))' }} />
@@ -244,7 +244,7 @@ export default function Admin() {
               onClick={handleRegenerateInvite}
               disabled={isSpawning}
               className={cn(
-                "text-[10px] font-black uppercase tracking-widest px-3 py-1.5 rounded-xl btn-neon-accent transition-all flex items-center gap-1.5 text-black",
+                "text-[10px] font-black uppercase tracking-widest px-3 py-1.5 rounded-xl btn-neon-accent transition-all flex items-center gap-1.5 text-black border-2 border-black",
                 isSpawning && "animate-pulse scale-95 opacity-50"
               )}
             >
@@ -258,7 +258,7 @@ export default function Admin() {
                 <p className="text-[10px] font-bold uppercase tracking-[0.18em] text-muted-foreground/80">Code</p>
                 <p className="font-mono text-lg font-bold text-foreground">{inviteCode || "Loading..."}</p>
               </div>
-              <button className="rounded-xl p-3 shrink-0 transition-all duration-300 active:scale-95 btn-neon-primary text-white" onClick={() => copyToClipboard(inviteCode, "Invite code")}>
+              <button className="rounded-xl p-3 shrink-0 transition-all duration-300 active:scale-95 btn-neon-primary text-white border-2 border-black" onClick={() => copyToClipboard(inviteCode, "Invite code")}>
                 {copiedField === "Invite code" ? <Check className="w-4 h-4" /> : <Copy className="w-4 h-4" />}
               </button>
             </div>
@@ -267,14 +267,14 @@ export default function Admin() {
                 <p className="text-[10px] font-bold uppercase tracking-[0.18em] text-muted-foreground/80">Invite link</p>
                 <p className="truncate text-sm text-muted-foreground">{inviteUrl || "Loading..."}</p>
               </div>
-              <button className="rounded-xl p-3 shrink-0 transition-all duration-300 active:scale-95 btn-neon-accent" onClick={() => copyToClipboard(inviteUrl, "Invite link")}>
+              <button className="rounded-xl p-3 shrink-0 transition-all duration-300 active:scale-95 btn-neon-accent border-2 border-black" onClick={() => copyToClipboard(inviteUrl, "Invite link")}>
                 {copiedField === "Invite link" ? <Check className="w-4 h-4" /> : <LinkIcon className="w-4 h-4" />}
               </button>
             </div>
           </div>
         </section>
 
-        <section className="rounded-[1.75rem] p-5 glass-card">
+        <section className="rounded-[1.75rem] p-5 glass-card border-2 border-black">
           <div className="flex items-center justify-between mb-4">
             <h2 className="font-display text-lg font-bold flex items-center gap-2">
               <ShieldCheck className="w-5 h-5 text-primary" style={{ filter: 'drop-shadow(0 0 4px rgba(var(--glow-primary), 0.4))' }} />
@@ -325,7 +325,7 @@ export default function Admin() {
                   {/* Actions */}
                   <div className="px-4 pb-4 flex gap-2">
                     <button
-                      className="flex-1 flex items-center justify-center gap-1.5 rounded-xl bg-primary text-primary-foreground py-2.5 text-sm font-bold shadow-sm active:scale-[0.97] transition-transform"
+                      className="flex-1 flex items-center justify-center gap-1.5 rounded-xl bg-primary text-primary-foreground py-2.5 text-sm font-bold shadow-sm active:scale-[0.97] transition-transform border-2 border-black"
                       onClick={async () => {
                         try {
                           await reviewChoreMutation.mutateAsync({ id: submission.id, action: "approve" });
@@ -338,7 +338,7 @@ export default function Admin() {
                       <Check className="w-4 h-4" /> Approve
                     </button>
                     <button
-                      className="flex items-center justify-center gap-1.5 rounded-xl border-2 border-border px-4 py-2.5 text-sm font-bold active:scale-[0.97] transition-transform"
+                      className="flex items-center justify-center gap-1.5 rounded-xl border-2 border-black px-4 py-2.5 text-sm font-bold active:scale-[0.97] transition-transform"
                       onClick={async () => {
                         const note = window.prompt("Reason for rejection?", "Give it one more pass.");
                         if (note === null) return; // User cancelled
@@ -399,7 +399,7 @@ export default function Admin() {
                   {/* Actions */}
                   <div className="px-4 pb-4 flex gap-2">
                     <button
-                      className="flex-1 flex items-center justify-center gap-1.5 rounded-xl bg-primary text-primary-foreground py-2.5 text-sm font-bold shadow-sm active:scale-[0.97] transition-transform"
+                      className="flex-1 flex items-center justify-center gap-1.5 rounded-xl bg-primary text-primary-foreground py-2.5 text-sm font-bold shadow-sm active:scale-[0.97] transition-transform border-2 border-black"
                       onClick={async () => {
                         try {
                           await reviewRewardMutation.mutateAsync({ id: claim.id, action: "approve" });
@@ -412,7 +412,7 @@ export default function Admin() {
                       <Check className="w-4 h-4" /> Approve
                     </button>
                     <button
-                      className="flex items-center justify-center gap-1.5 rounded-xl border-2 border-border px-4 py-2.5 text-sm font-bold active:scale-[0.97] transition-transform"
+                      className="flex items-center justify-center gap-1.5 rounded-xl border-2 border-black px-4 py-2.5 text-sm font-bold active:scale-[0.97] transition-transform"
                       onClick={async () => {
                         try {
                           await reviewRewardMutation.mutateAsync({ id: claim.id, action: "reject", note: "Not this one just now." });
@@ -439,7 +439,7 @@ export default function Admin() {
           </div>
         </section>
 
-        <section className="rounded-[1.75rem] p-5 glass-card">
+        <section className="rounded-[1.75rem] p-5 glass-card border-2 border-black">
           <h2 className="font-display text-lg font-bold mb-3 flex items-center gap-2">
             <Trophy className="w-5 h-5 text-accent" />
             Leaderboard visibility
@@ -455,7 +455,7 @@ export default function Admin() {
                 <button
                   key={user.id}
                   onClick={() => handleToggleLeaderboard(user.id, hidden)}
-                  className="w-full rounded-2xl bg-muted/50 px-3 py-3 flex items-center justify-between gap-3 text-left border-2 border-transparent hover:border-primary/30 transition-colors"
+                  className="w-full rounded-2xl bg-muted/50 px-3 py-3 flex items-center justify-between gap-3 text-left border-2 border-black hover:border-primary/30 transition-colors"
                 >
                   <div>
                     <p className="font-bold text-sm">{user.username}</p>
@@ -502,7 +502,7 @@ export default function Admin() {
                 {user.id !== currentUser.id && (
                   <button
                     className={cn(
-                      "rounded-xl px-4 py-2 text-xs font-bold transition-all active:scale-95",
+                      "rounded-xl px-4 py-2 text-xs font-bold transition-all active:scale-95 border-2 border-black",
                       user.role === "admin" 
                         ? "bg-slate-100 text-slate-600 hover:bg-slate-200" 
                         : "bg-primary text-primary-foreground hover:shadow-lg hover:shadow-primary/20",
@@ -530,7 +530,7 @@ export default function Admin() {
           </div>
         </section>
 
-        <section className="rounded-[1.75rem] p-5 glass-card">
+        <section className="rounded-[1.75rem] p-5 glass-card border-2 border-black">
           <h2 className="font-display text-xl font-bold mb-4 flex items-center gap-2">
             <Plus className="text-primary" /> Create chore
           </h2>
@@ -556,7 +556,7 @@ export default function Admin() {
               <input type="checkbox" checked={choreNeedsApproval} onChange={(event) => setChoreNeedsApproval(event.target.checked)} />
               Require parent approval
             </label>
-            <button type="submit" className="w-full rounded-2xl px-4 py-4 font-bold text-white btn-neon-primary active:scale-[0.96] transition-transform">
+            <button type="submit" className="w-full rounded-2xl px-4 py-4 font-bold text-white btn-neon-primary active:scale-[0.96] transition-transform border-2 border-black">
               Add chore
             </button>
           </form>
@@ -574,7 +574,7 @@ export default function Admin() {
               <input type="checkbox" checked={rewardNeedsApproval} onChange={(event) => setRewardNeedsApproval(event.target.checked)} />
               Require parent approval
             </label>
-            <button type="submit" className="w-full rounded-2xl px-4 py-4 font-bold text-white active:scale-[0.96] transition-transform" style={{ background: 'linear-gradient(135deg, hsl(189, 71%, 50%), hsl(189, 71%, 40%))', boxShadow: '0 0 20px rgba(var(--glow-secondary), 0.3)' }}>
+            <button type="submit" className="w-full rounded-2xl px-4 py-4 font-bold text-white active:scale-[0.96] transition-transform border-2 border-black" style={{ background: 'linear-gradient(135deg, hsl(189, 71%, 50%), hsl(189, 71%, 40%))', boxShadow: '0 0 20px rgba(var(--glow-secondary), 0.3)' }}>
               Add reward
             </button>
           </form>

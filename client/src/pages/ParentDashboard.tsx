@@ -114,7 +114,7 @@ function ChildActivityCarousel({
         dragConstraints={{ left: 0, right: 0 }}
         dragElastic={0.2}
         onDragEnd={handleDragEnd}
-        className="rounded-3xl bg-white/60 dark:bg-white/5 border border-white/40 dark:border-white/10 p-5 cursor-grab active:cursor-grabbing select-none shadow-sm backdrop-blur-md"
+        className="rounded-3xl bg-white/60 dark:bg-white/5 border-2 border-black p-5 cursor-grab active:cursor-grabbing select-none shadow-sm backdrop-blur-md"
       >
         <div className="flex items-center gap-3 mb-5">
           <UserAvatar user={child} size="lg" className="border shadow-sm border-white/40 dark:border-white/10" />
@@ -278,7 +278,7 @@ export default function ParentDashboard() {
               whileTap={{ scale: 0.94 }}
               onClick={action}
               className={cn(
-                "flex flex-col items-center gap-2.5 rounded-[20px] p-4 border transition-all duration-300 shadow-sm backdrop-blur-sm",
+                "flex flex-col items-center gap-2.5 rounded-[20px] p-4 border-2 border-black transition-all duration-300 shadow-sm backdrop-blur-sm",
                 color
               )}
             >
@@ -329,7 +329,7 @@ export default function ParentDashboard() {
               <TrendingUp className="w-3 h-3" /> Live ranking
             </button>
           </div>
-          <div className="rounded-3xl bg-white/60 dark:bg-white/5 border border-white/40 dark:border-white/10 shadow-sm backdrop-blur-sm overflow-hidden">
+          <div className="rounded-3xl bg-white/60 dark:bg-white/5 border-2 border-black shadow-sm backdrop-blur-sm overflow-hidden">
             {[...leaderboard].sort((a, b) => b.points - a.points).slice(0, 3).map((u, i) => (
               <div
                 key={u.id}
@@ -374,7 +374,7 @@ export default function ParentDashboard() {
             <p className="text-sm text-slate-500 dark:text-slate-400 font-medium">No activity yet. Assign some chores to get started!</p>
           </div>
         ) : (
-          <div className="rounded-3xl bg-white/60 dark:bg-white/5 border border-white/40 dark:border-white/10 shadow-sm backdrop-blur-sm overflow-hidden">
+          <div className="rounded-3xl bg-white/60 dark:bg-white/5 border-2 border-black shadow-sm backdrop-blur-sm overflow-hidden">
             {activity.slice(0, 5).map((event, i) => (
               <div
                 key={event.id}

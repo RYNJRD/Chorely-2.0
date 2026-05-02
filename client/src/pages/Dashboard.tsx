@@ -55,8 +55,8 @@ function CalendarStrip() {
               className={cn(
                 "flex flex-col items-center rounded-2xl py-2.5 px-3 min-w-[46px] transition-all duration-300",
                 isToday
-                  ? "text-white border-2 border-black"
-                  : "text-slate-400 dark:text-white/60 hover:bg-white/5 dark:hover:bg-white/5 border-2 border-black/20",
+                  ? "text-white"
+                  : "text-slate-400 dark:text-white/60 hover:bg-white/5 dark:hover:bg-white/5",
               )}
               style={isToday ? {
                 background: 'linear-gradient(135deg, hsl(262, 83%, 58%), hsl(280, 75%, 60%))',
@@ -106,7 +106,7 @@ function MonthlySpotlight({ winner }: { winner: { title: string; summary: string
       className="mb-8"
     >
       <div className="rounded-[2rem] overflow-hidden relative" style={{
-        border: '2px solid #000000',
+        border: '2px solid transparent',
         backgroundClip: 'padding-box',
       }}>
         {/* Neon gold worm ring */}
@@ -249,7 +249,7 @@ export default function Dashboard() {
           <div className="flex items-start justify-between mb-4">
             <div className="flex items-center gap-3">
               <div className="relative">
-                <UserAvatar user={currentUser} size="md" className="border-2 border-black shadow-xl" />
+                <UserAvatar user={currentUser} size="md" className="border-2 border-white/20 shadow-xl" />
                 <div className="absolute -bottom-1 -right-1 bg-emerald-500 w-4 h-4 rounded-full border-2 border-[#1a1a2e]" />
               </div>
               <div>
@@ -261,13 +261,13 @@ export default function Dashboard() {
             </div>
             {/* Stars counter & Menu */}
             <div className="flex items-center gap-2">
-              <div className="rounded-2xl px-3.5 py-2 flex items-center gap-2 bg-white/5 border-2 border-black shadow-inner">
+              <div className="rounded-2xl px-3.5 py-2 flex items-center gap-2 bg-white/5 border border-white/10 shadow-inner">
                 <Star className="w-4 h-4 fill-amber-400 text-amber-400" />
                 <p className="font-display text-lg font-bold text-white leading-none">{currentUser.points}</p>
               </div>
               <button
                 onClick={() => setIsDrawerOpen(true)}
-                className="w-10 h-10 flex items-center justify-center rounded-xl bg-white/5 border-2 border-black text-white hover:bg-white/10 transition-all duration-300 active:scale-95 shadow-sm"
+                className="w-10 h-10 flex items-center justify-center rounded-xl bg-white/5 border border-white/10 text-white hover:bg-white/10 transition-all duration-300 active:scale-95 shadow-sm"
                 aria-label="Open menu"
               >
                 <Menu className="w-5 h-5" />
@@ -277,7 +277,7 @@ export default function Dashboard() {
           
           {/* Rank info */}
           <div className="flex items-center gap-2 mb-4">
-            <div className="w-8 h-8 rounded-xl bg-purple-500/10 flex items-center justify-center border-2 border-black">
+            <div className="w-8 h-8 rounded-xl bg-purple-500/10 flex items-center justify-center border border-purple-500/20">
               <Trophy className="w-4 h-4 text-purple-400" />
             </div>
             <p className="text-sm font-medium text-white/80">
@@ -294,7 +294,7 @@ export default function Dashboard() {
               </p>
               <p className="text-[10px] font-bold text-white/60">{progressToNext}%</p>
             </div>
-            <div className="h-2 bg-white/5 rounded-full overflow-hidden border-2 border-black">
+            <div className="h-2 bg-white/5 rounded-full overflow-hidden border border-white/5">
               <motion.div
                 initial={{ width: 0 }}
                 animate={{ width: `${progressToNext}%` }}
@@ -307,7 +307,7 @@ export default function Dashboard() {
         </div>
 
         {/* Stats row */}
-        <div className="relative grid grid-cols-3 divide-x-2 divide-black" style={{ borderTop: '2px solid #000000' }}>
+        <div className="relative grid grid-cols-3 divide-x divide-white/5" style={{ borderTop: '1px solid rgba(255,255,255,0.06)' }}>
           {[
             { icon: Flame, label: "Streak", value: `${currentUser.streak}d`, sub: bonusPercent ? `+${bonusPercent}%` : "Build it!", color: "text-orange-300" },
             { icon: CheckCircle2, label: "This week", value: `${completedThisWeek}`, sub: "chores done", color: "text-green-300" },
