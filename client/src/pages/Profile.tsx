@@ -200,17 +200,23 @@ export default function Profile() {
                   }}
                   className={cn(
                     "group relative aspect-square rounded-[1.25rem] transition-all duration-300 flex flex-col items-center justify-center p-2.5 overflow-hidden active:scale-95",
-                    isSelected && RARITY_GLOW[outfit.rarity],
+                    isSelected ? RARITY_GLOW[outfit.rarity] : "hover:brightness-110",
                   )}
                   style={{
-                    background: isSelected ? RARITY_BG_GLOW[outfit.rarity] : 'rgba(255, 255, 255, 0.04)',
+                    background: isSelected 
+                      ? (outfit.rarity === "legendary" ? 'rgba(255, 215, 0, 0.25)' : 
+                         outfit.rarity === "mythic" ? 'rgba(168, 85, 247, 0.25)' : 
+                         outfit.rarity === "rare" ? 'rgba(56, 189, 248, 0.25)' : 'rgba(255, 255, 255, 0.1)')
+                      : (outfit.rarity === "legendary" ? 'rgba(255, 215, 0, 0.08)' : 
+                         outfit.rarity === "mythic" ? 'rgba(168, 85, 247, 0.08)' : 
+                         outfit.rarity === "rare" ? 'rgba(56, 189, 248, 0.08)' : 'rgba(255, 255, 255, 0.04)'),
                     border: `1.5px solid ${isSelected 
-                      ? (outfit.rarity === "legendary" ? 'rgba(255, 215, 0, 0.6)' : 
-                         outfit.rarity === "mythic" ? 'rgba(168, 85, 247, 0.6)' : 
-                         outfit.rarity === "rare" ? 'rgba(56, 189, 248, 0.6)' : 'rgba(255, 255, 255, 0.2)')
-                      : (outfit.rarity === "legendary" ? 'rgba(255, 215, 0, 0.15)' : 
-                         outfit.rarity === "mythic" ? 'rgba(168, 85, 247, 0.15)' : 
-                         outfit.rarity === "rare" ? 'rgba(56, 189, 248, 0.15)' : 'rgba(255, 255, 255, 0.06)')}`,
+                      ? (outfit.rarity === "legendary" ? 'rgba(255, 215, 0, 0.8)' : 
+                         outfit.rarity === "mythic" ? 'rgba(168, 85, 247, 0.8)' : 
+                         outfit.rarity === "rare" ? 'rgba(56, 189, 248, 0.8)' : 'rgba(255, 255, 255, 0.5)')
+                      : (outfit.rarity === "legendary" ? 'rgba(255, 215, 0, 0.4)' : 
+                         outfit.rarity === "mythic" ? 'rgba(168, 85, 247, 0.4)' : 
+                         outfit.rarity === "rare" ? 'rgba(56, 189, 248, 0.4)' : 'rgba(255, 255, 255, 0.15)')}`,
                   }}
                 >
                   {/* Item Image */}
@@ -242,11 +248,11 @@ export default function Profile() {
                   {/* Rarity Label (Bottom) */}
                   <div className="absolute bottom-0 w-full py-1 text-[7px] font-black uppercase tracking-widest text-center"
                     style={{
-                      background: isSelected ? 'rgba(0, 0, 0, 0.5)' : 'rgba(0, 0, 0, 0.2)',
+                      background: isSelected ? 'rgba(0, 0, 0, 0.7)' : 'rgba(0, 0, 0, 0.4)',
                       backdropFilter: 'blur(4px)',
-                      color: outfit.rarity === "legendary" ? 'rgb(250, 204, 21)' :
-                             outfit.rarity === "mythic" ? 'rgb(192, 132, 252)' :
-                             outfit.rarity === "rare" ? 'rgb(96, 165, 250)' : 'rgba(255, 255, 255, 0.4)',
+                      color: outfit.rarity === "legendary" ? 'rgb(255, 220, 0)' :
+                             outfit.rarity === "mythic" ? 'rgb(210, 160, 255)' :
+                             outfit.rarity === "rare" ? 'rgb(140, 200, 255)' : 'rgba(255, 255, 255, 0.6)',
                     }}
                   >
                     {outfit.rarity}
