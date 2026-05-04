@@ -3,11 +3,9 @@ import { choreLogs, choreSubmissions, chores, families, users } from "../../shar
 import type { ChoreSubmission, User } from "../../shared/schema.js";
 import { db } from "../db.js";
 import { calculateStreakMultiplier, getEffectiveStreakForDate, getFamilyTimeZone, getLocalDateKey } from "../../shared/streak.js";
-import { createSystemMessage } from "./message-service.js";
 import { recordActivity } from "./activity-service.js";
 import { evaluateAchievements } from "./achievement-service.js";
 import { publishFamilyEvent } from "../realtime.js";
-import { notifyParentsOfChoreCompleted } from "./email-service.js";
 import { notifyParentsOfChoreCompleted } from "./email-service.js";
 
 async function getFamilyById(id: number | null | undefined) {
@@ -67,7 +65,7 @@ async function updateUserStreakIfAllDailyDoneToday(user: User): Promise<User> {
       relatedEntityId: updated.id,
       metadata: { streak: updated.streak },
     });
-    await createSystemMessage(family.id, updated.id, `🔥 ${updated.username} reached a ${updated.streak}-day streak!`);
+
   }
 
   return updated;
@@ -125,7 +123,7 @@ async function approveChoreSubmissionInternal(submissionId: number, reviewerId: 
       relatedEntityId: updatedSubmission.id,
     });
 
-    await createSystemMessage(user.familyId, user.id, `✅ ${user.username}'s "${chore.title}" was approved for ${submission.pointsAwarded} stars.`);
+
   }
   await evaluateAchievements(updatedUser);
   publishFamilyEvent(user.familyId, "family:leaderboard", { familyId: user.familyId, userId: updatedUser.id });
@@ -177,7 +175,7 @@ export async function completeChore(choreId: number, userId: number, note?: stri
       relatedEntityType: "chore_submission",
       relatedEntityId: submission.id,
     });
-    await createSystemMessage(user.familyId, user.id, `📝 ${user.username} submitted "${chore.title}" for review.`);
+
     publishFamilyEvent(user.familyId, "family:review", submission);
 
     notifyParentsOfChoreCompleted(user.familyId, user.username, chore.title).catch(console.error);
@@ -213,7 +211,7 @@ export async function completeChore(choreId: number, userId: number, note?: stri
     relatedEntityType: "chore",
     relatedEntityId: chore.id,
   });
-  await createSystemMessage(user.familyId, user.id, `✨ ${user.username} completed "${chore.title}" for ${finalPoints} stars.`);
+
   publishFamilyEvent(user.familyId, "family:chore", { choreId: chore.id, userId: user.id, awardedPoints: finalPoints });
 
   notifyParentsOfChoreCompleted(user.familyId, user.username, chore.title).catch(console.error);
@@ -260,7 +258,7 @@ export async function reviewChoreSubmission(submissionId: number, reviewer: User
       relatedEntityType: "chore_submission",
       relatedEntityId: updated.id,
     });
-    await createSystemMessage(user.familyId, reviewer.id, `💬 ${user.username}'s "${chore?.title || "chore"}" needs another pass.`);
+
     publishFamilyEvent(user.familyId, "family:review", updated);
     return { submission: updated, user };
   }
