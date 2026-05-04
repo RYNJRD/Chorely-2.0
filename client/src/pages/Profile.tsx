@@ -220,6 +220,18 @@ export default function Profile() {
                 className="absolute bottom-[10%] w-[150%] aspect-square blur-[100px] rounded-full pointer-events-none transition-colors duration-700 opacity-40 z-0"
                 style={{ background: `radial-gradient(circle, ${RARITY_BG_GLOW[previewOutfit.rarity]}, transparent 60%)` }}
               />
+
+              {/* Custom Outfit Background */}
+              {previewOutfit.background && (
+                <div className="absolute inset-0 -mx-4 z-0 pointer-events-none overflow-hidden mask-bottom-fade">
+                  <img 
+                    src={previewOutfit.background} 
+                    className="w-full h-full object-cover opacity-60 mix-blend-screen scale-110" 
+                    style={{ filter: "drop-shadow(0 0 20px rgba(168, 85, 247, 0.5))" }}
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-[#0f172a] via-transparent to-[#0f172a] opacity-80" />
+                </div>
+              )}
               
               {/* Floating Info Card (Top/Center) */}
               <div className="absolute top-0 w-full px-2 sm:px-4 z-20">

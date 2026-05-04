@@ -1,8 +1,11 @@
 import penguinBaseImg from "@assets/base_penguin.png";
 import penguinCoatImg from "@assets/coat_penguin.png";
 import penguinSuitImg from "@assets/suit_penguin.png";
+import penguinSuit2Img from "@assets/suit2_penguin.png";
 import penguinPirateImg from "@assets/pirate_penguin.png";
 import penguinAstronautImg from "@assets/astronaut_penguin.png";
+import penguinNinjaImg from "@assets/ninja_penguin.png";
+import ninjaBackgroundImg from "@assets/ninjabackground.png";
 
 export type Rarity = "common" | "rare" | "mythic" | "legendary";
 
@@ -13,6 +16,7 @@ export type PenguinOutfit = {
   rarity: Rarity;
   price: number;
   description: string;
+  background?: string;
   stats: {
     focus: number;
     effort: number;
@@ -35,7 +39,7 @@ export const RARITY_META: Record<Rarity, { label: string, color: string, bg: str
     border: "border-blue-400" 
   },
   mythic: { 
-    label: "Mythic", 
+    label: "Epic", // Using mythic styling for Epic/Purple
     color: "text-purple-500", 
     bg: "bg-purple-500", 
     border: "border-purple-400" 
@@ -49,6 +53,16 @@ export const RARITY_META: Record<Rarity, { label: string, color: string, bg: str
 };
 
 export const PENGUIN_OUTFITS: PenguinOutfit[] = [
+  { 
+    id: "ninja",  
+    label: "Night Ninja",  
+    image: penguinNinjaImg, 
+    rarity: "mythic", 
+    price: 1,
+    background: ninjaBackgroundImg,
+    description: "Moves in silence. Acts with focus. Masters self-control in the icy shadows.",
+    stats: { focus: 9, effort: 7, discipline: 8 }
+  },
   { 
     id: "astronaut",  
     label: "Space Explorer",  
@@ -66,6 +80,15 @@ export const PENGUIN_OUTFITS: PenguinOutfit[] = [
     price: 1,
     description: "Sails the icy seas in search of golden fish. Fearsome, bold, and slightly clumsy.",
     stats: { focus: 4, effort: 9, discipline: 3 }
+  },
+  { 
+    id: "suit2",      
+    label: "Agent Penguin",     
+    image: penguinSuit2Img,      
+    rarity: "mythic",      
+    price: 1,
+    description: "Licensed to chill. Infiltrates with style, class, and an impeccable tuxedo.",
+    stats: { focus: 8, effort: 5, discipline: 8 }
   },
   { 
     id: "fancy",      
