@@ -8,6 +8,8 @@ import {
 } from "lucide-react";
 import { useFamilyChores, useFamilyLeaderboard, useFamilyActivity, useFamilyUsers } from "../hooks/use-families";
 import { UserAvatar } from "../components/UserAvatar";
+import { NotificationBell } from "../components/NotificationBell";
+import { HouseholdProgress } from "../components/HouseholdProgress";
 import { useStore } from "../store/useStore";
 import { cn } from "../lib/utils";
 import { formatDistanceToNow, isToday, isThisWeek } from "date-fns";
@@ -254,6 +256,7 @@ export default function ParentDashboard() {
               <span className="text-xs font-bold text-rose-600 dark:text-rose-400">{pendingCount} pending</span>
             </button>
           )}
+          <NotificationBell />
           <button
             onClick={() => setIsDrawerOpen(true)}
             className="w-10 h-10 flex items-center justify-center rounded-2xl bg-white/60 dark:bg-white/5 border border-white/40 dark:border-white/10 text-slate-600 dark:text-slate-300 hover:bg-white/80 dark:hover:bg-white/10 transition-colors shadow-sm active:scale-95"
@@ -295,6 +298,16 @@ export default function ParentDashboard() {
         type={activeModal || 'chore'}
         onClose={() => setActiveModal(null)}
       />
+
+      {/* ── Household Progress Bar ── */}
+      <motion.div
+        initial={{ opacity: 0, y: 8 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.12 }}
+        className="mb-7"
+      >
+        <HouseholdProgress chores={allChores} currentUserId={currentUser.id} />
+      </motion.div>
 
       <motion.div
         initial={{ opacity: 0, y: 8 }}
