@@ -12,9 +12,9 @@ interface HouseholdProgressProps {
 function getWeeklyCompletionRate(chores: Chore[]): number {
   const weekStart = startOfWeek(new Date(), { weekStartsOn: 1 });
 
-  // Only count active chores that have recurring schedules (daily, weekly)
+  // Only count active chores that have recurring schedules
   const actionableChores = chores.filter(
-    (c) => c.type === "daily" || c.type === "weekly" || c.type === "box"
+    (c) => c.isActive && (c.type === "daily" || c.type === "weekly" || c.type === "monthly" || c.type === "box")
   );
 
   if (actionableChores.length === 0) return 100;
@@ -96,9 +96,14 @@ export function HouseholdProgress({ chores }: HouseholdProgressProps) {
       </div>
 
       {/* Weekly label */}
-      <p className="text-[10px] font-bold text-slate-400 dark:text-white/25 uppercase tracking-widest mt-2 text-right">
-        This week's household score
-      </p>
+      <div className="flex justify-between items-center mt-2">
+        <p className="text-[10px] font-bold text-slate-400 dark:text-white/25 uppercase tracking-widest">
+          All chores combined
+        </p>
+        <p className="text-[10px] font-bold text-slate-400 dark:text-white/25 uppercase tracking-widest">
+          Weekly Family Score
+        </p>
+      </div>
     </div>
   );
 }
