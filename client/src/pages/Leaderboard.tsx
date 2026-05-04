@@ -52,7 +52,11 @@ export default function Leaderboard() {
   }
 
   const visibleUsers = (leaderboard || [])
-    .filter((u) => !u.hideFromLeaderboard)
+    .filter((u) => {
+      const isDefaultHidden = u.role === 'admin';
+      const isHidden = u.hideFromLeaderboard ?? isDefaultHidden;
+      return !isHidden;
+    })
     .sort((a, b) => b.points - a.points);
   
   const maxPoints = Math.max(...visibleUsers.map((u) => u.points), 1);

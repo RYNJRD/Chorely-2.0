@@ -210,14 +210,27 @@ export default function ParentDashboard() {
   const { data: activity = [] } = useFamilyActivity(id);
   const { data: users = [] } = useFamilyUsers(id);
 
-  const children = useMemo(() =>
-    leaderboard.filter((u) => u.role !== "admin"),
+  const visibleMembers = useMemo(() =>
+    leaderboard.filter((u) => {
+      const isDefaultHidden = u.role === 'admin';
+      const isHidden = u.hideFromLeaderboard ?? isDefaultHidden;
+      return !isHidden;
+    }),
     [leaderboard]
   );
 
   const pendingCount = useMemo(() =>
     allChores.filter((c: any) => c.latestSubmissionStatus === "submitted").length,
     [allChores]
+  );
+
+  const visibleActivity = useMemo(() =>
+    activity.filter((e: any) => {
+      const isDefaultHidden = e.user?.role === 'admin';
+      const isHidden = e.user?.hideFromLeaderboard ?? isDefaultHidden;
+      return !isHidden;
+    }),
+    [activity]
   );
 
   const adminPath = family?.id ? `/family/${family.id}/admin` : "/";
@@ -250,10 +263,10 @@ export default function ParentDashboard() {
           {pendingCount > 0 && (
             <button
               onClick={() => setLocation(adminPath)}
-              className="flex items-center gap-1.5 rounded-2xl bg-rose-50 dark:bg-rose-950/40 border border-rose-200 dark:border-rose-900/50 px-3 py-1.5 shadow-sm active:scale-95 transition-transform"
+              className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-amber-100 dark:bg-amber-900/30 text-amber-700 dark:text-amber-400 border border-amber-200 dark:border-amber-800/30 active:scale-95 transition-transform"
             >
-              <AlertCircle className="w-3.5 h-3.5 text-rose-500" />
-              <span className="text-xs font-bold text-rose-600 dark:text-rose-400">{pendingCount} pending</span>
+              <ShieldAlert className="w-3.5 h-3.5" />
+              <span className="text-[11px] font-bold uppercase tracking-widest">{pendingCount} pending</span>
             </button>
           )}
           <NotificationBell />
@@ -320,13 +333,13 @@ export default function ParentDashboard() {
           <span className="text-[11px] font-bold text-slate-400 dark:text-slate-500">Live</span>
         </div>
         <ChildActivityCarousel
-          children={children}
+          children={visibleMembers}
           allChores={allChores}
           leaderboard={leaderboard}
         />
       </motion.div>
 
-      {[...leaderboard].sort((a, b) => b.points - a.points).slice(0, 3).length > 0 && (
+      {visibleMembers.sort((a, b) => b.points - a.points).slice(0, 3).length > 0 && (
         <motion.div
           initial={{ opacity: 0, y: 8 }}
           animate={{ opacity: 1, y: 0 }}
@@ -343,7 +356,7 @@ export default function ParentDashboard() {
             </button>
           </div>
           <div className="rounded-3xl bg-white/60 dark:bg-white/5 border-2 border-black shadow-sm backdrop-blur-sm overflow-hidden">
-            {[...leaderboard].sort((a, b) => b.points - a.points).slice(0, 3).map((u, i) => (
+            {visibleMembers.sort((a, b) => b.points - a.points).slice(0, 3).map((u, i) => (
               <div
                 key={u.id}
                 className={cn(
@@ -382,18 +395,18 @@ export default function ParentDashboard() {
           </button>
         </div>
 
-        {activity.length === 0 ? (
+        {visibleActivity.length === 0 ? (
           <div className="rounded-3xl p-6 text-center bg-white/60 dark:bg-white/5 border border-white/40 dark:border-white/10 shadow-sm">
             <p className="text-sm text-slate-500 dark:text-slate-400 font-medium">No activity yet. Assign some chores to get started!</p>
           </div>
         ) : (
           <div className="rounded-3xl bg-white/60 dark:bg-white/5 border-2 border-black shadow-sm backdrop-blur-sm overflow-hidden">
-            {activity.slice(0, 5).map((event, i) => (
+            {visibleActivity.slice(0, 5).map((event: any, i) => (
               <div
                 key={event.id}
                 className={cn(
                   "flex items-start gap-3.5 px-4 py-4",
-                  i < Math.min(activity.length - 1, 4) && "border-b border-white/40 dark:border-white/10"
+                  i < Math.min(visibleActivity.length - 1, 4) && "border-b border-white/40 dark:border-white/10"
                 )}
               >
                 <div className="w-10 h-10 rounded-2xl bg-white/80 dark:bg-white/10 border border-white/40 dark:border-white/10 shadow-sm flex items-center justify-center flex-none">

@@ -16,11 +16,20 @@ export function NotificationBell() {
 
   // Filter to only chore completion events this week
   const choreCompletions = useMemo(() => {
-    return (activity as ActivityEvent[])
+    return (activity as (ActivityEvent & { user: any })[])
       .filter(
-        (e) =>
-          (e.type === "chore_completed" || e.type === "chore_approved") &&
-          isAfter(new Date(e.createdAt), weekStart)
+        (e) => {
+          const typeMatch = (e.type === "chore_completed" || e.type === "chore_approved");
+          if (!typeMatch) return false;
+
+          const isRecent = isAfter(new Date(e.createdAt), weekStart);
+          if (!isRecent) return false;
+
+          // Filter out parents (admins) by default unless they are set to visible
+          const isDefaultHidden = e.user?.role === 'admin';
+          const isHidden = e.user?.hideFromLeaderboard ?? isDefaultHidden;
+          return !isHidden;
+        }
       )
       .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
       .slice(0, 20);

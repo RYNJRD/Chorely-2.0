@@ -440,30 +440,44 @@ export default function Admin() {
         </section>
 
         <section className="rounded-[1.75rem] p-5 glass-card border-2 border-black">
-          <h2 className="font-display text-lg font-bold mb-3 flex items-center gap-2">
-            <Trophy className="w-5 h-5 text-accent" />
-            Leaderboard visibility
-          </h2>
+          <div className="flex items-center justify-between mb-3">
+            <h2 className="font-display text-lg font-bold flex items-center gap-2 text-foreground">
+              <Trophy className="w-5 h-5 text-accent" />
+              Family visibility
+            </h2>
+            <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest">Only kids show by default</p>
+          </div>
           <div className="relative mb-3">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
             <input value={searchQuery} onChange={(event) => setSearchQuery(event.target.value)} placeholder="Search family members..." className="w-full rounded-xl bg-muted/50 pl-10 pr-4 py-2.5 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-primary/50" />
           </div>
           <div className="space-y-2">
             {filteredUsers.map((user) => {
-              const hidden = user.hideFromLeaderboard ?? false;
+              // Rule: Admins are hidden by default, members are visible by default
+              const isDefaultHidden = user.role === 'admin';
+              const hidden = user.hideFromLeaderboard ?? isDefaultHidden;
+              
               return (
                 <button
                   key={user.id}
                   onClick={() => handleToggleLeaderboard(user.id, hidden)}
                   className="w-full rounded-2xl bg-muted/50 px-3 py-3 flex items-center justify-between gap-3 text-left border-2 border-black hover:border-primary/30 transition-colors"
                 >
-                  <div>
-                    <p className="font-bold text-sm">{user.username}</p>
-                    <p className="text-xs text-muted-foreground">{user.role}</p>
+                  <div className="flex items-center gap-3">
+                    <UserAvatar user={user} size="sm" />
+                    <div>
+                      <p className="font-bold text-sm">{user.username}</p>
+                      <p className="text-[10px] font-bold text-muted-foreground uppercase">{user.role === 'admin' ? 'Parent' : 'Child'}</p>
+                    </div>
                   </div>
-                  <span className={cn("text-xs font-bold uppercase tracking-[0.18em]", hidden ? "text-muted-foreground" : "text-primary")}>
-                    {hidden ? "Hidden" : "Visible"}
-                  </span>
+                  <div className="flex items-center gap-2">
+                    <span className={cn(
+                      "text-[10px] font-black uppercase tracking-widest px-2 py-1 rounded-lg",
+                      hidden ? "bg-slate-200 text-slate-500" : "bg-green-100 text-green-700"
+                    )}>
+                      {hidden ? "Hidden" : "Visible"}
+                    </span>
+                  </div>
                 </button>
               );
             })}
@@ -548,7 +562,11 @@ export default function Admin() {
             </div>
             <select value={choreAssignee} onChange={(event) => setChoreAssignee(event.target.value)} className={inputClass}>
               <option value="__anyone__">Anyone can help</option>
-              {familyUsers.map((user) => (
+              {familyUsers.filter(u => {
+                const isDefaultHidden = u.role === 'admin';
+                const isHidden = u.hideFromLeaderboard ?? isDefaultHidden;
+                return !isHidden;
+              }).map((user) => (
                 <option key={user.id} value={user.id}>{user.username}</option>
               ))}
             </select>
