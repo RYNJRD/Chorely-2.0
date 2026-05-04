@@ -9,7 +9,10 @@ import { calculateStreakMultiplier, getEffectiveStreakForDate, getFamilyTimeZone
 import type { Chore } from "../../../shared/schema";
 import { ChoreCard } from "../components/ChoreCard";
 import { UserAvatar } from "../components/UserAvatar";
+import { NotificationBell } from "../components/NotificationBell";
+import { HouseholdProgress } from "../components/HouseholdProgress";
 import { useToast } from "../hooks/use-toast";
+import { getRandomCompletionMessage, getRandomSubmissionMessage } from "../lib/completion-messages";
 import {
   useFamilyChores,
   useFamilyLeaderboard,
@@ -212,9 +215,11 @@ export default function Dashboard() {
         if (result.user) setCurrentUser(result.user);
 
         if (result.submission?.status === "submitted") {
-          toast({ title: "Submitted for review ✓", description: `${chore.title} is waiting for approval.` });
+          const msg = getRandomSubmissionMessage(chore.title);
+          toast({ title: msg.title, description: msg.description });
         } else {
-          toast({ title: `+${result.awardedPoints} stars ⭐`, description: `Great job on ${chore.title}!` });
+          const msg = getRandomCompletionMessage(result.awardedPoints);
+          toast({ title: msg.title, description: msg.description });
         }
 
         confetti({
@@ -259,12 +264,13 @@ export default function Dashboard() {
                 </h1>
               </div>
             </div>
-            {/* Stars counter & Menu */}
+            {/* Stars counter, Notification Bell & Menu */}
             <div className="flex items-center gap-2">
               <div className="rounded-2xl px-3.5 py-2 flex items-center gap-2 bg-white/5 border border-white/10 shadow-inner">
                 <Star className="w-4 h-4 fill-amber-400 text-amber-400" />
                 <p className="font-display text-lg font-bold text-white leading-none">{currentUser.points}</p>
               </div>
+              <NotificationBell />
               <button
                 onClick={() => setIsDrawerOpen(true)}
                 className="w-10 h-10 flex items-center justify-center rounded-xl bg-white/5 border border-white/10 text-white hover:bg-white/10 transition-all duration-300 active:scale-95 shadow-sm"
@@ -334,6 +340,16 @@ export default function Dashboard() {
           <p className="text-xs font-bold text-foreground/60">{format(today, "MMMM yyyy")}</p>
         </div>
         <CalendarStrip />
+      </motion.div>
+
+      {/* ── Household Progress Bar ── */}
+      <motion.div
+        initial={{ opacity: 0, y: 8 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.2 }}
+        className="mb-5"
+      >
+        <HouseholdProgress chores={chores} currentUserId={currentUser.id} />
       </motion.div>
 
       {/* ── Onboarding checklist (admin only) ── */}

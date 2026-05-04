@@ -7,6 +7,18 @@ import { recordActivity } from "./activity-service.js";
 import { evaluateAchievements } from "./achievement-service.js";
 import { publishFamilyEvent } from "../realtime.js";
 import { notifyParentsOfChoreCompleted } from "./email-service.js";
+import { createSystemMessage } from "./message-service.js";
+
+// Appreciation prompts for when someone completes a shared chore
+const APPRECIATION_PROMPTS = [
+  (name: string) => `👏 ${name} just helped out! Drop a thanks in the chat.`,
+  (name: string) => `🙌 ${name} tackled a shared chore — say something nice!`,
+  (name: string) => `💛 ${name} pitched in for the family! Show some love.`,
+  (name: string) => `🎉 ${name} stepped up! A quick "thanks" goes a long way.`,
+  (name: string) => `⭐ ${name} just made the house better — let them know!`,
+  (name: string) => `🤝 ${name} helped the whole family — say thanks!`,
+  (name: string) => `✨ Shoutout to ${name} for lending a hand!`,
+];
 
 async function getFamilyById(id: number | null | undefined) {
   if (!id) return undefined;
@@ -215,6 +227,12 @@ export async function completeChore(choreId: number, userId: number, note?: stri
   publishFamilyEvent(user.familyId, "family:chore", { choreId: chore.id, userId: user.id, awardedPoints: finalPoints });
 
   notifyParentsOfChoreCompleted(user.familyId, user.username, chore.title).catch(console.error);
+
+  // Send appreciation prompt in chat when a shared (unassigned) chore is completed
+  if (chore.assigneeId === null) {
+    const prompt = APPRECIATION_PROMPTS[Math.floor(Math.random() * APPRECIATION_PROMPTS.length)];
+    await createSystemMessage(user.familyId, user.id, prompt(user.username));
+  }
 
   return {
     chore,
