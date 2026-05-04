@@ -299,6 +299,40 @@ export async function registerRoutes(httpServer: Server, app: Express): Promise<
     }
   });
 
+  app.post(api.users.unlockAvatar.path, requireAuth, attachCurrentUser, async (req, res) => {
+    try {
+      const currentUser = getCurrentUser(req);
+      const userId = parseId(req.params.id);
+      if (!userId) return res.status(400).json({ message: "Invalid user id" });
+      if (currentUser.id !== userId) return forbidden(res, "Can only unlock for your own profile");
+      
+      const input = api.users.unlockAvatar.input.parse(req.body);
+      
+      // Default prices: classic is free, all others are 1 star for now as per user request
+      const cost = input.outfitId === "classic" ? 0 : 1;
+      
+      const updatedUser = await storage.unlockAvatar(userId, input.outfitId, cost);
+      
+      if (updatedUser.familyId) {
+        await recordActivity({
+          familyId: updatedUser.familyId,
+          userId: updatedUser.id,
+          type: "achievement_earned", // Reusing type for now or could add a new one
+          title: "New Outfit Unlocked!",
+          body: `${updatedUser.username} unlocked the ${input.outfitId} outfit.`,
+          relatedEntityType: "user",
+          relatedEntityId: updatedUser.id,
+          metadata: { outfitId: input.outfitId, cost }
+        });
+        publishFamilyEvent(updatedUser.familyId, "family:user", updatedUser);
+      }
+      
+      return res.json(updatedUser);
+    } catch (error) {
+      return res.status(400).json({ message: error instanceof Error ? error.message : "Failed to unlock avatar" });
+    }
+  });
+
   app.patch(api.users.toggleLeaderboard.path, requireAuth, attachCurrentUser, async (req, res) => {
     try {
       const currentUser = getCurrentUser(req);

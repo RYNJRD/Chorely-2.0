@@ -11,6 +11,7 @@ export type PenguinOutfit = {
   label: string;
   image: string;
   rarity: Rarity;
+  price: number;
   comingSoon?: boolean;
 };
 
@@ -42,11 +43,11 @@ export const RARITY_META: Record<Rarity, { label: string, color: string, bg: str
 };
 
 export const PENGUIN_OUTFITS: PenguinOutfit[] = [
-  { id: "astronaut",  label: "Astronaut",  image: penguinAstronautImg, rarity: "legendary" },
-  { id: "pirate",     label: "Pirate",     image: penguinPirateImg,    rarity: "mythic" },
-  { id: "fancy",      label: "Formal",     image: penguinSuitImg,      rarity: "rare" },
-  { id: "winter",     label: "Winter",     image: penguinCoatImg,      rarity: "rare" },
-  { id: "classic",    label: "Classic",    image: penguinBaseImg,      rarity: "common" },
+  { id: "astronaut",  label: "Astronaut",  image: penguinAstronautImg, rarity: "legendary", price: 1 },
+  { id: "pirate",     label: "Pirate",     image: penguinPirateImg,    rarity: "mythic",    price: 1 },
+  { id: "fancy",      label: "Formal",     image: penguinSuitImg,      rarity: "rare",      price: 1 },
+  { id: "winter",     label: "Winter",     image: penguinCoatImg,      rarity: "rare",      price: 1 },
+  { id: "classic",    label: "Classic",    image: penguinBaseImg,      rarity: "common",    price: 0 },
 ];
 
 export const OUTFIT_MAP: Record<string, string> = Object.fromEntries(

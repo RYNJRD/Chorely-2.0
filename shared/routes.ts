@@ -151,6 +151,12 @@ export const api = {
       input: z.object({ role: z.enum(USER_ROLES) }),
       responses: { 200: z.custom<typeof users.$inferSelect>() },
     },
+    unlockAvatar: {
+      method: "POST" as const,
+      path: "/api/users/:id/unlock-avatar" as const,
+      input: z.object({ outfitId: z.string() }),
+      responses: { 200: z.custom<typeof users.$inferSelect>() },
+    },
   },
   messages: {
     list: {

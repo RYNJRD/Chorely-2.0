@@ -44,6 +44,7 @@ export interface IStorage {
   getUser(id: number): Promise<User | undefined>;
   getUserByFirebaseUid(uid: string): Promise<User | undefined>;
   updateUserAvatar(id: number, avatarConfig: string, avatarInventory?: string): Promise<User>;
+  unlockAvatar(id: number, outfitId: string, cost: number): Promise<User>;
   updateUserLeaderboard(id: number, hide: boolean): Promise<User | undefined>;
   updateUserRole(id: number, role: string): Promise<User | undefined>;
   updateUserProfile(id: number, username: string): Promise<User | undefined>;
@@ -142,6 +143,25 @@ export class DatabaseStorage implements IStorage {
     const [updated] = await db
       .update(users)
       .set({ avatarConfig, ...(avatarInventory ? { avatarInventory } : {}) })
+      .where(eq(users.id, id))
+      .returning();
+    return updated;
+  }
+
+  async unlockAvatar(id: number, outfitId: string, cost: number): Promise<User> {
+    const [user] = await db.select().from(users).where(eq(users.id, id));
+    if (!user) throw new Error("User not found");
+    if (user.points < cost) throw new Error("Not enough stars!");
+
+    const inventory = JSON.parse(user.avatarInventory || "{}");
+    inventory[outfitId] = true;
+
+    const [updated] = await db
+      .update(users)
+      .set({ 
+        points: user.points - cost,
+        avatarInventory: JSON.stringify(inventory)
+      })
       .where(eq(users.id, id))
       .returning();
     return updated;

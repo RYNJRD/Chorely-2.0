@@ -1,12 +1,13 @@
 import { useEffect, useMemo, useState } from "react";
 import { useMutation } from "@tanstack/react-query";
 import { motion, AnimatePresence } from "framer-motion";
-import { Settings as SettingsIcon, Check, Trophy, Star, Flame } from "lucide-react";
+import { Settings as SettingsIcon, Check, Trophy, Star, Flame, Lock } from "lucide-react";
 import { useLocation } from "wouter";
 import { api, buildUrl } from "../../../shared/routes";
 import { queryClient } from "../lib/queryClient";
 import { useStore } from "../store/useStore";
 import { apiFetch } from "../lib/apiFetch";
+import { useToast } from "../hooks/use-toast";
 import {
   PENGUIN_OUTFITS,
   parseAvatarConfig,
@@ -32,11 +33,20 @@ const RARITY_BG_GLOW: Record<Rarity, string> = {
 
 export default function Profile() {
   const { currentUser, setCurrentUser, family, setIsDrawerOpen } = useStore();
+  const { toast } = useToast();
   const [config, setConfig] = useState<AvatarConfig>(() => parseAvatarConfig(currentUser?.avatarConfig));
 
   useEffect(() => {
     setConfig(parseAvatarConfig(currentUser?.avatarConfig));
   }, [currentUser?.avatarConfig]);
+
+  const inventory = useMemo(() => {
+    try {
+      return JSON.parse(currentUser?.avatarInventory || "{}");
+    } catch {
+      return {};
+    }
+  }, [currentUser?.avatarInventory]);
 
   const mutation = useMutation({
     mutationFn: async (nextConfig: AvatarConfig) => {
@@ -54,6 +64,39 @@ export default function Profile() {
     onSuccess: (user) => {
       setCurrentUser(user);
       queryClient.invalidateQueries({ queryKey: [api.families.getUsers.path, user.familyId] });
+    },
+  });
+
+  const unlockMutation = useMutation({
+    mutationFn: async (outfitId: string) => {
+      const res = await apiFetch(
+        buildUrl(api.users.unlockAvatar.path, { id: currentUser?.id || 0 }),
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ outfitId }),
+        },
+      );
+      if (!res.ok) {
+        const error = await res.json();
+        throw new Error(error.message || "Failed to unlock outfit");
+      }
+      return res.json();
+    },
+    onSuccess: (user) => {
+      setCurrentUser(user);
+      queryClient.invalidateQueries({ queryKey: [api.families.getUsers.path, user.familyId] });
+      toast({
+        title: "Outfit Unlocked!",
+        description: "You've got a new look. Go ahead and wear it!",
+      });
+    },
+    onError: (error: Error) => {
+      toast({
+        title: "Oops!",
+        description: error.message,
+        variant: "destructive",
+      });
     },
   });
 
@@ -187,15 +230,26 @@ export default function Profile() {
           <div className="grid grid-cols-3 gap-2.5 pt-2">
             {sortedOutfits.map((outfit) => {
               const isSelected = selectedId === outfit.id;
-              const outfitMeta = RARITY_META[outfit.rarity];
+              const isUnlocked = outfit.id === "classic" || !!inventory[outfit.id];
+              const canAfford = currentUser.points >= outfit.price;
+              
               return (
                 <button
                   key={outfit.id}
                   onClick={() => {
-                    if (!outfit.comingSoon) {
+                    if (outfit.comingSoon) return;
+                    
+                    if (isUnlocked) {
                       const nextConfig = { outfit: outfit.id };
                       setConfig(nextConfig);
                       mutation.mutate(nextConfig);
+                    } else if (canAfford) {
+                      unlockMutation.mutate(outfit.id);
+                    } else {
+                      toast({
+                        title: "Locked!",
+                        description: `You need ${outfit.price} star${outfit.price === 1 ? '' : 's'} to unlock this.`,
+                      });
                     }
                   }}
                   className={cn(
@@ -220,7 +274,10 @@ export default function Profile() {
                   }}
                 >
                   {/* Item Image */}
-                  <div className="relative w-[88%] h-[88%] flex items-center justify-center">
+                  <div className={cn(
+                    "relative w-[88%] h-[88%] flex items-center justify-center transition-all duration-300",
+                    !isUnlocked && "grayscale opacity-50 blur-[1px]"
+                  )}>
                     <img 
                       src={outfit.image} 
                       className={cn(
@@ -229,6 +286,17 @@ export default function Profile() {
                       )} 
                     />
                   </div>
+
+                  {/* Lock Overlay */}
+                  {!isUnlocked && (
+                    <div className="absolute inset-0 flex flex-col items-center justify-center bg-black/40 backdrop-blur-[2px] transition-all group-hover:bg-black/20">
+                      <Lock className="w-5 h-5 text-white/90 drop-shadow-lg" />
+                      <div className="mt-1 flex items-center gap-1 bg-amber-400 text-black px-1.5 py-0.5 rounded-full text-[8px] font-black">
+                        <Star className="w-2 h-2 fill-current" />
+                        {outfit.price}
+                      </div>
+                    </div>
+                  )}
 
                   {/* Selection Badge */}
                   {isSelected && (
