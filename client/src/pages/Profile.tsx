@@ -204,8 +204,8 @@ export default function Profile() {
           </button>
         </div>
 
-        {/* Character Preview Card (RPG Style) */}
-        <div className="flex-1 relative flex items-center justify-center min-h-0 w-full max-w-lg mx-auto mb-4 mt-2">
+        {/* Character Preview Area */}
+        <div className="flex-1 relative w-full h-full min-h-0 flex flex-col items-center justify-end pb-2">
           <AnimatePresence mode="wait">
             <motion.div
               key={previewOutfit.id}
@@ -213,98 +213,82 @@ export default function Profile() {
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -10 }}
               transition={{ duration: 0.3 }}
-              className="w-full h-full max-h-[220px] rounded-[1.5rem] p-3 sm:p-4 flex gap-3 sm:gap-4 overflow-hidden relative shadow-2xl border border-white/5"
-              style={{
-                background: 'linear-gradient(135deg, rgba(15,23,42,0.9) 0%, rgba(30,27,75,0.95) 100%)',
-                backdropFilter: 'blur(20px)',
-              }}
+              className="absolute inset-0 w-full h-full flex flex-col items-center justify-end"
             >
-              {/* Background Glow inside card */}
+              {/* Background Glow */}
               <div 
-                className="absolute inset-0 opacity-30 blur-2xl pointer-events-none transition-colors duration-700"
-                style={{ background: `radial-gradient(circle at 30% 50%, ${RARITY_BG_GLOW[previewOutfit.rarity]}, transparent 70%)` }}
+                className="absolute bottom-[10%] w-[150%] aspect-square blur-[100px] rounded-full pointer-events-none transition-colors duration-700 opacity-40 z-0"
+                style={{ background: `radial-gradient(circle, ${RARITY_BG_GLOW[previewOutfit.rarity]}, transparent 60%)` }}
               />
+              
+              {/* Floating Info Card (Top/Center) */}
+              <div className="absolute top-0 w-full px-2 sm:px-4 z-20">
+                <div className="rounded-3xl p-4 shadow-2xl border border-white/10 relative overflow-hidden"
+                     style={{
+                       background: 'linear-gradient(135deg, rgba(15,23,42,0.85) 0%, rgba(30,27,75,0.9) 100%)',
+                       backdropFilter: 'blur(20px)',
+                     }}>
+                  {/* Info Card Content */}
+                  <div className="flex justify-between items-start mb-2">
+                    <div>
+                      <h2 className="text-base sm:text-lg font-black text-white leading-none tracking-wide">
+                        {previewOutfit.label}
+                      </h2>
+                      <p className={cn("text-[10px] font-black uppercase tracking-widest mt-1", meta.color)}>
+                        {previewOutfit.rarity}
+                      </p>
+                    </div>
+                    {/* Stats */}
+                    <div className="flex flex-col sm:flex-row items-end sm:items-center gap-1.5 sm:gap-2">
+                       <div className="flex items-center gap-1 bg-white/5 rounded-full px-2 py-1"><Target className="w-3 h-3 text-purple-400"/> <span className="text-[10px] font-black text-white">+{previewOutfit.stats.focus}</span></div>
+                       <div className="flex items-center gap-1 bg-white/5 rounded-full px-2 py-1"><Flame className="w-3 h-3 text-orange-400"/> <span className="text-[10px] font-black text-white">+{previewOutfit.stats.effort}</span></div>
+                       <div className="flex items-center gap-1 bg-white/5 rounded-full px-2 py-1"><Shield className="w-3 h-3 text-blue-400"/> <span className="text-[10px] font-black text-white">+{previewOutfit.stats.discipline}</span></div>
+                    </div>
+                  </div>
+                  
+                  <p className="text-[11px] text-slate-300/80 leading-snug mb-3 pr-4">
+                    {previewOutfit.description}
+                  </p>
 
-              {/* Character Side */}
-              <div className="flex-none w-[40%] relative flex flex-col items-center justify-center">
-                <div className="relative w-full h-[85%] flex items-center justify-center z-10 drop-shadow-2xl">
-                  <img
-                    src={previewOutfit.image}
-                    className={cn(
-                      "max-h-full w-auto object-contain transition-all duration-300",
-                      !isUnlocked && "grayscale brightness-50"
+                  <div className="w-full">
+                    {!isUnlocked ? (
+                      <HoldToBuyButton 
+                        price={previewOutfit.price} 
+                        canAfford={canAfford}
+                        onComplete={() => unlockMutation.mutate(previewOutfit.id)}
+                      />
+                    ) : isEquipped ? (
+                      <div className="w-full py-2.5 rounded-xl bg-white/10 text-white/50 text-[11px] font-black uppercase text-center border border-white/5">
+                        Equipped
+                      </div>
+                    ) : (
+                      <button
+                        onClick={() => {
+                          const nextConfig = { outfit: previewOutfit.id };
+                          setConfig(nextConfig);
+                          mutation.mutate(nextConfig);
+                        }}
+                        className="w-full py-2.5 rounded-xl bg-primary text-primary-foreground text-[11px] font-black uppercase shadow-lg active:scale-95 transition-transform"
+                      >
+                        Equip
+                      </button>
                     )}
-                    style={{ filter: isUnlocked ? `drop-shadow(0 10px 15px ${RARITY_BG_GLOW[previewOutfit.rarity]})` : undefined }}
-                  />
+                  </div>
                 </div>
-                <div className="w-20 h-2 rounded-[100%] blur-[2px] bg-white/5 absolute bottom-4" />
               </div>
 
-              {/* Info Side */}
-              <div className="flex-1 flex flex-col justify-center relative z-10 min-w-0 py-1">
-                <div className="mb-auto">
-                  <h2 className="text-sm sm:text-base font-black text-white leading-none tracking-wide truncate pr-2">
-                    {previewOutfit.label}
-                  </h2>
-                  <p className={cn("text-[9px] sm:text-[10px] font-black uppercase tracking-widest mt-1", meta.color)}>
-                    {previewOutfit.rarity}
-                  </p>
-                </div>
-                
-                <p className="text-[10px] sm:text-xs text-slate-300/80 leading-snug mt-2 mb-3 line-clamp-3">
-                  {previewOutfit.description}
-                </p>
-
-                {/* Stats Row */}
-                <div className="flex items-center gap-2 sm:gap-3 mb-3">
-                  <div className="flex items-center gap-1">
-                    <Target className="w-3 h-3 text-purple-400" />
-                    <div className="flex flex-col">
-                      <span className="text-white text-[10px] font-black leading-none">+{previewOutfit.stats.focus}</span>
-                      <span className="text-purple-400/60 text-[6px] font-black uppercase tracking-wider leading-none mt-0.5">Focus</span>
-                    </div>
-                  </div>
-                  <div className="flex items-center gap-1">
-                    <Flame className="w-3 h-3 text-orange-400" />
-                    <div className="flex flex-col">
-                      <span className="text-white text-[10px] font-black leading-none">+{previewOutfit.stats.effort}</span>
-                      <span className="text-orange-400/60 text-[6px] font-black uppercase tracking-wider leading-none mt-0.5">Effort</span>
-                    </div>
-                  </div>
-                  <div className="flex items-center gap-1">
-                    <Shield className="w-3 h-3 text-blue-400" />
-                    <div className="flex flex-col">
-                      <span className="text-white text-[10px] font-black leading-none">+{previewOutfit.stats.discipline}</span>
-                      <span className="text-blue-400/60 text-[6px] font-black uppercase tracking-wider leading-none mt-0.5">Discip.</span>
-                    </div>
-                  </div>
-                </div>
-
-                {/* Action Button Area */}
-                <div className="mt-auto">
-                  {!isUnlocked ? (
-                    <HoldToBuyButton 
-                      price={previewOutfit.price} 
-                      canAfford={canAfford}
-                      onComplete={() => unlockMutation.mutate(previewOutfit.id)}
-                    />
-                  ) : isEquipped ? (
-                    <div className="w-full py-2.5 rounded-xl bg-white/10 text-white/50 text-[10px] sm:text-xs font-black uppercase text-center border border-white/5">
-                      Equipped
-                    </div>
-                  ) : (
-                    <button
-                      onClick={() => {
-                        const nextConfig = { outfit: previewOutfit.id };
-                        setConfig(nextConfig);
-                        mutation.mutate(nextConfig);
-                      }}
-                      className="w-full py-2.5 rounded-xl bg-primary text-primary-foreground text-[10px] sm:text-xs font-black uppercase shadow-lg active:scale-95 transition-transform"
-                    >
-                      Equip
-                    </button>
+              {/* Large Character (Bottom Center) */}
+              <div className="relative w-full h-[65%] flex items-end justify-center z-10 drop-shadow-2xl mb-4 pointer-events-none">
+                <img
+                  src={previewOutfit.image}
+                  className={cn(
+                    "h-full w-auto object-contain transition-all duration-300",
+                    !isUnlocked && "opacity-90 brightness-[0.6] sepia-[0.2] hue-rotate-180" // subtle dark icy look for locked
                   )}
-                </div>
+                  style={{ filter: isUnlocked ? `drop-shadow(0 -10px 40px ${RARITY_BG_GLOW[previewOutfit.rarity]})` : undefined }}
+                />
+                {/* Floor Shadow */}
+                <div className="absolute -bottom-2 w-48 h-8 bg-black/60 blur-[12px] rounded-[100%] z-[-1]" />
               </div>
             </motion.div>
           </AnimatePresence>
@@ -392,7 +376,7 @@ export default function Profile() {
                   {/* Item Image */}
                   <div className={cn(
                     "relative w-[88%] h-[88%] flex items-center justify-center transition-all duration-300",
-                    !isItemUnlocked && "grayscale opacity-50 blur-[1px]"
+                    !isItemUnlocked && "opacity-60 saturate-50"
                   )}>
                     <img 
                       src={outfit.image} 
@@ -403,10 +387,10 @@ export default function Profile() {
                     />
                   </div>
 
-                  {/* Lock Overlay */}
+                  {/* Lock Overlay (Subtle) */}
                   {!isItemUnlocked && (
-                    <div className="absolute inset-0 flex flex-col items-center justify-center bg-black/40 backdrop-blur-[2px] transition-all group-hover:bg-black/20">
-                      <Lock className="w-5 h-5 text-white/90 drop-shadow-lg" />
+                    <div className="absolute top-2 left-2 bg-black/40 backdrop-blur-md p-1 rounded-full z-10">
+                      <Lock className="w-3 h-3 text-white/80" />
                     </div>
                   )}
 
