@@ -60,18 +60,18 @@ export function HouseholdProgress({ chores }: HouseholdProgressProps) {
         <div className="flex items-center gap-2">
           <div className="w-7 h-7 rounded-lg flex items-center justify-center"
             style={{ background: 'rgba(34, 197, 94, 0.12)', border: '1px solid rgba(34, 197, 94, 0.2)' }}>
-            <Home className="w-3.5 h-3.5 text-green-400" />
+            <Home className="w-3.5 h-3.5 text-green-600 dark:text-green-400" />
           </div>
-          <p className="text-xs font-bold text-white/70">{message}</p>
+          <p className="text-xs font-bold text-slate-700 dark:text-white/70">{message}</p>
         </div>
         <div className="flex items-center gap-1.5">
-          <TrendingUp className="w-3 h-3 text-white/30" />
-          <span className="text-xs font-black text-white/80">{percent}%</span>
+          <TrendingUp className="w-3 h-3 text-slate-400 dark:text-white/30" />
+          <span className="text-xs font-black text-slate-800 dark:text-white/80">{percent}%</span>
         </div>
       </div>
 
       {/* Progress bar */}
-      <div className="h-3 bg-white/5 rounded-full overflow-hidden border border-white/5 relative">
+      <div className="h-3 bg-slate-200 dark:bg-white/5 rounded-full overflow-hidden border border-slate-300 dark:border-white/5 relative">
         <motion.div
           initial={{ width: 0 }}
           animate={{ width: `${percent}%` }}
@@ -96,7 +96,7 @@ export function HouseholdProgress({ chores }: HouseholdProgressProps) {
       </div>
 
       {/* Weekly label */}
-      <p className="text-[10px] font-bold text-white/25 uppercase tracking-widest mt-2 text-right">
+      <p className="text-[10px] font-bold text-slate-400 dark:text-white/25 uppercase tracking-widest mt-2 text-right">
         This week's household score
       </p>
     </div>
