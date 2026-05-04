@@ -12,6 +12,12 @@ export type PenguinOutfit = {
   image: string;
   rarity: Rarity;
   price: number;
+  description: string;
+  stats: {
+    focus: number;
+    effort: number;
+    discipline: number;
+  };
   comingSoon?: boolean;
 };
 
@@ -43,11 +49,51 @@ export const RARITY_META: Record<Rarity, { label: string, color: string, bg: str
 };
 
 export const PENGUIN_OUTFITS: PenguinOutfit[] = [
-  { id: "astronaut",  label: "Astronaut",  image: penguinAstronautImg, rarity: "legendary", price: 1 },
-  { id: "pirate",     label: "Pirate",     image: penguinPirateImg,    rarity: "mythic",    price: 1 },
-  { id: "fancy",      label: "Formal",     image: penguinSuitImg,      rarity: "rare",      price: 1 },
-  { id: "winter",     label: "Winter",     image: penguinCoatImg,      rarity: "rare",      price: 1 },
-  { id: "classic",    label: "Classic",    image: penguinBaseImg,      rarity: "common",    price: 0 },
+  { 
+    id: "astronaut",  
+    label: "Space Explorer",  
+    image: penguinAstronautImg, 
+    rarity: "legendary", 
+    price: 1,
+    description: "Ventures where no penguin has waddled before. Masters of silence and oxygen management.",
+    stats: { focus: 8, effort: 6, discipline: 7 }
+  },
+  { 
+    id: "pirate",     
+    label: "Sea Scourge",     
+    image: penguinPirateImg,    
+    rarity: "mythic",    
+    price: 1,
+    description: "Sails the icy seas in search of golden fish. Fearsome, bold, and slightly clumsy.",
+    stats: { focus: 4, effort: 9, discipline: 3 }
+  },
+  { 
+    id: "fancy",      
+    label: "Formal Suit",     
+    image: penguinSuitImg,      
+    rarity: "rare",      
+    price: 1,
+    description: "Dressed for success. Manners are their greatest weapon in the icy boardroom.",
+    stats: { focus: 6, effort: 4, discipline: 9 }
+  },
+  { 
+    id: "winter",     
+    label: "Cozy Winter",     
+    image: penguinCoatImg,      
+    rarity: "rare",      
+    price: 1,
+    description: "Warmth is life. A specialist in surviving the harshest blizzards with style.",
+    stats: { focus: 5, effort: 7, discipline: 6 }
+  },
+  { 
+    id: "classic",    
+    label: "Basic Penguin",    
+    image: penguinBaseImg,      
+    rarity: "common",    
+    price: 0,
+    description: "The pure, unadulterated essence of penguin-kind. Simple, yet surprisingly capable.",
+    stats: { focus: 2, effort: 2, discipline: 2 }
+  },
 ];
 
 export const OUTFIT_MAP: Record<string, string> = Object.fromEntries(

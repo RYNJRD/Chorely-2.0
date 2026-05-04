@@ -1,7 +1,7 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState, useRef } from "react";
 import { useMutation } from "@tanstack/react-query";
 import { motion, AnimatePresence } from "framer-motion";
-import { Settings as SettingsIcon, Check, Trophy, Star, Flame, Lock } from "lucide-react";
+import { Settings as SettingsIcon, Check, Trophy, Star, Flame, Lock, Shield, Zap, Target } from "lucide-react";
 import { useLocation } from "wouter";
 import { api, buildUrl } from "../../../shared/routes";
 import { queryClient } from "../lib/queryClient";
@@ -31,10 +31,66 @@ const RARITY_BG_GLOW: Record<Rarity, string> = {
   common: "rgba(255, 255, 255, 0.05)",
 };
 
+const HoldToBuyButton = ({ price, onComplete, canAfford }: { price: number, onComplete: () => void, canAfford: boolean }) => {
+  const [isHolding, setIsHolding] = useState(false);
+  const [progress, setProgress] = useState(0);
+  const completedRef = useRef(false);
+  
+  useEffect(() => {
+    let timer: NodeJS.Timeout;
+    if (isHolding && !completedRef.current) {
+      timer = setInterval(() => {
+        setProgress(p => {
+          if (p >= 100) {
+            clearInterval(timer);
+            if (!completedRef.current) {
+              completedRef.current = true;
+              onComplete();
+            }
+            return 100;
+          }
+          return p + 4; // roughly 1.25s
+        });
+      }, 50);
+    } else if (!isHolding) {
+      setProgress(0);
+      completedRef.current = false;
+    }
+    return () => clearInterval(timer);
+  }, [isHolding, onComplete]);
+
+  return (
+    <button
+      onPointerDown={() => canAfford && setIsHolding(true)}
+      onPointerUp={() => setIsHolding(false)}
+      onPointerLeave={() => setIsHolding(false)}
+      className={cn("relative w-full py-2.5 rounded-xl overflow-hidden font-black uppercase text-[10px] sm:text-xs transition-transform active:scale-95", 
+        canAfford ? "bg-indigo-900/40 text-white border border-indigo-500/30 shadow-[0_0_15px_rgba(99,102,241,0.2)]" : "bg-slate-800/50 text-white/50 cursor-not-allowed border border-slate-700/50"
+      )}
+      style={{ userSelect: 'none', WebkitUserSelect: 'none' }}
+    >
+      {/* Progress Fill */}
+      <div 
+        className="absolute inset-y-0 left-0 bg-gradient-to-r from-indigo-600 to-indigo-400 transition-all ease-linear" 
+        style={{ width: `${progress}%` }} 
+      />
+      {/* Text */}
+      <span className="relative z-10 flex items-center justify-center gap-1.5 drop-shadow-md">
+        {canAfford ? (
+          <>Hold to Unlock <Star className="w-3 h-3 fill-amber-400 text-amber-400 drop-shadow-[0_0_5px_rgba(251,191,36,0.8)]" /> {price}</>
+        ) : (
+          <>Need {price} Stars</>
+        )}
+      </span>
+    </button>
+  );
+};
+
 export default function Profile() {
   const { currentUser, setCurrentUser, family, setIsDrawerOpen } = useStore();
   const { toast } = useToast();
   const [config, setConfig] = useState<AvatarConfig>(() => parseAvatarConfig(currentUser?.avatarConfig));
+  const [previewId, setPreviewId] = useState<string>(config.outfit ?? "classic");
 
   useEffect(() => {
     setConfig(parseAvatarConfig(currentUser?.avatarConfig));
@@ -64,6 +120,7 @@ export default function Profile() {
     onSuccess: (user) => {
       setCurrentUser(user);
       queryClient.invalidateQueries({ queryKey: [api.families.getUsers.path, user.familyId] });
+      toast({ title: "Equipped!", description: "Your new look is saved." });
     },
   });
 
@@ -83,13 +140,17 @@ export default function Profile() {
       }
       return res.json();
     },
-    onSuccess: (user) => {
+    onSuccess: (user, outfitId) => {
       setCurrentUser(user);
       queryClient.invalidateQueries({ queryKey: [api.families.getUsers.path, user.familyId] });
       toast({
-        title: "Outfit Unlocked!",
-        description: "You've got a new look. Go ahead and wear it!",
+        title: "Unlocked!",
+        description: "You've got a new look. Equip it now!",
       });
+      // Optionally auto-equip upon unlock
+      const nextConfig = { outfit: outfitId };
+      setConfig(nextConfig);
+      mutation.mutate(nextConfig);
     },
     onError: (error: Error) => {
       toast({
@@ -102,31 +163,33 @@ export default function Profile() {
 
   if (!currentUser) return null;
 
-  const selectedId = config.outfit ?? "classic";
-  const selectedOutfit = useMemo(
-    () => PENGUIN_OUTFITS.find((o) => o.id === selectedId) ?? PENGUIN_OUTFITS[0],
-    [selectedId],
+  const equippedId = config.outfit ?? "classic";
+  
+  const previewOutfit = useMemo(
+    () => PENGUIN_OUTFITS.find((o) => o.id === previewId) ?? PENGUIN_OUTFITS[0],
+    [previewId],
   );
 
-  // Sort outfits by rarity rarity: legendary > mythic > rare > common
   const sortedOutfits = useMemo(() => {
     const weights: Record<Rarity, number> = { legendary: 3, mythic: 2, rare: 1, common: 0 };
     return [...PENGUIN_OUTFITS].sort((a, b) => weights[b.rarity] - weights[a.rarity]);
   }, []);
 
-  const meta = RARITY_META[selectedOutfit.rarity];
+  const meta = RARITY_META[previewOutfit.rarity];
+  const isUnlocked = previewOutfit.id === "classic" || !!inventory[previewOutfit.id];
+  const isEquipped = equippedId === previewOutfit.id;
+  const canAfford = currentUser.points >= previewOutfit.price;
 
   return (
     <div className="h-full transition-colors duration-700 overflow-hidden select-none flex flex-col font-sans bg-tab-profile">
       
       {/* ── Top Section (flex: 2.5) ── */}
-      <div className="flex-[2.5] flex flex-col pt-5 px-5 min-h-0">
+      <div className="flex-[2.5] flex flex-col pt-5 px-4 sm:px-5 min-h-0">
         {/* Top Header */}
-        <div className="flex items-center justify-between h-10 mb-5">
+        <div className="flex items-center justify-between h-10 mb-4">
           <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-xl flex items-center justify-center flex-none glass"
-                style={{ boxShadow: '0 0 12px rgba(250, 204, 21, 0.3)' }}>
-                <Trophy className="w-5 h-5 text-yellow-400" style={{ filter: 'drop-shadow(0 0 6px rgba(250, 204, 21, 0.6))' }} />
+              <div className="w-10 h-10 rounded-xl flex items-center justify-center flex-none glass shadow-[0_0_12px_rgba(250,204,21,0.3)]">
+                <Trophy className="w-5 h-5 text-yellow-400 drop-shadow-[0_0_6px_rgba(250,204,21,0.6)]" />
               </div>
               <div className="flex flex-col justify-center">
                 <h1 className="text-xl font-black leading-none text-indigo-950 dark:text-white">{currentUser.username}</h1>
@@ -141,51 +204,110 @@ export default function Profile() {
           </button>
         </div>
 
-        {/* Stats Row - Frosted Glass Gems */}
-        <div className="flex justify-center gap-2.5 mb-2 shrink-0 mx-auto w-full max-w-[240px]">
-            <div className="glass-card flex-1 rounded-2xl py-1 flex flex-col items-center justify-center">
-              <Star className="w-3.5 h-3.5 fill-amber-400 text-amber-400 mb-0.5" style={{ filter: 'drop-shadow(0 0 4px rgba(250, 204, 21, 0.5))' }} />
-              <span className="font-display font-black text-[12px] text-foreground">{currentUser.points}</span>
-            </div>
-            <div className="glass-card flex-1 rounded-2xl py-1 flex flex-col items-center justify-center">
-              <Flame className="w-3.5 h-3.5 fill-orange-500 text-orange-400 mb-0.5" style={{ filter: 'drop-shadow(0 0 4px rgba(249, 115, 22, 0.5))' }} />
-              <span className="font-display font-black text-[12px] text-foreground">{currentUser.streak || 0}</span>
-            </div>
-            <div className="glass-card flex-1 rounded-2xl py-1 flex flex-col items-center justify-center">
-              <span className="text-[12px] font-black text-muted-foreground/40 mb-0.5 leading-none">#</span>
-              <span className="font-display font-black text-[12px] text-foreground">1</span>
-            </div>
-        </div>
-
-        {/* Character Display Area (Proportional) */}
-        <div className="flex-1 relative flex flex-col items-center justify-center min-h-0 pointer-events-none">
+        {/* Character Preview Card (RPG Style) */}
+        <div className="flex-1 relative flex items-center justify-center min-h-0 w-full max-w-lg mx-auto mb-4 mt-2">
           <AnimatePresence mode="wait">
             <motion.div
-              key={selectedOutfit.rarity}
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 0.4 }}
-              className={cn(
-                "absolute w-[180%] aspect-square blur-[120px] rounded-full z-0",
-                selectedOutfit.rarity === "legendary" ? "bg-amber-400/30" :
-                selectedOutfit.rarity === "mythic" ? "bg-purple-500/30" :
-                selectedOutfit.rarity === "rare" ? "bg-blue-400/30" : "bg-slate-400/20"
-              )}
-            />
-          </AnimatePresence>
-          <div className="relative w-full h-[92%] flex items-center justify-center z-10">
-            <AnimatePresence mode="wait">
-              <motion.img
-                key={selectedId}
-                initial={{ scale: 0.95, opacity: 0 }}
-                animate={{ scale: 1, opacity: 1 }}
-                exit={{ scale: 0.95, opacity: 0 }}
-                src={selectedOutfit.image}
-                className="max-h-full w-auto object-contain drop-shadow-xl"
-                style={{ filter: `drop-shadow(0 0 20px ${RARITY_BG_GLOW[selectedOutfit.rarity]})` }}
+              key={previewOutfit.id}
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -10 }}
+              transition={{ duration: 0.3 }}
+              className="w-full h-full max-h-[220px] rounded-[1.5rem] p-3 sm:p-4 flex gap-3 sm:gap-4 overflow-hidden relative shadow-2xl border border-white/5"
+              style={{
+                background: 'linear-gradient(135deg, rgba(15,23,42,0.9) 0%, rgba(30,27,75,0.95) 100%)',
+                backdropFilter: 'blur(20px)',
+              }}
+            >
+              {/* Background Glow inside card */}
+              <div 
+                className="absolute inset-0 opacity-30 blur-2xl pointer-events-none transition-colors duration-700"
+                style={{ background: `radial-gradient(circle at 30% 50%, ${RARITY_BG_GLOW[previewOutfit.rarity]}, transparent 70%)` }}
               />
-            </AnimatePresence>
-          </div>
-          <div className="w-32 h-4 rounded-[100%] blur-[2px] -mt-4" style={{ background: 'rgba(255,255,255,0.03)' }} />
+
+              {/* Character Side */}
+              <div className="flex-none w-[40%] relative flex flex-col items-center justify-center">
+                <div className="relative w-full h-[85%] flex items-center justify-center z-10 drop-shadow-2xl">
+                  <img
+                    src={previewOutfit.image}
+                    className={cn(
+                      "max-h-full w-auto object-contain transition-all duration-300",
+                      !isUnlocked && "grayscale brightness-50"
+                    )}
+                    style={{ filter: isUnlocked ? `drop-shadow(0 10px 15px ${RARITY_BG_GLOW[previewOutfit.rarity]})` : undefined }}
+                  />
+                </div>
+                <div className="w-20 h-2 rounded-[100%] blur-[2px] bg-white/5 absolute bottom-4" />
+              </div>
+
+              {/* Info Side */}
+              <div className="flex-1 flex flex-col justify-center relative z-10 min-w-0 py-1">
+                <div className="mb-auto">
+                  <h2 className="text-sm sm:text-base font-black text-white leading-none tracking-wide truncate pr-2">
+                    {previewOutfit.label}
+                  </h2>
+                  <p className={cn("text-[9px] sm:text-[10px] font-black uppercase tracking-widest mt-1", meta.color)}>
+                    {previewOutfit.rarity}
+                  </p>
+                </div>
+                
+                <p className="text-[10px] sm:text-xs text-slate-300/80 leading-snug mt-2 mb-3 line-clamp-3">
+                  {previewOutfit.description}
+                </p>
+
+                {/* Stats Row */}
+                <div className="flex items-center gap-2 sm:gap-3 mb-3">
+                  <div className="flex items-center gap-1">
+                    <Target className="w-3 h-3 text-purple-400" />
+                    <div className="flex flex-col">
+                      <span className="text-white text-[10px] font-black leading-none">+{previewOutfit.stats.focus}</span>
+                      <span className="text-purple-400/60 text-[6px] font-black uppercase tracking-wider leading-none mt-0.5">Focus</span>
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-1">
+                    <Flame className="w-3 h-3 text-orange-400" />
+                    <div className="flex flex-col">
+                      <span className="text-white text-[10px] font-black leading-none">+{previewOutfit.stats.effort}</span>
+                      <span className="text-orange-400/60 text-[6px] font-black uppercase tracking-wider leading-none mt-0.5">Effort</span>
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-1">
+                    <Shield className="w-3 h-3 text-blue-400" />
+                    <div className="flex flex-col">
+                      <span className="text-white text-[10px] font-black leading-none">+{previewOutfit.stats.discipline}</span>
+                      <span className="text-blue-400/60 text-[6px] font-black uppercase tracking-wider leading-none mt-0.5">Discip.</span>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Action Button Area */}
+                <div className="mt-auto">
+                  {!isUnlocked ? (
+                    <HoldToBuyButton 
+                      price={previewOutfit.price} 
+                      canAfford={canAfford}
+                      onComplete={() => unlockMutation.mutate(previewOutfit.id)}
+                    />
+                  ) : isEquipped ? (
+                    <div className="w-full py-2.5 rounded-xl bg-white/10 text-white/50 text-[10px] sm:text-xs font-black uppercase text-center border border-white/5">
+                      Equipped
+                    </div>
+                  ) : (
+                    <button
+                      onClick={() => {
+                        const nextConfig = { outfit: previewOutfit.id };
+                        setConfig(nextConfig);
+                        mutation.mutate(nextConfig);
+                      }}
+                      className="w-full py-2.5 rounded-xl bg-primary text-primary-foreground text-[10px] sm:text-xs font-black uppercase shadow-lg active:scale-95 transition-transform"
+                    >
+                      Equip
+                    </button>
+                  )}
+                </div>
+              </div>
+            </motion.div>
+          </AnimatePresence>
         </div>
       </div>
 
@@ -201,56 +323,50 @@ export default function Profile() {
           boxShadow: '0 -10px 40px rgba(0,0,0,0.1)',
         }}
       >
-        {/* Inside Trace - rarity glow */}
+        {/* Inside Trace - rarity glow (based on previewed item) */}
         <div className={cn(
           "absolute inset-[5px] rounded-t-[2.1rem] pointer-events-none z-10 transition-all duration-500",
           meta.border ? "border" : "",
         )} style={{
-          borderColor: selectedOutfit.rarity === "legendary" ? 'rgba(255, 215, 0, 0.25)' :
-                       selectedOutfit.rarity === "mythic" ? 'rgba(168, 85, 247, 0.25)' :
-                       selectedOutfit.rarity === "rare" ? 'rgba(56, 189, 248, 0.25)' : 'rgba(255, 255, 255, 0.05)',
-          boxShadow: selectedOutfit.rarity !== "common" 
-            ? `inset 0 0 30px ${RARITY_BG_GLOW[selectedOutfit.rarity]}` 
+          borderColor: previewOutfit.rarity === "legendary" ? 'rgba(255, 215, 0, 0.25)' :
+                       previewOutfit.rarity === "mythic" ? 'rgba(168, 85, 247, 0.25)' :
+                       previewOutfit.rarity === "rare" ? 'rgba(56, 189, 248, 0.25)' : 'rgba(255, 255, 255, 0.05)',
+          boxShadow: previewOutfit.rarity !== "common" 
+            ? `inset 0 0 30px ${RARITY_BG_GLOW[previewOutfit.rarity]}` 
             : 'none',
         }} />
 
         {/* Panel Header */}
         <div className="px-6 pt-4 pb-2 shrink-0">
           <div className="flex items-center justify-between">
-            <div>
-              <h2 className="text-xs font-black uppercase tracking-[0.1em] text-foreground/90">Wardrobe</h2>
-              <div className="h-1 w-6 bg-primary rounded-full mt-0.5" style={{ boxShadow: '0 0 8px rgba(var(--glow-primary), 0.5)' }} />
+            <div className="flex items-center gap-4">
+              <div>
+                <h2 className="text-xs font-black uppercase tracking-[0.1em] text-foreground/90">Wardrobe</h2>
+                <div className="h-1 w-6 bg-primary rounded-full mt-0.5 shadow-[0_0_8px_rgba(var(--glow-primary),0.5)]" />
+              </div>
+              <div className="flex items-center gap-1.5 bg-black/20 rounded-full px-2.5 py-1 backdrop-blur-sm border border-white/5">
+                <Star className="w-3 h-3 fill-amber-400 text-amber-400 drop-shadow-[0_0_3px_rgba(251,191,36,0.5)]" />
+                <span className="text-[10px] font-black text-white">{currentUser.points}</span>
+              </div>
             </div>
             <p className="text-[9px] font-black text-muted-foreground uppercase tracking-widest">{PENGUIN_OUTFITS.length} Items</p>
           </div>
         </div>
 
-        {/* Costume Grid (Internally Scrollable ViewPort) */}
+        {/* Costume Grid */}
         <div className="flex-1 overflow-y-auto px-5 pb-28 no-scrollbar mask-bottom-fade">
           <div className="grid grid-cols-3 gap-2.5 pt-2">
             {sortedOutfits.map((outfit) => {
-              const isSelected = selectedId === outfit.id;
-              const isUnlocked = outfit.id === "classic" || !!inventory[outfit.id];
-              const canAfford = currentUser.points >= outfit.price;
+              const isSelected = previewId === outfit.id;
+              const isEquipped = equippedId === outfit.id;
+              const isItemUnlocked = outfit.id === "classic" || !!inventory[outfit.id];
               
               return (
                 <button
                   key={outfit.id}
                   onClick={() => {
                     if (outfit.comingSoon) return;
-                    
-                    if (isUnlocked) {
-                      const nextConfig = { outfit: outfit.id };
-                      setConfig(nextConfig);
-                      mutation.mutate(nextConfig);
-                    } else if (canAfford) {
-                      unlockMutation.mutate(outfit.id);
-                    } else {
-                      toast({
-                        title: "Locked!",
-                        description: `You need ${outfit.price} star${outfit.price === 1 ? '' : 's'} to unlock this.`,
-                      });
-                    }
+                    setPreviewId(outfit.id);
                   }}
                   className={cn(
                     "group relative aspect-square rounded-[1.25rem] transition-all duration-300 flex flex-col items-center justify-center p-2.5 overflow-hidden active:scale-95",
@@ -276,7 +392,7 @@ export default function Profile() {
                   {/* Item Image */}
                   <div className={cn(
                     "relative w-[88%] h-[88%] flex items-center justify-center transition-all duration-300",
-                    !isUnlocked && "grayscale opacity-50 blur-[1px]"
+                    !isItemUnlocked && "grayscale opacity-50 blur-[1px]"
                   )}>
                     <img 
                       src={outfit.image} 
@@ -288,36 +404,23 @@ export default function Profile() {
                   </div>
 
                   {/* Lock Overlay */}
-                  {!isUnlocked && (
+                  {!isItemUnlocked && (
                     <div className="absolute inset-0 flex flex-col items-center justify-center bg-black/40 backdrop-blur-[2px] transition-all group-hover:bg-black/20">
                       <Lock className="w-5 h-5 text-white/90 drop-shadow-lg" />
-                      <div className="mt-1 flex items-center gap-1 bg-amber-400 text-black px-1.5 py-0.5 rounded-full text-[8px] font-black">
-                        <Star className="w-2 h-2 fill-current" />
-                        {outfit.price}
-                      </div>
                     </div>
                   )}
 
-                  {/* Selection Badge */}
-                  {isSelected && (
-                    <motion.div 
-                      initial={{ scale: 0 }}
-                      animate={{ scale: 1 }}
-                      className="absolute top-1.5 right-1.5 w-5 h-5 rounded-lg flex items-center justify-center z-20"
-                      style={{
-                        background: 'rgba(var(--glow-primary), 0.8)',
-                        boxShadow: '0 0 8px rgba(var(--glow-primary), 0.5)',
-                      }}
-                    >
+                  {/* Equipped Badge */}
+                  {isEquipped && (
+                    <div className="absolute top-1.5 right-1.5 w-5 h-5 rounded-lg flex items-center justify-center z-20 shadow-[0_0_8px_rgba(var(--glow-primary),0.5)] bg-[rgba(var(--glow-primary),0.8)]">
                       <Check className="w-3 h-3 text-white" strokeWidth={4} />
-                    </motion.div>
+                    </div>
                   )}
 
                   {/* Rarity Label (Bottom) */}
-                  <div className="absolute bottom-0 w-full py-1 text-[7px] font-black uppercase tracking-widest text-center"
+                  <div className="absolute bottom-0 w-full py-1 text-[7px] font-black uppercase tracking-widest text-center backdrop-blur-[4px]"
                     style={{
                       background: isSelected ? 'rgba(0, 0, 0, 0.7)' : 'rgba(0, 0, 0, 0.4)',
-                      backdropFilter: 'blur(4px)',
                       color: outfit.rarity === "legendary" ? 'rgb(255, 220, 0)' :
                              outfit.rarity === "mythic" ? 'rgb(210, 160, 255)' :
                              outfit.rarity === "rare" ? 'rgb(140, 200, 255)' : 'rgba(255, 255, 255, 0.6)',
