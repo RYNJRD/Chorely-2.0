@@ -206,6 +206,24 @@ export default function Rewards() {
           );
         })}
       </div>
+
+      {/* ── Call to action to ask parents for more rewards ── */}
+      <motion.div 
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ delay: 0.4 }}
+        className="mt-8"
+      >
+        <div className="rounded-[1.75rem] border-2 border-dashed border-white/10 p-6 flex flex-col items-center justify-center text-center bg-white/5 shadow-inner">
+          <div className="w-12 h-12 rounded-[1rem] bg-white/5 flex items-center justify-center mb-3">
+            <Gift className="w-6 h-6 text-white/30" />
+          </div>
+          <h3 className="font-display font-bold text-[17px] text-foreground mb-1">Want more options?</h3>
+          <p className="text-[13px] text-muted-foreground/80 max-w-[220px] leading-relaxed">
+            Ask your parents to add some cool new rewards for you!
+          </p>
+        </div>
+      </motion.div>
     </div>
   );
 }
