@@ -1,6 +1,5 @@
 import { useFamilyLive } from "../hooks/use-family-live";
 import { NavigationDrawer } from "./NavigationDrawer";
-import { Menu, X } from "lucide-react";
 import { useState, useEffect } from "react";
 import { useLocation } from "wouter";
 import { useStore } from "../store/useStore";
@@ -13,7 +12,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
   const { family, isDrawerOpen, setIsDrawerOpen, isNavHidden, currentUser } = useStore();
   const onboardingPaths = ["/", "/get-started", "/auth", "/verify-email", "/email-action", "/join-family", "/setup-family", "/home"];
   const isOnboarding = onboardingPaths.includes(location) || location.startsWith("/join/");
-  
+
   useFamilyLive(family?.id);
 
   // Subscription Gate Logic
@@ -30,7 +29,10 @@ export function Layout({ children }: { children: React.ReactNode }) {
     */
   }, [isInactive, isSubscriptionPage, isOnboarding, family?.id, setLocation]);
 
-  const showNav = !isOnboarding && !isNavHidden; // Show nav for everyone now
+  // Hide nav on profile page — use location-based check so there's never
+  // a flash caused by async state; the nav slides out smoothly via AnimatePresence.
+  const isProfilePage = location.includes("/profile");
+  const showNav = !isOnboarding && !isNavHidden && !isProfilePage;
 
   return (
     <div className="flex items-center justify-center min-h-screen bg-zinc-950 font-sans text-foreground selection:bg-primary/20">
@@ -49,7 +51,22 @@ export function Layout({ children }: { children: React.ReactNode }) {
             {children}
           </main>
         </div>
-        {showNav && <BottomNav />}
+
+        {/* Bottom nav slides down off-screen when on profile, up when on other pages */}
+        <AnimatePresence initial={false}>
+          {showNav && (
+            <motion.div
+              key="bottom-nav"
+              initial={{ y: 120, opacity: 0 }}
+              animate={{ y: 0, opacity: 1 }}
+              exit={{ y: 120, opacity: 0 }}
+              transition={{ type: "spring", stiffness: 380, damping: 36, mass: 0.9 }}
+              style={{ position: "absolute", bottom: 0, left: 0, right: 0, pointerEvents: "auto" }}
+            >
+              <BottomNav />
+            </motion.div>
+          )}
+        </AnimatePresence>
       </div>
     </div>
   );
