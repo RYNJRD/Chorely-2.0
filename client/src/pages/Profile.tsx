@@ -337,20 +337,17 @@ export default function Profile() {
             {/* Character image — sits in clean context above background */}
             <div
               className="absolute inset-0 flex items-end justify-center"
-              style={{ zIndex: 10, paddingBottom: "4px" }}
+              style={{ zIndex: 10, paddingBottom: "4px", isolation: "isolate" }}
             >
               <img
                 src={previewOutfit.image}
-                className="h-full w-auto object-contain pointer-events-none"
+                className="h-full w-auto object-contain pointer-events-none relative z-[2]"
                 style={{
-                  /*
-                   * COLOR BUG FIX:
-                   * Locked state uses ONLY brightness + saturate (no hue-rotate/sepia/invert).
-                   * drop-shadow provides the rarity halo for unlocked characters.
-                   */
+                  opacity: 1,
+                  mixBlendMode: "normal",
                   filter: isUnlocked
                     ? `drop-shadow(0 0 28px ${RARITY_BG_GLOW[previewOutfit.rarity]}) drop-shadow(0 -4px 20px ${RARITY_BG_GLOW[previewOutfit.rarity]})`
-                    : "brightness(0.45) saturate(0.25)",
+                    : "none",
                   transition: "filter 0.4s ease",
                 }}
               />
@@ -358,10 +355,9 @@ export default function Profile() {
               {/* Locked overlay tint — separate from img */}
               {!isUnlocked && (
                 <div
-                  className="absolute inset-0 pointer-events-none"
+                  className="absolute inset-0 pointer-events-none z-[3]"
                   style={{
-                    background: "rgba(5,10,30,0.35)",
-                    zIndex: 11,
+                    background: "rgba(5,10,30,0.55)",
                   }}
                 />
               )}
@@ -559,6 +555,7 @@ export default function Profile() {
                     isSelected ? RARITY_CARD_ANIM[outfit.rarity] : ""
                   )}
                   style={{
+                    isolation: "isolate",
                     background: isSelected
                       ? outfit.rarity === "legendary"
                         ? "rgba(255, 200, 0, 0.18)"
@@ -587,23 +584,19 @@ export default function Profile() {
                     }`,
                   }}
                 >
-                  {/*
-                   * COLOR FIX: locked thumbnails use opacity + saturate on the wrapper.
-                   * No hue-rotate. No invert. No sepia. No parent blend-mode.
-                   */}
                   <div
                     className="relative w-[80%] h-[78%] flex items-center justify-center"
                     style={{
-                      opacity: isItemUnlocked ? 1 : 0.45,
-                      filter: isItemUnlocked ? "none" : "saturate(0.2)",
                       transform: isSelected ? "scale(1.08)" : "scale(1)",
-                      transition: "transform 0.25s ease, opacity 0.2s, filter 0.2s",
+                      transition: "transform 0.25s ease",
                     }}
                   >
                     <img
                       src={outfit.image}
-                      className="w-full h-full object-contain pointer-events-none"
+                      className="w-full h-full object-contain pointer-events-none relative z-[2]"
                       style={{
+                        opacity: 1,
+                        mixBlendMode: "normal",
                         filter: isSelected && isItemUnlocked
                           ? `drop-shadow(0 0 8px ${RARITY_BG_GLOW[outfit.rarity]})`
                           : "none",
@@ -611,9 +604,17 @@ export default function Profile() {
                     />
                   </div>
 
+                  {/* Lock overlay for the entire card */}
+                  {!isItemUnlocked && (
+                    <div 
+                      className="absolute inset-0 pointer-events-none z-[3]"
+                      style={{ background: "rgba(0, 0, 0, 0.55)" }}
+                    />
+                  )}
+
                   {/* Lock badge */}
                   {!isItemUnlocked && (
-                    <div className="absolute top-1.5 left-1.5 bg-black/60 backdrop-blur-sm p-1 rounded-full z-10">
+                    <div className="absolute top-1.5 left-1.5 bg-black/60 backdrop-blur-sm p-1 rounded-full z-[4]">
                       <Lock className="w-2.5 h-2.5 text-white/70" />
                     </div>
                   )}
@@ -621,7 +622,7 @@ export default function Profile() {
                   {/* Equipped check */}
                   {isEquippedItem && (
                     <div
-                      className="absolute top-1.5 right-1.5 w-5 h-5 rounded-lg flex items-center justify-center z-20"
+                      className="absolute top-1.5 right-1.5 w-5 h-5 rounded-lg flex items-center justify-center z-[4]"
                       style={{
                         background: `rgba(var(--glow-primary), 0.85)`,
                         boxShadow: `0 0 8px rgba(var(--glow-primary), 0.6)`,
@@ -633,7 +634,7 @@ export default function Profile() {
 
                   {/* Rarity strip */}
                   <div
-                    className="absolute bottom-0 left-0 right-0 py-[3px] text-[6.5px] font-black uppercase tracking-widest text-center"
+                    className="absolute bottom-0 left-0 right-0 py-[3px] text-[6.5px] font-black uppercase tracking-widest text-center z-[4]"
                     style={{
                       background: "rgba(0,0,0,0.6)",
                       color: RARITY_BADGE_COLOR[outfit.rarity],
