@@ -235,21 +235,7 @@ export default function Profile() {
   return (
     <div className="h-full overflow-hidden select-none flex flex-col font-sans bg-tab-profile relative">
 
-      {/* ── Rarity-coloured ambient background wash ── */}
-      <AnimatePresence mode="wait">
-        <motion.div
-          key={`bg-${previewOutfit.rarity}`}
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          exit={{ opacity: 0 }}
-          transition={{ duration: 0.6 }}
-          className="absolute inset-0 pointer-events-none"
-          style={{
-            background: `radial-gradient(ellipse at 50% 30%, ${RARITY_BG_GLOW[previewOutfit.rarity]}, transparent 65%)`,
-            zIndex: 0,
-          }}
-        />
-      </AnimatePresence>
+      {/* Removed Rarity-coloured ambient background wash based on user feedback */}
 
       {/* ── Top Header ── */}
       <div className="relative flex items-center justify-between h-12 px-4 pt-4 pb-0 shrink-0" style={{ zIndex: 10 }}>
@@ -322,17 +308,7 @@ export default function Profile() {
               </div>
             )}
 
-            {/* Rarity ground glow */}
-            <div
-              className="absolute bottom-0 left-1/2 -translate-x-1/2 pointer-events-none transition-all duration-700"
-              style={{
-                zIndex: 2,
-                width: "160%",
-                height: "55%",
-                background: `radial-gradient(ellipse at 50% 100%, ${RARITY_BG_GLOW[previewOutfit.rarity]}, transparent 65%)`,
-                filter: "blur(4px)",
-              }}
-            />
+            {/* Removed Rarity ground glow based on user feedback */}
 
             {/* Character image — sits in clean context above background */}
             <div
