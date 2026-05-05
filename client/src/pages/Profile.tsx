@@ -1,8 +1,7 @@
 import { useEffect, useMemo, useState, useRef } from "react";
 import { useMutation } from "@tanstack/react-query";
 import { motion, AnimatePresence } from "framer-motion";
-import { Settings as SettingsIcon, Check, Trophy, Star, Flame, Lock, Shield, Zap, Target } from "lucide-react";
-import { useLocation } from "wouter";
+import { Settings as SettingsIcon, Check, Trophy, Star, Flame, Lock, Shield, Target } from "lucide-react";
 import { api, buildUrl } from "../../../shared/routes";
 import { queryClient } from "../lib/queryClient";
 import { useStore } from "../store/useStore";
@@ -64,7 +63,7 @@ const HoldToBuyButton = ({ price, onComplete, canAfford }: { price: number, onCo
       onPointerDown={() => canAfford && setIsHolding(true)}
       onPointerUp={() => setIsHolding(false)}
       onPointerLeave={() => setIsHolding(false)}
-      className={cn("relative w-full py-2.5 rounded-xl overflow-hidden font-black uppercase text-[10px] sm:text-xs transition-transform active:scale-95", 
+      className={cn("relative w-full py-3 rounded-xl overflow-hidden font-black uppercase text-xs transition-transform active:scale-95", 
         canAfford ? "bg-indigo-900/40 text-white border border-indigo-500/30 shadow-[0_0_15px_rgba(99,102,241,0.2)]" : "bg-slate-800/50 text-white/50 cursor-not-allowed border border-slate-700/50"
       )}
       style={{ userSelect: 'none', WebkitUserSelect: 'none' }}
@@ -147,7 +146,6 @@ export default function Profile() {
         title: "Unlocked!",
         description: "You've got a new look. Equip it now!",
       });
-      // Optionally auto-equip upon unlock
       const nextConfig = { outfit: outfitId };
       setConfig(nextConfig);
       mutation.mutate(nextConfig);
@@ -183,132 +181,195 @@ export default function Profile() {
   return (
     <div className="h-full transition-colors duration-700 overflow-hidden select-none flex flex-col font-sans bg-tab-profile">
       
-      {/* ── Top Section (flex: 2.5) ── */}
-      <div className="flex-[2.5] flex flex-col pt-5 px-4 sm:px-5 min-h-0">
-        {/* Top Header */}
-        <div className="flex items-center justify-between h-10 mb-4">
-          <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-xl flex items-center justify-center flex-none glass shadow-[0_0_12px_rgba(250,204,21,0.3)]">
-                <Trophy className="w-5 h-5 text-yellow-400 drop-shadow-[0_0_6px_rgba(250,204,21,0.6)]" />
-              </div>
-              <div className="flex flex-col justify-center">
-                <h1 className="text-xl font-black leading-none text-indigo-950 dark:text-white">{currentUser.username}</h1>
-                <p className="text-[9px] font-black uppercase tracking-wider text-indigo-900/70 dark:text-white/60 mt-1">Explorer Level 1</p>
-              </div>
+      {/* ── Top Header ── */}
+      <div className="flex items-center justify-between h-12 px-4 sm:px-5 pt-4 pb-0 shrink-0">
+        <div className="flex items-center gap-3">
+          <div className="w-9 h-9 rounded-xl flex items-center justify-center flex-none glass shadow-[0_0_12px_rgba(250,204,21,0.3)]">
+            <Trophy className="w-4 h-4 text-yellow-400 drop-shadow-[0_0_6px_rgba(250,204,21,0.6)]" />
           </div>
-          <button 
-            onClick={() => setIsDrawerOpen(true)}
-            className="w-10 h-10 rounded-xl glass flex items-center justify-center active:scale-95 transition-all duration-300 flex-none"
-          >
-              <SettingsIcon className="w-5 h-5 text-foreground/50" />
-          </button>
+          <div className="flex flex-col justify-center">
+            <h1 className="text-lg font-black leading-none text-indigo-950 dark:text-white">{currentUser.username}</h1>
+            <p className="text-[9px] font-black uppercase tracking-wider text-indigo-900/70 dark:text-white/60 mt-0.5">Explorer Level 1</p>
+          </div>
         </div>
-
-        {/* Character Preview Area */}
-        <div className="flex-1 relative w-full h-full min-h-0 flex flex-col items-center justify-end pb-2">
-          <AnimatePresence mode="wait">
-            <motion.div
-              key={previewOutfit.id}
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -10 }}
-              transition={{ duration: 0.3 }}
-              className="absolute inset-0 w-full h-full flex flex-col items-center justify-end"
-            >
-              {/* Background Glow */}
-              <div 
-                className="absolute bottom-[10%] w-[150%] aspect-square blur-[100px] rounded-full pointer-events-none transition-colors duration-700 opacity-40 z-0"
-                style={{ background: `radial-gradient(circle, ${RARITY_BG_GLOW[previewOutfit.rarity]}, transparent 60%)` }}
-              />
-
-              {/* Custom Outfit Background */}
-              {previewOutfit.background && (
-                <div className="absolute inset-0 -mx-4 z-0 pointer-events-none overflow-hidden mask-bottom-fade">
-                  <img 
-                    src={previewOutfit.background} 
-                    className="w-full h-full object-cover opacity-60 mix-blend-screen scale-110" 
-                    style={{ filter: "drop-shadow(0 0 20px rgba(168, 85, 247, 0.5))" }}
-                  />
-                  <div className="absolute inset-0 bg-gradient-to-t from-[#0f172a] via-transparent to-[#0f172a] opacity-80" />
-                </div>
-              )}
-              
-              {/* Floating Info Card (Top/Center) */}
-              <div className="absolute top-0 w-full px-2 sm:px-4 z-20">
-                <div className="rounded-3xl p-4 shadow-2xl border border-white/10 relative overflow-hidden"
-                     style={{
-                       background: 'linear-gradient(135deg, rgba(15,23,42,0.85) 0%, rgba(30,27,75,0.9) 100%)',
-                       backdropFilter: 'blur(20px)',
-                     }}>
-                  {/* Info Card Content */}
-                  <div className="flex justify-between items-start mb-2">
-                    <div>
-                      <h2 className="text-base sm:text-lg font-black text-white leading-none tracking-wide">
-                        {previewOutfit.label}
-                      </h2>
-                      <p className={cn("text-[10px] font-black uppercase tracking-widest mt-1", meta.color)}>
-                        {previewOutfit.rarity}
-                      </p>
-                    </div>
-                    {/* Stats */}
-                    <div className="flex flex-col sm:flex-row items-end sm:items-center gap-1.5 sm:gap-2">
-                       <div className="flex items-center gap-1 bg-white/5 rounded-full px-2 py-1"><Target className="w-3 h-3 text-purple-400"/> <span className="text-[10px] font-black text-white">+{previewOutfit.stats.focus}</span></div>
-                       <div className="flex items-center gap-1 bg-white/5 rounded-full px-2 py-1"><Flame className="w-3 h-3 text-orange-400"/> <span className="text-[10px] font-black text-white">+{previewOutfit.stats.effort}</span></div>
-                       <div className="flex items-center gap-1 bg-white/5 rounded-full px-2 py-1"><Shield className="w-3 h-3 text-blue-400"/> <span className="text-[10px] font-black text-white">+{previewOutfit.stats.discipline}</span></div>
-                    </div>
-                  </div>
-                  
-                  <p className="text-[11px] text-slate-300/80 leading-snug mb-3 pr-4">
-                    {previewOutfit.description}
-                  </p>
-
-                  <div className="w-full">
-                    {!isUnlocked ? (
-                      <HoldToBuyButton 
-                        price={previewOutfit.price} 
-                        canAfford={canAfford}
-                        onComplete={() => unlockMutation.mutate(previewOutfit.id)}
-                      />
-                    ) : isEquipped ? (
-                      <div className="w-full py-2.5 rounded-xl bg-white/10 text-white/50 text-[11px] font-black uppercase text-center border border-white/5">
-                        Equipped
-                      </div>
-                    ) : (
-                      <button
-                        onClick={() => {
-                          const nextConfig = { outfit: previewOutfit.id };
-                          setConfig(nextConfig);
-                          mutation.mutate(nextConfig);
-                        }}
-                        className="w-full py-2.5 rounded-xl bg-primary text-primary-foreground text-[11px] font-black uppercase shadow-lg active:scale-95 transition-transform"
-                      >
-                        Equip
-                      </button>
-                    )}
-                  </div>
-                </div>
-              </div>
-
-              {/* Large Character (Bottom Center) */}
-              <div className="relative w-full h-[65%] flex items-end justify-center z-10 drop-shadow-2xl mb-4 pointer-events-none">
-                <img
-                  src={previewOutfit.image}
-                  className={cn(
-                    "h-full w-auto object-contain transition-all duration-300",
-                    !isUnlocked && "opacity-90 brightness-[0.6] sepia-[0.2] hue-rotate-180" // subtle dark icy look for locked
-                  )}
-                  style={{ filter: isUnlocked ? `drop-shadow(0 -10px 40px ${RARITY_BG_GLOW[previewOutfit.rarity]})` : undefined }}
-                />
-                {/* Floor Shadow */}
-                <div className="absolute -bottom-2 w-48 h-8 bg-black/60 blur-[12px] rounded-[100%] z-[-1]" />
-              </div>
-            </motion.div>
-          </AnimatePresence>
-        </div>
+        <button 
+          onClick={() => setIsDrawerOpen(true)}
+          className="w-9 h-9 rounded-xl glass flex items-center justify-center active:scale-95 transition-all duration-300 flex-none"
+        >
+          <SettingsIcon className="w-4 h-4 text-foreground/50" />
+        </button>
       </div>
 
-      {/* ── Bottom Section (flex: 2.5) ── */}
-      <div className="flex-[2.5] relative rounded-t-[2.5rem] flex flex-col overflow-hidden mx-1 mb-[-4px]"
+      {/* ── Character Preview Area ── */}
+      {/*
+        IMPORTANT: The background image layer is absolutely positioned BELOW all character
+        images using z-index: 0, with no filter/blend-mode applied to parent containers.
+        Character images sit at z-index: 10+ and are never inside a blend-mode stacking context.
+      */}
+      <div className="relative shrink-0 mx-3 mt-3" style={{ height: 'clamp(180px, 38vw, 260px)' }}>
+        <AnimatePresence mode="wait">
+          <motion.div
+            key={previewOutfit.id}
+            initial={{ opacity: 0, y: 8 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -8 }}
+            transition={{ duration: 0.25 }}
+            className="absolute inset-0"
+          >
+            {/* Background image layer — isolated, no mix-blend on any ancestor of character imgs */}
+            {previewOutfit.background && (
+              <div
+                className="absolute inset-0 rounded-2xl overflow-hidden pointer-events-none"
+                style={{ zIndex: 0 }}
+              >
+                <img
+                  src={previewOutfit.background}
+                  className="w-full h-full object-cover opacity-50"
+                  style={{ mixBlendMode: 'normal' }}
+                  aria-hidden="true"
+                />
+                {/* Gradient vignette on top of background image only */}
+                <div
+                  className="absolute inset-0"
+                  style={{
+                    background: 'linear-gradient(to bottom, rgba(15,23,42,0.3) 0%, rgba(15,23,42,0.1) 50%, rgba(15,23,42,0.55) 100%)',
+                  }}
+                />
+              </div>
+            )}
+
+            {/* Rarity ambient glow — behind character, no filters on character itself */}
+            <div
+              className="absolute inset-0 rounded-2xl pointer-events-none transition-colors duration-700"
+              style={{
+                zIndex: 1,
+                background: `radial-gradient(ellipse at 50% 80%, ${RARITY_BG_GLOW[previewOutfit.rarity]}, transparent 70%)`,
+              }}
+            />
+
+            {/* Character image — clean stacking context, no parent filters */}
+            <div
+              className="absolute inset-0 flex items-end justify-center pb-3"
+              style={{ zIndex: 10 }}
+            >
+              <img
+                src={previewOutfit.image}
+                className="h-full w-auto object-contain drop-shadow-2xl pointer-events-none transition-all duration-300"
+                style={{
+                  /*
+                   * COLOR BUG FIX: No filter/hue-rotate/sepia on the character image.
+                   * For locked state we use a separate overlay div below instead of
+                   * CSS filter on the img element to avoid hue-rotate color inversion.
+                   */
+                  filter: isUnlocked
+                    ? `drop-shadow(0 -8px 32px ${RARITY_BG_GLOW[previewOutfit.rarity]})`
+                    : 'brightness(0.55) saturate(0.3)',
+                }}
+              />
+
+              {/* Locked dim overlay — separate element, NOT a filter on img */}
+              {!isUnlocked && (
+                <div
+                  className="absolute inset-0 flex items-end justify-center pb-3 pointer-events-none"
+                  style={{ zIndex: 11 }}
+                >
+                  <div
+                    className="absolute inset-0 rounded-2xl"
+                    style={{ background: 'rgba(10,15,40,0.25)' }}
+                  />
+                </div>
+              )}
+            </div>
+
+            {/* Floor shadow */}
+            <div
+              className="absolute bottom-1 left-1/2 -translate-x-1/2 w-36 h-5 rounded-[100%] pointer-events-none"
+              style={{ zIndex: 9, background: 'rgba(0,0,0,0.45)', filter: 'blur(10px)' }}
+            />
+          </motion.div>
+        </AnimatePresence>
+      </div>
+
+      {/* ── Compact Character Info Card ── */}
+      <div className="shrink-0 mx-3 mt-2">
+        <AnimatePresence mode="wait">
+          <motion.div
+            key={`info-${previewOutfit.id}`}
+            initial={{ opacity: 0, y: 6 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -6 }}
+            transition={{ duration: 0.2 }}
+            className="rounded-2xl px-4 py-3 border border-white/10"
+            style={{
+              background: 'linear-gradient(135deg, rgba(15,23,42,0.82) 0%, rgba(30,27,75,0.88) 100%)',
+              backdropFilter: 'blur(18px)',
+              WebkitBackdropFilter: 'blur(18px)',
+            }}
+          >
+            {/* Name + Rarity row */}
+            <div className="flex items-center justify-between mb-2">
+              <div>
+                <h2 className="text-sm font-black text-white leading-none tracking-wide">
+                  {previewOutfit.label}
+                </h2>
+                <p className={cn("text-[10px] font-black uppercase tracking-widest mt-0.5", meta.color)}>
+                  {previewOutfit.rarity}
+                </p>
+              </div>
+              {/* Stat chips */}
+              <div className="flex items-center gap-1">
+                <div className="flex items-center gap-0.5 bg-white/5 rounded-full px-2 py-1">
+                  <Target className="w-2.5 h-2.5 text-purple-400"/>
+                  <span className="text-[9px] font-black text-white">+{previewOutfit.stats.focus}</span>
+                </div>
+                <div className="flex items-center gap-0.5 bg-white/5 rounded-full px-2 py-1">
+                  <Flame className="w-2.5 h-2.5 text-orange-400"/>
+                  <span className="text-[9px] font-black text-white">+{previewOutfit.stats.effort}</span>
+                </div>
+                <div className="flex items-center gap-0.5 bg-white/5 rounded-full px-2 py-1">
+                  <Shield className="w-2.5 h-2.5 text-blue-400"/>
+                  <span className="text-[9px] font-black text-white">+{previewOutfit.stats.discipline}</span>
+                </div>
+              </div>
+            </div>
+
+            {/* Short description */}
+            <p className="text-[10px] text-slate-300/75 leading-snug mb-2.5 line-clamp-2">
+              {previewOutfit.description}
+            </p>
+
+            {/* Action button — full width, thumb-friendly */}
+            <div className="w-full">
+              {!isUnlocked ? (
+                <HoldToBuyButton 
+                  price={previewOutfit.price} 
+                  canAfford={canAfford}
+                  onComplete={() => unlockMutation.mutate(previewOutfit.id)}
+                />
+              ) : isEquipped ? (
+                <div className="w-full py-3 rounded-xl bg-white/10 text-white/50 text-[11px] font-black uppercase text-center border border-white/5">
+                  Equipped
+                </div>
+              ) : (
+                <button
+                  onClick={() => {
+                    const nextConfig = { outfit: previewOutfit.id };
+                    setConfig(nextConfig);
+                    mutation.mutate(nextConfig);
+                  }}
+                  className="w-full py-3 rounded-xl bg-primary text-primary-foreground text-[11px] font-black uppercase shadow-lg active:scale-95 transition-transform"
+                >
+                  Equip
+                </button>
+              )}
+            </div>
+          </motion.div>
+        </AnimatePresence>
+      </div>
+
+      {/* ── Wardrobe Panel ── */}
+      <div
+        className="flex-1 relative rounded-t-[2rem] flex flex-col overflow-hidden mx-1 mt-2 mb-[-4px]"
         style={{
           background: 'var(--glass-bg)',
           backdropFilter: 'blur(25px)',
@@ -319,9 +380,9 @@ export default function Profile() {
           boxShadow: '0 -10px 40px rgba(0,0,0,0.1)',
         }}
       >
-        {/* Inside Trace - rarity glow (based on previewed item) */}
+        {/* Rarity inner trace */}
         <div className={cn(
-          "absolute inset-[5px] rounded-t-[2.1rem] pointer-events-none z-10 transition-all duration-500",
+          "absolute inset-[5px] rounded-t-[1.6rem] pointer-events-none z-10 transition-all duration-500",
           meta.border ? "border" : "",
         )} style={{
           borderColor: previewOutfit.rarity === "legendary" ? 'rgba(255, 215, 0, 0.25)' :
@@ -332,10 +393,10 @@ export default function Profile() {
             : 'none',
         }} />
 
-        {/* Panel Header */}
-        <div className="px-6 pt-4 pb-2 shrink-0">
+        {/* Wardrobe Panel Header */}
+        <div className="px-5 pt-4 pb-2 shrink-0">
           <div className="flex items-center justify-between">
-            <div className="flex items-center gap-4">
+            <div className="flex items-center gap-3">
               <div>
                 <h2 className="text-xs font-black uppercase tracking-[0.1em] text-foreground/90">Wardrobe</h2>
                 <div className="h-1 w-6 bg-primary rounded-full mt-0.5 shadow-[0_0_8px_rgba(var(--glow-primary),0.5)]" />
@@ -350,11 +411,11 @@ export default function Profile() {
         </div>
 
         {/* Costume Grid */}
-        <div className="flex-1 overflow-y-auto px-5 pb-28 no-scrollbar mask-bottom-fade">
-          <div className="grid grid-cols-3 gap-2.5 pt-2">
+        <div className="flex-1 overflow-y-auto px-4 pb-28 no-scrollbar mask-bottom-fade">
+          <div className="grid grid-cols-3 gap-2.5 pt-1">
             {sortedOutfits.map((outfit) => {
               const isSelected = previewId === outfit.id;
-              const isEquipped = equippedId === outfit.id;
+              const isEquippedItem = equippedId === outfit.id;
               const isItemUnlocked = outfit.id === "classic" || !!inventory[outfit.id];
               
               return (
@@ -385,11 +446,20 @@ export default function Profile() {
                          outfit.rarity === "rare" ? 'rgba(56, 189, 248, 0.4)' : 'rgba(255, 255, 255, 0.15)')}`,
                   }}
                 >
-                  {/* Item Image */}
+                  {/*
+                   * COLOR BUG FIX — Wardrobe thumbnails:
+                   * The locked dim effect is applied ONLY via opacity on the wrapper div.
+                   * NO hue-rotate, sepia, or invert is applied to the img element.
+                   * saturate(0.5) is acceptable as it doesn't shift hue.
+                   * The background image of Night Ninja is NOT a parent of these thumbnails,
+                   * so mix-blend-screen cannot affect them.
+                   */}
                   <div className={cn(
                     "relative w-[88%] h-[88%] flex items-center justify-center transition-all duration-300",
-                    !isItemUnlocked && "opacity-60 saturate-50"
-                  )}>
+                  )} style={{
+                    opacity: isItemUnlocked ? 1 : 0.55,
+                    filter: isItemUnlocked ? 'none' : 'saturate(0.35)',
+                  }}>
                     <img 
                       src={outfit.image} 
                       className={cn(
@@ -399,22 +469,23 @@ export default function Profile() {
                     />
                   </div>
 
-                  {/* Lock Overlay (Subtle) */}
+                  {/* Lock icon badge */}
                   {!isItemUnlocked && (
-                    <div className="absolute top-2 left-2 bg-black/40 backdrop-blur-md p-1 rounded-full z-10">
-                      <Lock className="w-3 h-3 text-white/80" />
+                    <div className="absolute top-1.5 left-1.5 bg-black/50 backdrop-blur-md p-1 rounded-full z-10">
+                      <Lock className="w-2.5 h-2.5 text-white/80" />
                     </div>
                   )}
 
-                  {/* Equipped Badge */}
-                  {isEquipped && (
+                  {/* Equipped badge */}
+                  {isEquippedItem && (
                     <div className="absolute top-1.5 right-1.5 w-5 h-5 rounded-lg flex items-center justify-center z-20 shadow-[0_0_8px_rgba(var(--glow-primary),0.5)] bg-[rgba(var(--glow-primary),0.8)]">
                       <Check className="w-3 h-3 text-white" strokeWidth={4} />
                     </div>
                   )}
 
-                  {/* Rarity Label (Bottom) */}
-                  <div className="absolute bottom-0 w-full py-1 text-[7px] font-black uppercase tracking-widest text-center backdrop-blur-[4px]"
+                  {/* Rarity label */}
+                  <div
+                    className="absolute bottom-0 w-full py-0.5 text-[7px] font-black uppercase tracking-widest text-center"
                     style={{
                       background: isSelected ? 'rgba(0, 0, 0, 0.7)' : 'rgba(0, 0, 0, 0.4)',
                       color: outfit.rarity === "legendary" ? 'rgb(255, 220, 0)' :
@@ -433,4 +504,3 @@ export default function Profile() {
     </div>
   );
 }
-
