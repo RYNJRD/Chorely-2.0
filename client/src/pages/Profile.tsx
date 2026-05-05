@@ -321,22 +321,9 @@ export default function Profile() {
                 style={{
                   opacity: 1,
                   mixBlendMode: "normal",
-                  filter: isUnlocked
-                    ? `drop-shadow(0 0 28px ${RARITY_BG_GLOW[previewOutfit.rarity]}) drop-shadow(0 -4px 20px ${RARITY_BG_GLOW[previewOutfit.rarity]})`
-                    : "none",
-                  transition: "filter 0.4s ease",
+                  filter: "none",
                 }}
               />
-
-              {/* Locked overlay tint — separate from img */}
-              {!isUnlocked && (
-                <div
-                  className="absolute inset-0 pointer-events-none z-[3]"
-                  style={{
-                    background: "rgba(5,10,30,0.55)",
-                  }}
-                />
-              )}
             </div>
 
             {/* Floor shadow ellipse */}
@@ -573,9 +560,7 @@ export default function Profile() {
                       style={{
                         opacity: 1,
                         mixBlendMode: "normal",
-                        filter: isSelected && isItemUnlocked
-                          ? `drop-shadow(0 0 8px ${RARITY_BG_GLOW[outfit.rarity]})`
-                          : "none",
+                        filter: "none",
                       }}
                     />
                   </div>
