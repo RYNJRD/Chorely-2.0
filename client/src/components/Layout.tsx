@@ -29,10 +29,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
     */
   }, [isInactive, isSubscriptionPage, isOnboarding, family?.id, setLocation]);
 
-  // Hide nav on profile page — use location-based check so there's never
-  // a flash caused by async state; the nav slides out smoothly via AnimatePresence.
-  const isProfilePage = location.includes("/profile");
-  const showNav = !isOnboarding && !isNavHidden && !isProfilePage;
+  const showNav = !isOnboarding && !isNavHidden;
 
   return (
     <div className="flex items-center justify-center min-h-screen bg-zinc-950 font-sans text-foreground selection:bg-primary/20">
@@ -45,13 +42,13 @@ export function Layout({ children }: { children: React.ReactNode }) {
         <div className="flex-1 min-h-0 relative flex flex-col rounded-[inherit]">
           <main className={cn(
             "flex-1 relative no-scrollbar rounded-[inherit]",
-            (location.includes("/profile") || location.includes("/me") || location.includes("/chat")) ? "overflow-hidden touch-none" : "overflow-y-auto pb-28",
+            location.includes("/chat") ? "overflow-hidden touch-none" : "overflow-y-auto pb-28",
             isOnboarding && "flex flex-col overflow-hidden touch-none h-full !pb-0"
           )}>
             <div className="relative min-h-full flex flex-col">
               {children}
               {/* Overscroll Bumper */}
-              {!isOnboarding && !location.includes("/profile") && !location.includes("/chat") && (
+              {!isOnboarding && !location.includes("/chat") && (
                 <div className="absolute top-full left-0 right-0 h-[50vh] bg-white dark:bg-white/5 pointer-events-none" />
               )}
             </div>

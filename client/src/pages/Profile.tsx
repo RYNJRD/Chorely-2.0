@@ -9,9 +9,8 @@ import {
   Lock,
   Shield,
   Target,
-  ArrowLeft,
 } from "lucide-react";
-import { useLocation } from "wouter";
+
 import { api, buildUrl } from "../../../shared/routes";
 import { queryClient } from "../lib/queryClient";
 import { useStore } from "../store/useStore";
@@ -137,7 +136,6 @@ const HoldToBuyButton = ({
 export default function Profile() {
   const { currentUser, setCurrentUser, setIsDrawerOpen } = useStore();
   const { toast } = useToast();
-  const [, setLocation] = useLocation();
   const [config, setConfig] = useState<AvatarConfig>(() =>
     parseAvatarConfig(currentUser?.avatarConfig)
   );
@@ -239,18 +237,8 @@ export default function Profile() {
 
       {/* ── Top Header ── */}
       <div className="relative flex items-center justify-between h-12 px-4 pt-4 pb-0 shrink-0" style={{ zIndex: 10 }}>
-        {/* Back arrow */}
-        <button
-          onClick={() => {
-            if (currentUser?.familyId) {
-              setLocation(`/family/${currentUser.familyId}/dashboard`);
-            }
-          }}
-          className="w-9 h-9 rounded-xl glass flex items-center justify-center active:scale-90 transition-all duration-200 flex-none"
-          aria-label="Go back"
-        >
-          <ArrowLeft className="w-4 h-4 text-white/80" />
-        </button>
+        {/* Spacer to keep title centred */}
+        <div className="w-9 h-9" />
 
         {/* Username centred */}
         <div className="flex flex-col items-center justify-center absolute left-1/2 -translate-x-1/2">
