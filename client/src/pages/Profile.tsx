@@ -273,8 +273,8 @@ export default function Profile() {
 
       {/* ── Character Preview — full bleed, no card wrapper ── */}
       <div
-        className="relative shrink-0 w-full"
-        style={{ height: "clamp(200px, 46vw, 290px)", zIndex: 5 }}
+        className="relative flex-1 w-full min-h-[300px]"
+        style={{ zIndex: 5 }}
       >
         <AnimatePresence mode="wait">
           <motion.div
@@ -343,105 +343,38 @@ export default function Profile() {
         </AnimatePresence>
       </div>
 
-      {/* ── Compact Info + Action Card ── */}
-      <div className="shrink-0 mx-3 mt-1.5" style={{ zIndex: 10 }}>
+      {/* ── Action Button Overlay ── */}
+      <div className="absolute bottom-4 left-4 right-4" style={{ zIndex: 10 }}>
         <AnimatePresence mode="wait">
           <motion.div
-            key={`card-${previewOutfit.id}`}
+            key={`action-${previewOutfit.id}`}
             initial={{ opacity: 0, y: 8 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -6 }}
             transition={{ duration: 0.22 }}
-            className="rounded-2xl px-4 py-2.5 border relative overflow-hidden"
-            style={{
-              background:
-                "linear-gradient(135deg, rgba(12,18,45,0.88) 0%, rgba(22,20,60,0.92) 100%)",
-              backdropFilter: "blur(22px)",
-              WebkitBackdropFilter: "blur(22px)",
-              borderColor: RARITY_BORDER_COLOR[previewOutfit.rarity],
-              boxShadow: `0 0 24px ${RARITY_BG_GLOW[previewOutfit.rarity]}, inset 0 0 16px rgba(255,255,255,0.025)`,
-            }}
           >
-            {/* Rarity shimmer line at top */}
-            <div
-              className="absolute top-0 left-0 right-0 h-[2px] rounded-t-2xl"
-              style={{
-                background: `linear-gradient(90deg, transparent 0%, ${RARITY_BORDER_COLOR[previewOutfit.rarity]} 40%, transparent 100%)`,
-                opacity: 0.9,
-              }}
-            />
-
-            {/* Name row + stats */}
-            <div className="flex items-center justify-between mb-1.5">
-              <div className="flex items-center gap-2">
-                <h2 className="text-sm font-black text-white leading-none tracking-wide">
-                  {previewOutfit.label}
-                </h2>
-                <span
-                  className="text-[9px] font-black uppercase tracking-widest px-1.5 py-0.5 rounded-full"
-                  style={{
-                    color: RARITY_BADGE_COLOR[previewOutfit.rarity],
-                    background: `${RARITY_BG_GLOW[previewOutfit.rarity]}`,
-                    border: `1px solid ${RARITY_BORDER_COLOR[previewOutfit.rarity]}`,
-                    textShadow: `0 0 8px ${RARITY_BADGE_COLOR[previewOutfit.rarity]}`,
-                  }}
-                >
-                  {previewOutfit.rarity}
-                </span>
+            {!isUnlocked ? (
+              <HoldToBuyButton
+                price={previewOutfit.price}
+                canAfford={canAfford}
+                onComplete={() => unlockMutation.mutate(previewOutfit.id)}
+              />
+            ) : isEquipped ? (
+              <div className="w-full py-3 rounded-2xl bg-black/40 text-white/80 text-[12px] font-black uppercase text-center border border-white/20 backdrop-blur-md shadow-lg">
+                ✓ Equipped
               </div>
-              {/* Stat chips */}
-              <div className="flex items-center gap-1">
-                <div className="flex items-center gap-0.5 bg-purple-500/10 border border-purple-500/20 rounded-full px-1.5 py-0.5">
-                  <Target className="w-2.5 h-2.5 text-purple-400" />
-                  <span className="text-[9px] font-black text-white">
-                    +{previewOutfit.stats.focus}
-                  </span>
-                </div>
-                <div className="flex items-center gap-0.5 bg-orange-500/10 border border-orange-500/20 rounded-full px-1.5 py-0.5">
-                  <Flame className="w-2.5 h-2.5 text-orange-400" />
-                  <span className="text-[9px] font-black text-white">
-                    +{previewOutfit.stats.effort}
-                  </span>
-                </div>
-                <div className="flex items-center gap-0.5 bg-blue-500/10 border border-blue-500/20 rounded-full px-1.5 py-0.5">
-                  <Shield className="w-2.5 h-2.5 text-blue-400" />
-                  <span className="text-[9px] font-black text-white">
-                    +{previewOutfit.stats.discipline}
-                  </span>
-                </div>
-              </div>
-            </div>
-
-            {/* Description */}
-            <p className="text-[10px] text-slate-300/70 leading-snug mb-2.5 line-clamp-2">
-              {previewOutfit.description}
-            </p>
-
-            {/* Action button */}
-            <div className="w-full">
-              {!isUnlocked ? (
-                <HoldToBuyButton
-                  price={previewOutfit.price}
-                  canAfford={canAfford}
-                  onComplete={() => unlockMutation.mutate(previewOutfit.id)}
-                />
-              ) : isEquipped ? (
-                <div className="w-full py-3 rounded-xl bg-white/8 text-white/40 text-[11px] font-black uppercase text-center border border-white/8">
-                  ✓ Equipped
-                </div>
-              ) : (
-                <button
-                  onClick={() => {
-                    const nextConfig = { outfit: previewOutfit.id };
-                    setConfig(nextConfig);
-                    mutation.mutate(nextConfig);
-                  }}
-                  className="w-full py-3 rounded-xl bg-primary text-primary-foreground text-[11px] font-black uppercase shadow-lg active:scale-95 transition-transform"
-                >
-                  Equip Now
-                </button>
-              )}
-            </div>
+            ) : (
+              <button
+                onClick={() => {
+                  const nextConfig = { outfit: previewOutfit.id };
+                  setConfig(nextConfig);
+                  mutation.mutate(nextConfig);
+                }}
+                className="w-full py-3 rounded-2xl bg-primary text-primary-foreground text-[12px] font-black uppercase shadow-[0_0_20px_rgba(var(--glow-primary),0.4)] active:scale-95 transition-all backdrop-blur-md"
+              >
+                Equip Now
+              </button>
+            )}
           </motion.div>
         </AnimatePresence>
       </div>

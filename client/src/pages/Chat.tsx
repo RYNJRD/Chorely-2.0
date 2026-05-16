@@ -194,9 +194,9 @@ export default function Chat() {
                     key={p.id}
                     onClick={() => selectBg(p.id)}
                     className={cn(
-                      "h-20 rounded-2xl flex items-center justify-center p-2 text-center text-[10px] font-bold transition-all duration-300 active:scale-95 glass",
+                      "h-20 rounded-2xl flex items-center justify-center p-2 text-center text-[10px] font-bold transition-all duration-300 active:scale-95 border border-white/10",
                       p.class,
-                      chatBg === p.class ? "ring-2 ring-primary scale-95" : ""
+                      chatBg === p.class ? "ring-2 ring-primary scale-95" : "opacity-80 hover:opacity-100"
                     )}
                     style={{ color: 'var(--foreground)' }}
                   >

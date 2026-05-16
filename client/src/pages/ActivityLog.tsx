@@ -20,8 +20,8 @@ export default function ActivityLog() {
 
   const filteredActivity = activity.filter(item => {
     // Check if the user associated with this activity is visible
-    const isDefaultHidden = item.user.role === 'admin';
-    const isHidden = item.user.hideFromLeaderboard ?? isDefaultHidden;
+    const isDefaultHidden = item.user?.role === 'admin';
+    const isHidden = item.user?.hideFromLeaderboard ?? isDefaultHidden;
     if (isHidden) return false;
 
     if (filter === 'all') return true;

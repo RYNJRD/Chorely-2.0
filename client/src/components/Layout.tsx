@@ -45,10 +45,16 @@ export function Layout({ children }: { children: React.ReactNode }) {
         <div className="flex-1 min-h-0 relative flex flex-col rounded-[inherit]">
           <main className={cn(
             "flex-1 relative no-scrollbar rounded-[inherit]",
-            (location.includes("/profile") || location.includes("/me") || location.includes("/chat")) ? "overflow-hidden touch-none" : "overflow-y-auto pb-28 mask-bottom-fade",
+            (location.includes("/profile") || location.includes("/me") || location.includes("/chat")) ? "overflow-hidden touch-none" : "overflow-y-auto pb-28",
             isOnboarding && "flex flex-col overflow-hidden touch-none h-full !pb-0"
           )}>
-            {children}
+            <div className="relative min-h-full flex flex-col">
+              {children}
+              {/* Overscroll Bumper */}
+              {!isOnboarding && !location.includes("/profile") && !location.includes("/chat") && (
+                <div className="absolute top-full left-0 right-0 h-[50vh] bg-white dark:bg-white/5 pointer-events-none" />
+              )}
+            </div>
           </main>
         </div>
 

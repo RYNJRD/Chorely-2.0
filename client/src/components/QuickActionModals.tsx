@@ -111,24 +111,58 @@ export function QuickActionModals({ familyId, isOpen, onClose, type }: QuickActi
                 <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground ml-1">Stars</p>
                 <input type="number" min="1" value={chorePoints} onChange={(event) => setChorePoints(event.target.value)} className={inputClass} required />
               </div>
-              <div className="space-y-1">
+              <div className="space-y-2">
                 <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground ml-1">Type</p>
-                <select value={choreType} onChange={(event) => setChoreType(event.target.value as any)} className={inputClass}>
-                  <option value="daily">Daily</option>
-                  <option value="weekly">Weekly</option>
-                  <option value="monthly">Monthly</option>
-                  <option value="box">Shared</option>
-                </select>
+                <div className="flex gap-2 overflow-x-auto no-scrollbar pb-1">
+                  {(['daily', 'weekly', 'monthly', 'box'] as const).map(t => (
+                    <button
+                      key={t}
+                      type="button"
+                      onClick={() => setChoreType(t)}
+                      className={cn(
+                        "px-4 py-2.5 rounded-xl text-xs font-bold capitalize whitespace-nowrap transition-all border-2",
+                        choreType === t 
+                          ? "bg-primary border-primary text-white shadow-md shadow-primary/20" 
+                          : "bg-input border-transparent text-foreground hover:border-primary/30"
+                      )}
+                    >
+                      {t === 'box' ? 'Shared' : t}
+                    </button>
+                  ))}
+                </div>
               </div>
             </div>
-            <div className="space-y-1">
+            <div className="space-y-2">
                 <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground ml-1">Assign To</p>
-                <select value={choreAssignee} onChange={(event) => setChoreAssignee(event.target.value)} className={inputClass}>
-                  <option value="__anyone__">Anyone</option>
+                <div className="flex gap-2 overflow-x-auto no-scrollbar pb-1">
+                  <button
+                    type="button"
+                    onClick={() => setChoreAssignee("__anyone__")}
+                    className={cn(
+                      "px-4 py-2.5 rounded-xl text-xs font-bold whitespace-nowrap transition-all border-2",
+                      choreAssignee === "__anyone__"
+                        ? "bg-primary border-primary text-white shadow-md shadow-primary/20" 
+                        : "bg-input border-transparent text-foreground hover:border-primary/30"
+                    )}
+                  >
+                    Anyone
+                  </button>
                   {familyUsers.map((user) => (
-                    <option key={user.id} value={user.id}>{user.username}</option>
+                    <button
+                      key={user.id}
+                      type="button"
+                      onClick={() => setChoreAssignee(String(user.id))}
+                      className={cn(
+                        "px-4 py-2.5 rounded-xl text-xs font-bold whitespace-nowrap transition-all border-2",
+                        choreAssignee === String(user.id)
+                          ? "bg-primary border-primary text-white shadow-md shadow-primary/20" 
+                          : "bg-input border-transparent text-foreground hover:border-primary/30"
+                      )}
+                    >
+                      {user.username}
+                    </button>
                   ))}
-                </select>
+                </div>
             </div>
             <label className="flex items-center gap-2 text-sm font-bold text-muted-foreground px-1">
               <input type="checkbox" checked={choreNeedsApproval} onChange={(event) => setChoreNeedsApproval(event.target.checked)} className="rounded" />
